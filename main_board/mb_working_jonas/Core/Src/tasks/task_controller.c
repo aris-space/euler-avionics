@@ -8,7 +8,7 @@
 #include "tasks/task_controller.h"
 
 
-void CalcPolynomial(int32_t ref_height, int32_t *ref_vel, int32_t gains[], int32_t coefficients[][POLY_DEG]);
+void CalcPolynomial(float ref_height, float *ref_vel, float gains[], float coefficients[][POLY_DEG]);
 
 
 void vTaskController(void *argument) {
@@ -16,17 +16,20 @@ void vTaskController(void *argument) {
 	uint32_t tick_count, tick_update;
 
 	/* Polynomial Coefficients for Gains and Reference Traj */
-	int32_t coeff[4][POLY_DEG] = { 0 };
+	float coeff[4][POLY_DEG] = { 0 };
 
 	/* State Estimation Values */
-	int32_t sf_velocity = 0;
-	int32_t sf_height = 0;
+	float sf_velocity = 0;
+	float sf_height = 0;
 
 	/* Gain Values and Trajectory Values to increase speed */
-	int32_t gains[3] = { 0 };
-	int32_t ref_vel = 0;
-	int32_t vel_error = 0;
-	int32_t control_input = 0;
+	float gains[3] = { 0 };
+	float ref_vel = 0;
+	float vel_error = 0;
+	float control_input = 0;
+	float integrated_error = 0;
+	float previous_control_input = 0;
+	uint32_t delta_t = 1 / CONTROLLER_SAMPLING_FREQ; 	/* That is probably very optimistic! */
 
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();
@@ -45,14 +48,20 @@ void vTaskController(void *argument) {
 		vel_error = sf_velocity - ref_vel;
 
 		/* Calculate Control Input */
-		/* TODO */
+		control_input = - gains[0] * vel_error - gains[1] * integrated_error
+				- gains[2] * (previous_control_input - OPT_TRAJ_CONTROL_INPUT)
+				+ previous_control_input;
 
-		/* Anti Windup */
-		/* TODO */
+		control_input = fmax(0, fmin(control_input, 1));
 
 		/* Send Control Output to motor control Task */
 		/* TODO */
 
+		/* Update Integrated Error */
+		integrated_error = fmax(-10, fmin(integrated_error + delta_t*vel_error, 10));
+
+		/* Update Previous Control Input */
+		previous_control_input = control_input;
 		/* Sleep */
 		osDelayUntil(tick_count);
 	}
@@ -60,7 +69,7 @@ void vTaskController(void *argument) {
 
 
 /* Does the Polynomial Calculation of the reference velocity */
-void CalcPolynomial(int32_t ref_height, int32_t *ref_vel, int32_t gains[], int32_t coefficients[][POLY_DEG]){
+void CalcPolynomial(float ref_height, float *ref_vel, float gains[], float coefficients[][POLY_DEG]){
 	/* For Speed */
 	uint32_t x_placeholder = 0;
 

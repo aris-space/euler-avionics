@@ -18,6 +18,7 @@
 /* Constants */
 #define CONTROLLER_SAMPLING_FREQ 500
 #define POLY_DEG 30
+#define OPT_TRAJ_CONTROL_INPUT 0
 /* Parameters */
 
 /* Commands */
