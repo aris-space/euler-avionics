@@ -28,6 +28,7 @@
 #include "tasks/task_controller.h"
 #include "tasks/task_sens_read.h"
 #include "tasks/task_state_est.h"
+#include "typedef.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,7 +47,10 @@
 
 /* Private variables ---------------------------------------------------------*/
 
+SPI_HandleTypeDef hspi1;
+
 typedef StaticTask_t osStaticThreadDef_t;
+typedef StaticSemaphore_t osStaticMutexDef_t;
 osThreadId_t defaultTaskHandle;
 osThreadId_t task_state_estHandle;
 uint32_t task_sfBuffer[ 512 ];
@@ -57,14 +61,22 @@ osStaticThreadDef_t task_controllerControlBlock;
 osThreadId_t task_sens_readHandle;
 uint32_t task_sensor_reaBuffer[ 512 ];
 osStaticThreadDef_t task_sensor_reaControlBlock;
+osMutexId_t sb_1_mutexHandle;
+osStaticMutexDef_t myMutex01ControlBlock;
 /* USER CODE BEGIN PV */
+baro_data sb1_baro;
+imu_data sb1_imu;
 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_SPI1_Init(void);
 void StartDefaultTask(void *argument);
+void vTaskStateEst(void *argument);
+void vTaskController(void *argument);
+void vTaskSensRead(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -104,12 +116,21 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USB_DEVICE_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
 
   osKernelInitialize();
+
+  /* Create the mutex(es) */
+  /* definition and creation of sb_1_mutex */
+  const osMutexAttr_t sb_1_mutex_attributes = {
+    .name = "sb_1_mutex",
+    .cb_mem = &myMutex01ControlBlock,
+    .cb_size = sizeof(myMutex01ControlBlock),
+  };
+  sb_1_mutexHandle = osMutexNew(&sb_1_mutex_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -183,7 +204,6 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -236,6 +256,46 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief SPI1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI1_Init(void)
+{
+
+  /* USER CODE BEGIN SPI1_Init 0 */
+
+  /* USER CODE END SPI1_Init 0 */
+
+  /* USER CODE BEGIN SPI1_Init 1 */
+
+  /* USER CODE END SPI1_Init 1 */
+  /* SPI1 parameter configuration*/
+  hspi1.Instance = SPI1;
+  hspi1.Init.Mode = SPI_MODE_MASTER;
+  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi1.Init.NSS = SPI_NSS_HARD_OUTPUT;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi1.Init.CRCPolynomial = 7;
+  hspi1.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
+  hspi1.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
+  if (HAL_SPI_Init(&hspi1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI1_Init 2 */
+
+  /* USER CODE END SPI1_Init 2 */
+
 }
 
 /**

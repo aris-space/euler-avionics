@@ -13,7 +13,12 @@
 
 /* Constants */
 #define STATE_ESTIMATION_FREQUENCY 1000
-/* Parameters */
+/* Matrix Sizes */
+#define A_SIZE 3	/* A_SIZE x A_SIZE -> A Matrix */
+#define B_SIZE 1	/* A_SIZE x B_SIZE -> B Matrix */
+#define G_SIZE 1	/* A_SIZE x G_SIZE -> G Matrix */
+#define NUMBER_SENSOR 3 /* NUMBER_SENSOR x A_SIZE -> H Matrix */
+
 
 /* Commands */
 
