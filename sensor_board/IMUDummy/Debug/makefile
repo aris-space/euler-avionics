@@ -41,8 +41,8 @@ IMUDummy.list \
 all: IMUDummy.elf secondary-outputs
 
 # Tool invocations
-IMUDummy.elf: $(OBJS) $(USER_OBJS) C:\Users\Jonas\Desktop\Git\avionics\sensor_board\IMUDummy\STM32L433CBTX_FLASH.ld
-	arm-none-eabi-gcc -o "IMUDummy.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Jonas\Desktop\Git\avionics\sensor_board\IMUDummy\STM32L433CBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="IMUDummy.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+IMUDummy.elf: $(OBJS) $(USER_OBJS) C:\Users\Jonas\Desktop\Git\aris-euler-avionics\sensor_board\IMUDummy\STM32L433CBTX_FLASH.ld
+	arm-none-eabi-gcc -o "IMUDummy.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Jonas\Desktop\Git\aris-euler-avionics\sensor_board\IMUDummy\STM32L433CBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="IMUDummy.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

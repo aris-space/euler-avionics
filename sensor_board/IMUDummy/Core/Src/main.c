@@ -109,40 +109,41 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+//		HAL_Delay(100);
+//		HAL_SPI_StateTypeDef spistate;
+//		HAL_StatusTypeDef Test = HAL_ERROR;
+//		spistate = HAL_SPI_GetState(&hspi1);
+//
+//		if(configured == 0){
+//			uint8_t register_sensor_powerMgmt1[2] = { 0 };
+//			register_sensor_powerMgmt1[0] = (0 << 7
+//					| IMU20600_COMMAND_POWER_MANAGMENT1);
+//			register_sensor_powerMgmt1[1] =
+//					(0 << 7 | SENS_sleep_EN << 6 | SENS_clk_src << 0);
+//			//UsbPrint("Tx_conf1: %x; Tx_conf2: %x\n", register_sensor_powerMgmt1[0],  register_sensor_powerMgmt1[1]);
+//			while (Test != HAL_OK) {
+//				//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+//				Test = HAL_SPI_Transmit(&hspi1, register_sensor_powerMgmt1,
+//						IMU20600_COMMAND_LENGTH, IMU20600_SPI_TIMEOUT);
+//				//HAL_Delay(1);
+//				//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+//			}
+//			configured = 1;
+//		}
 		HAL_Delay(100);
-		HAL_SPI_StateTypeDef spistate;
-		HAL_StatusTypeDef Test = HAL_ERROR;
-		spistate = HAL_SPI_GetState(&hspi1);
-
-		if(configured == 0){
-			uint8_t register_sensor_powerMgmt1[2] = { 0 };
-			register_sensor_powerMgmt1[0] = (0 << 7
-					| IMU20600_COMMAND_POWER_MANAGMENT1);
-			register_sensor_powerMgmt1[1] =
-					(0 << 7 | SENS_sleep_EN << 6 | SENS_clk_src << 0);
-			//UsbPrint("Tx_conf1: %x; Tx_conf2: %x\n", register_sensor_powerMgmt1[0],  register_sensor_powerMgmt1[1]);
-			while (Test != HAL_OK) {
-				//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-				Test = HAL_SPI_Transmit(&hspi1, register_sensor_powerMgmt1,
-						IMU20600_COMMAND_LENGTH, IMU20600_SPI_TIMEOUT);
-				//HAL_Delay(1);
-				//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-			}
-			configured = 1;
-		}
-		HAL_Delay(100);
 
 
-		//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-		uint8_t powermanagmentread = (1 << 7
-				| IMU20600_COMMAND_POWER_MANAGMENT1);
-		uint8_t powermanagmentreadrx = powermanagmentread;
-		Test = HAL_SPI_TransmitReceive(&hspi1, &powermanagmentread, &powermanagmentreadrx, 1, 10000000);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+		uint8_t powermanagmentread[1] = { 0 };
+		powermanagmentread[0] = (1 << 7 | 0x75);
+		uint8_t powermanagmentreadrx[1] = { 0 };
+		//HAL_SPI_TransmitReceive(&hspi1, powermanagmentread, powermanagmentreadrx, 2, 10000000);
+		HAL_SPI_Transmit(&hspi1, powermanagmentread, 1, 10000000);
+		HAL_SPI_Receive(&hspi1, powermanagmentreadrx, 1, 1000000);
 		//HAL_Delay(1);
-		//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-		UsbPrint("Tx: %x; Rx: %x\n", powermanagmentread,  powermanagmentreadrx);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+		UsbPrint("Tx: %x; Rx: %x\n", powermanagmentread[0],  powermanagmentreadrx[0]);
 
-		Test = HAL_ERROR;
 		//HAL_Delay(100);
 		/* Disable I2C Mode */
 //		if(configured == 1){
@@ -272,16 +273,16 @@ static void MX_SPI1_Init(void)
   hspi1.Init.Mode = SPI_MODE_MASTER;
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
   hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
+  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi1.Init.NSS = SPI_NSS_HARD_OUTPUT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+  hspi1.Init.NSS = SPI_NSS_SOFT;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
   hspi1.Init.CRCPolynomial = 7;
   hspi1.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
-  hspi1.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
+  hspi1.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
   if (HAL_SPI_Init(&hspi1) != HAL_OK)
   {
     Error_Handler();
@@ -299,9 +300,20 @@ static void MX_SPI1_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : PA4 */
+  GPIO_InitStruct.Pin = GPIO_PIN_4;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 }
 
