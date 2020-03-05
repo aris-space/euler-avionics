@@ -32,6 +32,7 @@ void vTaskPreprocess(void *argument) {
 			registers[1] = registers[0];
 			registers[0] = raw_acc_z + B1 * registers[0] + B2 * registers[1]
 					+ B3 * registers[2] + B4 * registers[3];
+
 			/* Write Result into Motherboard Variable if Mutex is available */
 			if (osMutexAcquire(imu_mutex, IMU_MUTEX_TIMEOUT) == osOK) {
 				imu_data_to_mb = queue_data;

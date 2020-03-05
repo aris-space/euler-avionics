@@ -37,6 +37,7 @@ typedef struct {
 	int32_t temperature;
 	uint32_t timestamp;
 } baro_data;
+#define BARO_STRUCT_SIZE 12
 
 /* Constants */
 #define QUEUE_SIZE 32
