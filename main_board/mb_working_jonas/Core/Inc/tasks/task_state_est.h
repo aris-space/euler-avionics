@@ -10,14 +10,17 @@
 
 /* Includes */
 #include "cmsis_os.h"
-
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
 /* Constants */
 #define STATE_ESTIMATION_FREQUENCY 1000
 /* Matrix Sizes */
-#define A_SIZE 3	/* A_SIZE x A_SIZE -> A Matrix */
-#define B_SIZE 1	/* A_SIZE x B_SIZE -> B Matrix */
-#define G_SIZE 1	/* A_SIZE x G_SIZE -> G Matrix */
-#define NUMBER_SENSOR 3 /* NUMBER_SENSOR x A_SIZE -> H Matrix */
+#define NUMBER_STATES 3	/* NUMBER_STATES x NUMBER_STATES -> A Matrix */
+#define NUMBER_INPUTS 1	/* NUMBER_STATES x NUMBER_INPUTS -> B Matrix */
+#define NUMBER_NOISE 1	/* NUMBER_STATES x NUMBER_NOISE -> G Matrix */
+#define NUMBER_SENSOR 3 /* NUMBER_SENSOR x NUMBER_STATES -> H Matrix */
+#define LAMBDA 0.1		/* Lambda for Moore Penrose Pseudoinverse */
 
 
 /* Commands */
