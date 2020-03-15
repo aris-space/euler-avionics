@@ -11,6 +11,7 @@
 /* Includes */
 #include "cmsis_os.h"
 #include "stm32l4xx_hal.h"
+#include "util.h"
 #include "typedef.h"
 #include "main.h"
 

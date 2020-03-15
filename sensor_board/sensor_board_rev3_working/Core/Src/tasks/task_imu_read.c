@@ -41,9 +41,9 @@ void vTaskImuRead(void *argument) {
 
 		/* Debugging */
 
-		UsbPrint("[DBG] RAW Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld; t: %lu\n",
-				gyroscope_data[0], gyroscope_data[1], gyroscope_data[2],
-				acceleration[0], acceleration[1], acceleration[2], tick_count);
+		//		UsbPrint("[DBG] RAW Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld; t: %lu\n",
+		//				gyroscope_data[0], gyroscope_data[1], gyroscope_data[2],
+		//				acceleration[0], acceleration[1], acceleration[2], tick_count);
 
 		//TODO [nstojosk] : can this overflow?
 		queue_data.gyro_x += gyroscope_data[0];
@@ -82,85 +82,24 @@ void vInitImu20600Read() {
 	osDelayUntil(2000);
 	while (1) {
 		HAL_StatusTypeDef Test = HAL_ERROR;
-		/* Disable I2C Mode */
-		uint8_t register_sensor_control[2] = { 0 };
-		register_sensor_control[0] = IMU20601_COMMAND_USER_CONTROL_WRITE;
-		register_sensor_control[1] = (SENS_FIFO_EN << 6 | I2C_DISABLE << 4 |
-				SENS_FIFO_RST << 2);
-		while (Test != HAL_OK) {
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-			Test = HAL_SPI_Transmit(&hspi1, register_sensor_control,
-					IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-		}
-		Test = HAL_ERROR;
 
-
-
-
-		uint8_t whoamI = 1 << 7 | 0x75;
-		uint8_t whoamI2 = { 0 };
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-		Test = HAL_SPI_Transmit(&hspi1, &whoamI, 1, IMU20601_SPI_TIMEOUT);
-		Test = HAL_SPI_Receive(&hspi1, &whoamI2, 1, IMU20601_SPI_TIMEOUT);
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-
-
-
-
-
-		/* Configure Gyroscope */
-		/* we need to send two bytes: first bit: write 0 /read 1, 7 next bits register address, the next 8 bits are the message */
-		uint8_t register_gyro_config[2] = { 0 };
-		register_gyro_config[0] = IMU20601_COMMAND_GYROSCOPE_CONFIGURATION_WRITE;
-		register_gyro_config[1] = (GYRO_SELFTEST << 5 | GYRO_RANGE << 3
-				| GYRO_FILTER);
-		while (Test != HAL_OK) {
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-			Test = HAL_SPI_Transmit(&hspi1, register_gyro_config,
-					IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-		}
-		Test = HAL_ERROR;
-		osDelay(1000);
-		/* Configure Accelerometer */
-		uint8_t register_acc_config[2] = { 0 };
-		register_acc_config[0] = IMU20601_COMMAND_ACCELEROMETER_CONFIGURATION1_WRITE;
-		register_acc_config[1] = (ACC_SELFTEST << 5 | ACC_RANGE << 3);
-		uint8_t register_acc_config2[2] = { 0 };
-		register_acc_config2[0] = IMU20601_COMMAND_ACCELEROMETER_CONFIGURATION2_WRITE;
-		register_acc_config2[1] = (ACC_AVGFILTER << 3 | ACC_FILTER);
-		while (Test != HAL_OK) {
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-			Test = HAL_SPI_Transmit(&hspi1, register_acc_config,
-					IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-		}
-		Test = HAL_ERROR;
-		while (Test != HAL_OK) {
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-			Test = HAL_SPI_Transmit(&hspi1, register_acc_config2,
-					IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-		}
-		Test = HAL_ERROR;
-
-		/* FIFO disable */
-		uint8_t register_FIFO[2] = { 0 };
-		register_FIFO[0] = IMU20601_COMMAND_FIFO_ENABLE_WRITE;
-		register_FIFO[1] = (GYRO_FIFO_EN << 4 | ACC_FIFO_EN << 3);
-		while (Test != HAL_OK) {
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-			Test = HAL_SPI_Transmit(&hspi1, register_FIFO,
-					IMU20601_COMMAND_LENGTH,
-					IMU20601_SPI_TIMEOUT);
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-		}
-		Test = HAL_ERROR;
 
 		/* sensor management 1 */
+		/* Reset Sensor */
 		uint8_t register_sensor_powerMgmt1[2] = { 0 };
 		register_sensor_powerMgmt1[0] = IMU20601_COMMAND_POWER_MANAGMENT1_WRITE;
+		register_sensor_powerMgmt1[1] =
+				(reset_conf << 7 | SENS_sleep_EN << 6 | SENS_clk_src << 0);
+		while (Test != HAL_OK) {
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+			Test = HAL_SPI_Transmit(&hspi1, register_sensor_powerMgmt1,
+					IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+		}
+		Test = HAL_ERROR;
+		HAL_Delay(50);
+
+		/* Wake Up Chip */
 		register_sensor_powerMgmt1[1] =
 				(SENS_sleep_EN << 6 | SENS_clk_src << 0);
 		while (Test != HAL_OK) {
@@ -170,6 +109,18 @@ void vInitImu20600Read() {
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
 		}
 		Test = HAL_ERROR;
+		HAL_Delay(50);
+
+		uint8_t tx = 0xEB;
+		uint8_t rx = 0;
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+		Test = HAL_SPI_Transmit(&hspi1, &tx,
+				1, IMU20601_SPI_TIMEOUT);
+		Test = HAL_SPI_Receive(&hspi1, &rx,
+				1, IMU20601_SPI_TIMEOUT);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+
+
 
 		/* sensor management 2 */
 		uint8_t register_sensor_powerMgmt2[2] = { 0 };
@@ -183,24 +134,150 @@ void vInitImu20600Read() {
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
 		}
 		Test = HAL_ERROR;
+		HAL_Delay(50);
+
+		tx = 0xEC;
+		rx = 0;
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+		Test = HAL_SPI_Transmit(&hspi1, &tx,
+				1, IMU20601_SPI_TIMEOUT);
+		Test = HAL_SPI_Receive(&hspi1, &rx,
+				1, IMU20601_SPI_TIMEOUT);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+		HAL_Delay(50);
+
+		/* Disable I2C Mode */
+		uint8_t register_sensor_control[2] = { 0 };
+		register_sensor_control[0] = IMU20601_COMMAND_USER_CONTROL_WRITE;
+		register_sensor_control[1] = (SENS_FIFO_EN << 6 | I2C_DISABLE << 4);
+		while (Test != HAL_OK) {
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+			Test = HAL_SPI_Transmit(&hspi1, register_sensor_control,
+					IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+		}
+		Test = HAL_ERROR;
+		HAL_Delay(50);
+
+		tx = 0xEA;
+		rx = 0;
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+		Test = HAL_SPI_Transmit(&hspi1, &tx,
+				1, IMU20601_SPI_TIMEOUT);
+		Test = HAL_SPI_Receive(&hspi1, &rx,
+				1, IMU20601_SPI_TIMEOUT);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+
+
+		/* Configure Gyroscope */
+		uint8_t register_gyro_config[2] = { 0 };
+		register_gyro_config[0] = IMU20601_COMMAND_GYROSCOPE_CONFIGURATION_WRITE;
+		register_gyro_config[1] = (GYRO_SELFTEST << 5 | GYRO_RANGE << 3
+				| GYRO_FILTER);
+		while (Test != HAL_OK) {
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+			Test = HAL_SPI_Transmit(&hspi1, register_gyro_config,
+					IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+		}
+		Test = HAL_ERROR;
+		HAL_Delay(50);
+
+		tx = 0x9B;
+		rx = 0;
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+		Test = HAL_SPI_Transmit(&hspi1, &tx,
+				1, IMU20601_SPI_TIMEOUT);
+		Test = HAL_SPI_Receive(&hspi1, &rx,
+				1, IMU20601_SPI_TIMEOUT);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+
+		/* Configure Accelerometer */
+		uint8_t register_acc_config[2] = { 0 };
+		register_acc_config[0] = IMU20601_COMMAND_ACCELEROMETER_CONFIGURATION1_WRITE;
+		register_acc_config[1] = (ACC_SELFTEST << 5 | ACC_RANGE << 3);
+		uint8_t register_acc_config2[2] = { 0 };
+		register_acc_config2[0] = IMU20601_COMMAND_ACCELEROMETER_CONFIGURATION2_WRITE;
+		register_acc_config2[1] = (ACC_AVGFILTER << 3 | ACC_FILTER);
+
+		while (Test != HAL_OK) {
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+			Test = HAL_SPI_Transmit(&hspi1, register_acc_config,
+					IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+		}
+		Test = HAL_ERROR;
+		HAL_Delay(50);
+
+		while (Test != HAL_OK) {
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+			Test = HAL_SPI_Transmit(&hspi1, register_acc_config2,
+					IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+		}
+		Test = HAL_ERROR;
+		HAL_Delay(50);
+
+		tx = 0x9C;
+		rx = 0;
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+		Test = HAL_SPI_Transmit(&hspi1, &tx,
+				1, IMU20601_SPI_TIMEOUT);
+		Test = HAL_SPI_Receive(&hspi1, &rx,
+				1, IMU20601_SPI_TIMEOUT);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+
+		tx = 0x9D;
+		rx = 0;
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+		Test = HAL_SPI_Transmit(&hspi1, &tx,
+				1, IMU20601_SPI_TIMEOUT);
+		Test = HAL_SPI_Receive(&hspi1, &rx,
+				1, IMU20601_SPI_TIMEOUT);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+
+		/* FIFO disable */
+		uint8_t register_FIFO[2] = { 0 };
+		register_FIFO[0] = IMU20601_COMMAND_FIFO_ENABLE_WRITE;
+		register_FIFO[1] = (GYRO_FIFO_EN << 4 | ACC_FIFO_EN << 3);
+		while (Test != HAL_OK) {
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+			Test = HAL_SPI_Transmit(&hspi1, register_FIFO,
+					IMU20601_COMMAND_LENGTH,
+					IMU20601_SPI_TIMEOUT);
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+		}
+		Test = HAL_ERROR;
+		HAL_Delay(50);
+
+		tx = 0xA3;
+		rx = 0;
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+		Test = HAL_SPI_Transmit(&hspi1, &tx,
+				1, IMU20601_SPI_TIMEOUT);
+		Test = HAL_SPI_Receive(&hspi1, &rx,
+				1, IMU20601_SPI_TIMEOUT);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+
+		HAL_Delay(50);
 
 		/* Test if what we measure is possible */
 		int32_t gyroscope_data[3]; /* 0 = x, 1 = y, 2 = z */
 		int32_t acceleration[3]; /* 0 = x, 1 = y, 2 = z */
 		vReadImu20600(gyroscope_data, acceleration);
-		UsbPrint("[DBG] RAW Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld\n",
-				gyroscope_data[0], gyroscope_data[1], gyroscope_data[2],
-				acceleration[0], acceleration[1], acceleration[2]);
+		//		UsbPrint("[DBG] RAW Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld\n",
+		//				gyroscope_data[0], gyroscope_data[1], gyroscope_data[2],
+		//				acceleration[0], acceleration[1], acceleration[2]);
 		uint32_t abs_value = acceleration[0] * acceleration[0]
-						+ acceleration[1] * acceleration[1]
-						+ acceleration[2] * acceleration[2];
-		if (((abs_value > 0.25 && abs_value < 2.25)
-				&& (gyroscope_data[0] > -50 && gyroscope_data[0] < 50
-						&& gyroscope_data[1] > -50 && gyroscope_data[1] < 50
-						&& gyroscope_data[2] > -50 && gyroscope_data[2] < 50))) {
-			/* initialization successful */
-			break;
-		}
+															+ acceleration[1] * acceleration[1]
+																							 + acceleration[2] * acceleration[2];
+		//		if (((abs_value > 0.25 && abs_value < 2.25)
+		//				&& (gyroscope_data[0] > -50 && gyroscope_data[0] < 50
+		//						&& gyroscope_data[1] > -50 && gyroscope_data[1] < 50
+		//						&& gyroscope_data[2] > -50 && gyroscope_data[2] < 50))) {
+		/* initialization successful */
+		break;
+		//}
 	}
 }
 
@@ -216,9 +293,14 @@ void vReadImu20600(int32_t gyroscope_data[], int32_t acceleration[]) {
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
 
 
+
 	acceleration[0] = bufferAcc[0] << 8 | bufferAcc[1];
 	acceleration[1] = bufferAcc[2] << 8 | bufferAcc[3];
 	acceleration[2] = bufferAcc[4] << 8 | bufferAcc[5];
+
+	acceleration[0] = acceleration[0] >> 10;
+	acceleration[1] = acceleration[1] >> 10;
+	acceleration[2] = acceleration[2] >> 10;
 
 	/* Read Gyroscope Data */
 	uint8_t bufferGyro[6] = { 0 };
@@ -226,12 +308,15 @@ void vReadImu20600(int32_t gyroscope_data[], int32_t acceleration[]) {
 
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi1, &commandgyroread, 1, IMU20601_SPI_TIMEOUT);
-	HAL_SPI_Receive(&hspi1, bufferGyro, 1, IMU20601_SPI_TIMEOUT);
+	HAL_SPI_Receive(&hspi1, bufferGyro, 6, IMU20601_SPI_TIMEOUT);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
 
-	gyroscope_data[0] = bufferGyro[1] << 8 | bufferGyro[2];
-	gyroscope_data[1] = bufferGyro[3] << 8 | bufferGyro[4];
-	gyroscope_data[2] = bufferGyro[5] << 8 | bufferGyro[6];
+	gyroscope_data[0] = bufferGyro[0] << 8 | bufferGyro[1];
+	gyroscope_data[1] = bufferGyro[2] << 8 | bufferGyro[3];
+	gyroscope_data[2] = bufferGyro[4] << 8 | bufferGyro[5];
 
+	gyroscope_data[0] = gyroscope_data[0] / 65;
+	gyroscope_data[1] = gyroscope_data[1] / 65;
+	gyroscope_data[2] = gyroscope_data[2] / 65;
 }
 

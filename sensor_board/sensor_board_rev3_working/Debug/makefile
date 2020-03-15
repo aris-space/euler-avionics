@@ -41,6 +41,9 @@ default.size.stdout \
 OBJDUMP_LIST += \
 sensor_board_rev3_working.list \
 
+OBJCOPY_BIN += \
+sensor_board_rev3_working.bin \
+
 
 # All Target
 all: sensor_board_rev3_working.elf secondary-outputs
@@ -61,12 +64,17 @@ sensor_board_rev3_working.list: $(EXECUTABLES)
 	@echo 'Finished building: $@'
 	@echo ' '
 
+sensor_board_rev3_working.bin: $(EXECUTABLES)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "sensor_board_rev3_working.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
 	-$(RM) *
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)
 
 .PHONY: all clean dependents
 .SECONDARY:

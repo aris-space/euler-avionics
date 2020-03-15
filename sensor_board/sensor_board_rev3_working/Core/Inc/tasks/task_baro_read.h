@@ -12,11 +12,12 @@
 #include "stm32l4xx_hal.h"
 #include "cmsis_os.h"
 #include "main.h"
+#include "util.h"
 #include "typedef.h"
 
 /* Constants */
 #define BARO_ADDRESS 0xEE
-#define BARO_SAMPLING_FREQ 200
+#define BARO_SAMPLING_FREQ 50
 #define BARO_I2C_TIMEOUT 10
 
 #define BARO_COMMAND_LENGTH 1

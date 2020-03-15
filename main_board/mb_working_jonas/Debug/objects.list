@@ -7,6 +7,7 @@
 "Core/Src/sysmem.o"
 "Core/Src/system_stm32f7xx.o"
 "Core/Src/typedef.o"
+"Core/Src/util.o"
 "Core/Src/tasks/task_controller.o"
 "Core/Src/tasks/task_sens_read.o"
 "Core/Src/tasks/task_state_est.o"

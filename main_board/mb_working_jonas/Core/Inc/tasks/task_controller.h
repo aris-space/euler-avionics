@@ -12,11 +12,12 @@
 #include "stm32f7xx_hal.h"
 #include "cmsis_os.h"
 #include "main.h"
+#include "util.h"
 #include "typedef.h"
 #include <math.h>
 
 /* Constants */
-#define CONTROLLER_SAMPLING_FREQ 500
+#define CONTROLLER_SAMPLING_FREQ 1
 #define POLY_DEG 30
 #define OPT_TRAJ_CONTROL_INPUT 0
 /* Parameters */

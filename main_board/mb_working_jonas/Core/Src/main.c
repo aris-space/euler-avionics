@@ -28,10 +28,13 @@
 #include "tasks/task_controller.h"
 #include "tasks/task_sens_read.h"
 #include "tasks/task_state_est.h"
+#include "util.h"
 #include "typedef.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
+typedef StaticTask_t osStaticThreadDef_t;
+typedef StaticSemaphore_t osStaticMutexDef_t;
 /* USER CODE BEGIN PTD */
 
 /* USER CODE END PTD */
@@ -48,31 +51,95 @@
 /* Private variables ---------------------------------------------------------*/
 
 SPI_HandleTypeDef hspi1;
+SPI_HandleTypeDef hspi2;
+SPI_HandleTypeDef hspi3;
 
-typedef StaticTask_t osStaticThreadDef_t;
-typedef StaticSemaphore_t osStaticMutexDef_t;
+/* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "defaultTask",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 128 * 4
+};
+/* Definitions for task_state_est */
 osThreadId_t task_state_estHandle;
 uint32_t task_sfBuffer[ 512 ];
 osStaticThreadDef_t task_sfControlBlock;
+const osThreadAttr_t task_state_est_attributes = {
+  .name = "task_state_est",
+  .stack_mem = &task_sfBuffer[0],
+  .stack_size = sizeof(task_sfBuffer),
+  .cb_mem = &task_sfControlBlock,
+  .cb_size = sizeof(task_sfControlBlock),
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for task_controller */
 osThreadId_t task_controllerHandle;
 uint32_t task_controllerBuffer[ 512 ];
 osStaticThreadDef_t task_controllerControlBlock;
+const osThreadAttr_t task_controller_attributes = {
+  .name = "task_controller",
+  .stack_mem = &task_controllerBuffer[0],
+  .stack_size = sizeof(task_controllerBuffer),
+  .cb_mem = &task_controllerControlBlock,
+  .cb_size = sizeof(task_controllerControlBlock),
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for task_sens_read */
 osThreadId_t task_sens_readHandle;
 uint32_t task_sensor_reaBuffer[ 512 ];
 osStaticThreadDef_t task_sensor_reaControlBlock;
+const osThreadAttr_t task_sens_read_attributes = {
+  .name = "task_sens_read",
+  .stack_mem = &task_sensor_reaBuffer[0],
+  .stack_size = sizeof(task_sensor_reaBuffer),
+  .cb_mem = &task_sensor_reaControlBlock,
+  .cb_size = sizeof(task_sensor_reaControlBlock),
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for sb_1_mutex */
 osMutexId_t sb_1_mutexHandle;
-osStaticMutexDef_t myMutex01ControlBlock;
+osStaticMutexDef_t sb_1_mutexControlBlock;
+const osMutexAttr_t sb_1_mutex_attributes = {
+  .name = "sb_1_mutex",
+  .cb_mem = &sb_1_mutexControlBlock,
+  .cb_size = sizeof(sb_1_mutexControlBlock),
+};
+/* Definitions for sb_3_mutex */
+osMutexId_t sb_3_mutexHandle;
+osStaticMutexDef_t sb_3_mutexControlBlock;
+const osMutexAttr_t sb_3_mutex_attributes = {
+  .name = "sb_3_mutex",
+  .cb_mem = &sb_3_mutexControlBlock,
+  .cb_size = sizeof(sb_3_mutexControlBlock),
+};
+/* Definitions for sb_2_mutex */
+osMutexId_t sb_2_mutexHandle;
+osStaticMutexDef_t sb_2_mutexControlBlock;
+const osMutexAttr_t sb_2_mutex_attributes = {
+  .name = "sb_2_mutex",
+  .cb_mem = &sb_2_mutexControlBlock,
+  .cb_size = sizeof(sb_2_mutexControlBlock),
+};
 /* USER CODE BEGIN PV */
-baro_data sb1_baro;
-imu_data sb1_imu;
+baro_data sb1_baro = { 0 };
+imu_data sb1_imu = { 0 };
+sb_data sb1_data = { 0 };
+baro_data sb2_baro = { 0 };
+imu_data sb2_imu = { 0 };
+sb_data sb2_data = { 0 };
+baro_data sb3_baro = { 0 };
+imu_data sb3_imu = { 0 };
+sb_data sb3_data = { 0 };
 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_SPI3_Init(void);
 static void MX_SPI1_Init(void);
+static void MX_SPI2_Init(void);
 void StartDefaultTask(void *argument);
 void vTaskStateEst(void *argument);
 void vTaskController(void *argument);
@@ -96,7 +163,6 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
-  
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -116,21 +182,24 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_SPI3_Init();
   MX_SPI1_Init();
+  MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-
+  MX_USB_DEVICE_Init();
   /* USER CODE END 2 */
 
+  /* Init scheduler */
   osKernelInitialize();
-
   /* Create the mutex(es) */
-  /* definition and creation of sb_1_mutex */
-  const osMutexAttr_t sb_1_mutex_attributes = {
-    .name = "sb_1_mutex",
-    .cb_mem = &myMutex01ControlBlock,
-    .cb_size = sizeof(myMutex01ControlBlock),
-  };
+  /* creation of sb_1_mutex */
   sb_1_mutexHandle = osMutexNew(&sb_1_mutex_attributes);
+
+  /* creation of sb_3_mutex */
+  sb_3_mutexHandle = osMutexNew(&sb_3_mutex_attributes);
+
+  /* creation of sb_2_mutex */
+  sb_2_mutexHandle = osMutexNew(&sb_2_mutex_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -149,45 +218,16 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  const osThreadAttr_t defaultTask_attributes = {
-    .name = "defaultTask",
-    .priority = (osPriority_t) osPriorityNormal,
-    .stack_size = 128
-  };
+  /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-  /* definition and creation of task_state_est */
-  const osThreadAttr_t task_state_est_attributes = {
-    .name = "task_state_est",
-    .stack_mem = &task_sfBuffer[0],
-    .stack_size = sizeof(task_sfBuffer),
-    .cb_mem = &task_sfControlBlock,
-    .cb_size = sizeof(task_sfControlBlock),
-    .priority = (osPriority_t) osPriorityLow,
-  };
+  /* creation of task_state_est */
   task_state_estHandle = osThreadNew(vTaskStateEst, NULL, &task_state_est_attributes);
 
-  /* definition and creation of task_controller */
-  const osThreadAttr_t task_controller_attributes = {
-    .name = "task_controller",
-    .stack_mem = &task_controllerBuffer[0],
-    .stack_size = sizeof(task_controllerBuffer),
-    .cb_mem = &task_controllerControlBlock,
-    .cb_size = sizeof(task_controllerControlBlock),
-    .priority = (osPriority_t) osPriorityLow,
-  };
+  /* creation of task_controller */
   task_controllerHandle = osThreadNew(vTaskController, NULL, &task_controller_attributes);
 
-  /* definition and creation of task_sens_read */
-  const osThreadAttr_t task_sens_read_attributes = {
-    .name = "task_sens_read",
-    .stack_mem = &task_sensor_reaBuffer[0],
-    .stack_size = sizeof(task_sensor_reaBuffer),
-    .cb_mem = &task_sensor_reaControlBlock,
-    .cb_size = sizeof(task_sensor_reaControlBlock),
-    .priority = (osPriority_t) osPriorityLow,
-  };
+  /* creation of task_sens_read */
   task_sens_readHandle = osThreadNew(vTaskSensRead, NULL, &task_sens_read_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -196,14 +236,14 @@ int main(void)
 
   /* Start scheduler */
   osKernelStart();
-  
+ 
   /* We should never get here as control is now taken by the scheduler */
-
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -275,19 +315,18 @@ static void MX_SPI1_Init(void)
   /* USER CODE END SPI1_Init 1 */
   /* SPI1 parameter configuration*/
   hspi1.Instance = SPI1;
-  hspi1.Init.Mode = SPI_MODE_MASTER;
+  hspi1.Init.Mode = SPI_MODE_SLAVE;
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
   hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi1.Init.NSS = SPI_NSS_HARD_OUTPUT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  hspi1.Init.NSS = SPI_NSS_HARD_INPUT;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
   hspi1.Init.CRCPolynomial = 7;
   hspi1.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
-  hspi1.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
+  hspi1.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
   if (HAL_SPI_Init(&hspi1) != HAL_OK)
   {
     Error_Handler();
@@ -295,6 +334,84 @@ static void MX_SPI1_Init(void)
   /* USER CODE BEGIN SPI1_Init 2 */
 
   /* USER CODE END SPI1_Init 2 */
+
+}
+
+/**
+  * @brief SPI2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI2_Init(void)
+{
+
+  /* USER CODE BEGIN SPI2_Init 0 */
+
+  /* USER CODE END SPI2_Init 0 */
+
+  /* USER CODE BEGIN SPI2_Init 1 */
+
+  /* USER CODE END SPI2_Init 1 */
+  /* SPI2 parameter configuration*/
+  hspi2.Instance = SPI2;
+  hspi2.Init.Mode = SPI_MODE_SLAVE;
+  hspi2.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi2.Init.NSS = SPI_NSS_HARD_INPUT;
+  hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi2.Init.CRCPolynomial = 7;
+  hspi2.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
+  hspi2.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
+  if (HAL_SPI_Init(&hspi2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI2_Init 2 */
+
+  /* USER CODE END SPI2_Init 2 */
+
+}
+
+/**
+  * @brief SPI3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI3_Init(void)
+{
+
+  /* USER CODE BEGIN SPI3_Init 0 */
+
+  /* USER CODE END SPI3_Init 0 */
+
+  /* USER CODE BEGIN SPI3_Init 1 */
+
+  /* USER CODE END SPI3_Init 1 */
+  /* SPI3 parameter configuration*/
+  hspi3.Instance = SPI3;
+  hspi3.Init.Mode = SPI_MODE_SLAVE;
+  hspi3.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi3.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi3.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi3.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi3.Init.NSS = SPI_NSS_HARD_INPUT;
+  hspi3.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi3.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi3.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi3.Init.CRCPolynomial = 7;
+  hspi3.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
+  hspi3.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
+  if (HAL_SPI_Init(&hspi3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI3_Init 2 */
+
+  /* USER CODE END SPI3_Init 2 */
 
 }
 
@@ -309,6 +426,7 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
 }
 
@@ -336,7 +454,7 @@ void StartDefaultTask(void *argument)
   /* USER CODE END 5 */ 
 }
 
-/**
+ /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM1 interrupt took place, inside
   * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment

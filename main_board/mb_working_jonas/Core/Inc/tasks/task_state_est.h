@@ -10,11 +10,13 @@
 
 /* Includes */
 #include "cmsis_os.h"
+#include "util.h"
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include "typedef.h"
 /* Constants */
-#define STATE_ESTIMATION_FREQUENCY 1000
+#define STATE_ESTIMATION_FREQUENCY 1
 /* Matrix Sizes */
 #define NUMBER_STATES 3	/* NUMBER_STATES x NUMBER_STATES -> A Matrix */
 #define NUMBER_INPUTS 1	/* NUMBER_STATES x NUMBER_INPUTS -> B Matrix */
