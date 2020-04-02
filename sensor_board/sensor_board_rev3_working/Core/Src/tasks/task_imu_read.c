@@ -28,7 +28,7 @@ void vTaskImuRead(void *argument) {
 	int8_t counter = 0;
 
 	/* initialize queue message */
-	imu_data queue_data = { 0 };
+	imu_data_t queue_data = { 0 };
 
 	vInitImu20600Read();
 
@@ -65,7 +65,7 @@ void vTaskImuRead(void *argument) {
 			queue_data.acc_y /= 4;
 			queue_data.acc_z /= 4;
 			/* I dont know it this works with the overflow of the tick_count! */
-			queue_data.timestamp = tick_count;
+			queue_data.ts = tick_count;
 
 			/* Send Data to Queue */
 			osMessageQueuePut(preprocess_queue, &queue_data, 0U, 0U);

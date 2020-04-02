@@ -12,7 +12,6 @@
 #include "cmsis_os.h"
 #include "stm32l4xx_hal.h"
 #include "util.h"
-#include "typedef.h"
 #include "main.h"
 
 /* Lowpass Filter Constants */
@@ -32,6 +31,6 @@ void vTaskPreprocess(void *argument);
 /* Extern */
 extern osMessageQueueId_t preprocess_queue;
 extern osMutexId_t imu_mutex;
-extern imu_data imu_data_to_mb;
+extern imu_data_t imu_data_to_mb;
 
 #endif /* INC_TASK_PREPROCESS_H_ */

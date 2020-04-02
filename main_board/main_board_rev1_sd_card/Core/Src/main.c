@@ -140,7 +140,10 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  (DBGMCU)->APB1FZ = 0x7E01BFF;
+  (DBGMCU)->APB2FZ = 0x70003;
+  /* init code for USB_DEVICE */
+  MX_USB_DEVICE_Init();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -150,8 +153,6 @@ int main(void)
   MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
 
-  /* init code for USB_DEVICE */
-  MX_USB_DEVICE_Init();
   /* USER CODE END 2 */
 
   /* Init scheduler */

@@ -13,7 +13,6 @@
 #include "cmsis_os.h"
 #include "main.h"
 #include "util.h"
-#include "typedef.h"
 
 /* Constants */
 #define IMU20601_SAMPLING_FREQ 50

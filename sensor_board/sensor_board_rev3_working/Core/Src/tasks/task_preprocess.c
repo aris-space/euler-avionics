@@ -15,7 +15,7 @@ void vTaskPreprocess(void *argument) {
 	int32_t raw_acc_z;
 
 	/* Queue data and Status Initialization */
-	imu_data queue_data = { 0 };
+	imu_data_t queue_data = { 0 };
 
 	/* Infinite loop */
 	for (;;) {

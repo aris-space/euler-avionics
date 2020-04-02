@@ -45,7 +45,7 @@ void vTaskBaroRead(void *argument) {
 		if (osMutexAcquire(baro_mutex, BARO_MUTEX_TIMEOUT) == osOK) {
 			baro_data_to_mb.temperature = temperature;
 			baro_data_to_mb.pressure = pressure;
-			baro_data_to_mb.timestamp = tick_count;
+			baro_data_to_mb.ts = tick_count;
 			osMutexRelease(baro_mutex);
 		}
 

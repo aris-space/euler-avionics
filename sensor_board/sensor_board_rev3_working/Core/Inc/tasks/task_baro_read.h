@@ -13,7 +13,6 @@
 #include "cmsis_os.h"
 #include "main.h"
 #include "util.h"
-#include "typedef.h"
 
 /* Constants */
 #define BARO_ADDRESS 0xEE
@@ -60,7 +59,7 @@
 
 /* Extern */
 extern I2C_HandleTypeDef hi2c1;
-extern baro_data baro_data_to_mb;
+extern baro_data_t baro_data_to_mb;
 extern osMutexId_t baro_mutex;
 
 /* Macros */

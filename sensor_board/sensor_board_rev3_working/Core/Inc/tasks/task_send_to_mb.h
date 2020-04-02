@@ -11,7 +11,6 @@
 /* Include */
 #include "cmsis_os.h"
 #include "util.h"
-#include "typedef.h"
 #include "main.h"
 
 /* Tasks */
@@ -22,12 +21,12 @@ void vTaskSendToMb(void *argument);
 #define MB_SAMPLING_RATE 200
 
 /* extern */
-extern baro_data baro_data_to_mb;
-extern imu_data imu_data_to_mb;
+extern baro_data_t baro_data_to_mb;
+extern imu_data_t imu_data_to_mb;
 extern osMutexId_t baro_mutex;
 extern osMutexId_t imu_mutex;
 extern SPI_HandleTypeDef hspi2;
-extern baro_data SPI_Baro;
-extern sb_data fullsb_data;
+extern baro_data_t SPI_Baro;
+extern sb_data_t fullsb_data;
 
 #endif /* INC_TASK_SEND_TO_MB_H_ */

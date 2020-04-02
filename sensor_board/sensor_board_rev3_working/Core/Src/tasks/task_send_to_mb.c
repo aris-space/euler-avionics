@@ -12,8 +12,8 @@ uint8_t baro_buffer[12] = { 0 };
 void vTaskSendToMb(void *argument) {
 
 	/* Local Data Variable initialization */
-	imu_data last_imu_data = { 0 };
-	baro_data last_baro_data = { 0 };
+	imu_data_t last_imu_data = { 0 };
+	baro_data_t last_baro_data = { 0 };
 
 	/* For periodic update */
 	uint32_t tick_count, tick_update;
@@ -34,25 +34,17 @@ void vTaskSendToMb(void *argument) {
 			osMutexRelease(baro_mutex);
 		}
 
-		fullsb_data.pressure = last_baro_data.pressure;
-		fullsb_data.temperature = last_baro_data.temperature;
-		fullsb_data.timestamp_b = last_baro_data.timestamp;
-		fullsb_data.acc_x = last_imu_data.acc_x;
-		fullsb_data.acc_y = last_imu_data.acc_y;
-		fullsb_data.acc_z = last_imu_data.acc_z;
-		fullsb_data.gyro_x = last_imu_data.gyro_x;
-		fullsb_data.gyro_y = last_imu_data.gyro_y;
-		fullsb_data.gyro_z = last_imu_data.gyro_z;
-		fullsb_data.timestamp_i = last_imu_data.timestamp;
+		fullsb_data.baro = last_baro_data;
+		fullsb_data.imu = last_imu_data;
 
 		UsbPrint("[DBG] P: %ld; T: %ld; t: %lu\n", last_baro_data.pressure,
-				last_baro_data.temperature, last_baro_data.timestamp);
+				last_baro_data.temperature, last_baro_data.ts);
 
 		UsbPrint(
 				"[DBG] Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld; t: %lu\n",
 				last_imu_data.gyro_x, last_imu_data.gyro_y,
 				last_imu_data.gyro_z, last_imu_data.acc_x, last_imu_data.acc_y,
-				last_imu_data.acc_z, last_imu_data.timestamp);
+				last_imu_data.acc_z, last_imu_data.ts);
 
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_RESET);
 		HAL_SPI_Transmit(&hspi2, (uint8_t*) &fullsb_data, sizeof(fullsb_data), SPI_TIMEOUT);

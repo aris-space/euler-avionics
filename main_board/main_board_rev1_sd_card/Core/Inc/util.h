@@ -12,6 +12,14 @@
 
 #define LOG_QUEUE_SIZE 128
 
+
+typedef enum {
+	A = 1,
+	B,
+	C,
+	D
+} rocket_state;
+
 /* IMU data structure */
 typedef struct {
 	int32_t gyro_x, gyro_y, gyro_z;
@@ -27,22 +35,42 @@ typedef struct {
 } baro_data;
 
 typedef enum {
-	IMU,
-	BARO
+	IMU = 1,
+	BARO,
+	GPS
 } sensor_t;
-
 
 typedef union {
 	imu_data imu;
 	baro_data baro;
 } sensor_u;
 
+typedef enum {
+	SENSOR = 1,
+	STATE,
+	ESTIMATOR_VAR,
+	STR
+} log_entry_t;
+
 typedef struct {
 	sensor_t sens_type;
 	sensor_u sensor;
-	uint32_t timestamp;
 	uint8_t sensor_board_id;
-} log_entry_t;
+} sensor_entry_t;
+
+
+typedef union {
+	sensor_entry_t sens_entry;
+	rocket_state state_entry;
+	float est_var_entry;
+	char str_entry[56];
+} entry_u;
+
+typedef struct {
+	log_entry_t entry_type;
+	entry_u entry_u;
+	uint32_t timestamp;
+} log_row_t;
 
 /* Debug flag */
 #ifdef DEBUG

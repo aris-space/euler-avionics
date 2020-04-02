@@ -29,11 +29,11 @@
 #include "tasks/task_imu_read.h"
 #include "tasks/task_send_to_mb.h"
 #include "tasks/task_preprocess.h"
-#include "typedef.h"
 #include "util.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
+typedef StaticTask_t osStaticThreadDef_t;
 /* USER CODE BEGIN PTD */
 
 /* USER CODE END PTD */
@@ -53,30 +53,71 @@ I2C_HandleTypeDef hi2c1;
 SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi2;
 
-typedef StaticTask_t osStaticThreadDef_t;
+/* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+  .name = "defaultTask",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 128 * 4
+};
+/* Definitions for task_baro_read */
 osThreadId_t task_baro_readHandle;
 uint32_t task_baro_readBuffer[ 2048 ];
 osStaticThreadDef_t task_baro_readControlBlock;
+const osThreadAttr_t task_baro_read_attributes = {
+  .name = "task_baro_read",
+  .stack_mem = &task_baro_readBuffer[0],
+  .stack_size = sizeof(task_baro_readBuffer),
+  .cb_mem = &task_baro_readControlBlock,
+  .cb_size = sizeof(task_baro_readControlBlock),
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for task_imu_read */
 osThreadId_t task_imu_readHandle;
 uint32_t task_imu_readBuffer[ 2048 ];
 osStaticThreadDef_t task_imu_readControlBlock;
+const osThreadAttr_t task_imu_read_attributes = {
+  .name = "task_imu_read",
+  .stack_mem = &task_imu_readBuffer[0],
+  .stack_size = sizeof(task_imu_readBuffer),
+  .cb_mem = &task_imu_readControlBlock,
+  .cb_size = sizeof(task_imu_readControlBlock),
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for task_send_to_mb */
 osThreadId_t task_send_to_mbHandle;
 uint32_t task_send_to_mbBuffer[ 2048 ];
 osStaticThreadDef_t task_send_to_mbControlBlock;
+const osThreadAttr_t task_send_to_mb_attributes = {
+  .name = "task_send_to_mb",
+  .stack_mem = &task_send_to_mbBuffer[0],
+  .stack_size = sizeof(task_send_to_mbBuffer),
+  .cb_mem = &task_send_to_mbControlBlock,
+  .cb_size = sizeof(task_send_to_mbControlBlock),
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for task_preprocess */
 osThreadId_t task_preprocessHandle;
 uint32_t task_preprocessBuffer[ 2048 ];
 osStaticThreadDef_t task_preprocessControlBlock;
+const osThreadAttr_t task_preprocess_attributes = {
+  .name = "task_preprocess",
+  .stack_mem = &task_preprocessBuffer[0],
+  .stack_size = sizeof(task_preprocessBuffer),
+  .cb_mem = &task_preprocessControlBlock,
+  .cb_size = sizeof(task_preprocessControlBlock),
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* USER CODE BEGIN PV */
 osMessageQueueId_t preprocess_queue;
 /* Baro Stuff */
 osMutexId_t baro_mutex;
-baro_data baro_data_to_mb;
+baro_data_t baro_data_to_mb;
 /* IMU Stuff */
 osMutexId_t imu_mutex;
-imu_data imu_data_to_mb;
+imu_data_t imu_data_to_mb;
 /* SPI Receive */
-sb_data fullsb_data;
+sb_data_t fullsb_data;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -109,7 +150,6 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
-  
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -137,6 +177,7 @@ int main(void)
 
   /* USER CODE END 2 */
 
+  /* Init scheduler */
   osKernelInitialize();
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -159,6 +200,18 @@ int main(void)
   };
 
   imu_mutex = osMutexNew(&imu_mutex_attr);
+
+
+#ifdef DEBUG
+  const osMutexAttr_t print_mutex_attr = {
+	  "print_mutex",                            // human readable mutex name
+	  osMutexPrioInherit,    					  // attr_bits
+	  NULL,                                     // memory for control block
+	  0U                                        // size for control block
+	};
+
+  print_mutex = osMutexNew(&print_mutex_attr);
+#endif
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -171,60 +224,23 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
-  preprocess_queue = osMessageQueueNew(QUEUE_SIZE, sizeof(imu_data), NULL);
+  preprocess_queue = osMessageQueueNew(PREPROCESS_QUEUE_SIZE, sizeof(imu_data_t), NULL);
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  const osThreadAttr_t defaultTask_attributes = {
-    .name = "defaultTask",
-    .priority = (osPriority_t) osPriorityNormal,
-    .stack_size = 128
-  };
+  /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-  /* definition and creation of task_baro_read */
-  const osThreadAttr_t task_baro_read_attributes = {
-    .name = "task_baro_read",
-    .stack_mem = &task_baro_readBuffer[0],
-    .stack_size = sizeof(task_baro_readBuffer),
-    .cb_mem = &task_baro_readControlBlock,
-    .cb_size = sizeof(task_baro_readControlBlock),
-    .priority = (osPriority_t) osPriorityNormal,
-  };
+  /* creation of task_baro_read */
   task_baro_readHandle = osThreadNew(vTaskBaroRead, NULL, &task_baro_read_attributes);
 
-  /* definition and creation of task_imu_read */
-  const osThreadAttr_t task_imu_read_attributes = {
-    .name = "task_imu_read",
-    .stack_mem = &task_imu_readBuffer[0],
-    .stack_size = sizeof(task_imu_readBuffer),
-    .cb_mem = &task_imu_readControlBlock,
-    .cb_size = sizeof(task_imu_readControlBlock),
-    .priority = (osPriority_t) osPriorityNormal,
-  };
+  /* creation of task_imu_read */
   task_imu_readHandle = osThreadNew(vTaskImuRead, NULL, &task_imu_read_attributes);
 
-  /* definition and creation of task_send_to_mb */
-  const osThreadAttr_t task_send_to_mb_attributes = {
-    .name = "task_send_to_mb",
-    .stack_mem = &task_send_to_mbBuffer[0],
-    .stack_size = sizeof(task_send_to_mbBuffer),
-    .cb_mem = &task_send_to_mbControlBlock,
-    .cb_size = sizeof(task_send_to_mbControlBlock),
-    .priority = (osPriority_t) osPriorityNormal,
-  };
+  /* creation of task_send_to_mb */
   task_send_to_mbHandle = osThreadNew(vTaskSendToMb, NULL, &task_send_to_mb_attributes);
 
-  /* definition and creation of task_preprocess */
-  const osThreadAttr_t task_preprocess_attributes = {
-    .name = "task_preprocess",
-    .stack_mem = &task_preprocessBuffer[0],
-    .stack_size = sizeof(task_preprocessBuffer),
-    .cb_mem = &task_preprocessControlBlock,
-    .cb_size = sizeof(task_preprocessControlBlock),
-    .priority = (osPriority_t) osPriorityNormal,
-  };
+  /* creation of task_preprocess */
   task_preprocessHandle = osThreadNew(vTaskPreprocess, NULL, &task_preprocess_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -233,9 +249,8 @@ int main(void)
 
   /* Start scheduler */
   osKernelStart();
-  
+ 
   /* We should never get here as control is now taken by the scheduler */
-
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -485,6 +500,7 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void *argument)
 {
   /* init code for USB_DEVICE */
+  //MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)
@@ -494,7 +510,7 @@ void StartDefaultTask(void *argument)
   /* USER CODE END 5 */ 
 }
 
-/**
+ /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM1 interrupt took place, inside
   * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
@@ -535,7 +551,7 @@ void Error_Handler(void)
   * @param  line: assert_param error line source number
   * @retval None
   */
-void assert_failed(char *file, uint32_t line)
+void assert_failed(uint8_t *file, uint32_t line)
 { 
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
