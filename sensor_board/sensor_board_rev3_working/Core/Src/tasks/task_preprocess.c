@@ -17,8 +17,14 @@ void vTaskPreprocess(void *argument) {
 	/* Queue data and Status Initialization */
 	imu_data_t queue_data = { 0 };
 
+	/* For periodic update */
+	uint32_t tick_count, tick_update;
+	tick_count = osKernelGetTickCount();
+	tick_update = osKernelGetTickFreq() / SAMPLING_RATE_PREP;
+
 	/* Infinite loop */
 	for (;;) {
+		tick_count += tick_update;
 		if (osMessageQueueGet(preprocess_queue, &queue_data, NULL,
 		osWaitForever) == osOK) {
 			raw_acc_z = queue_data.acc_z;
@@ -40,5 +46,6 @@ void vTaskPreprocess(void *argument) {
 				osMutexRelease(imu_mutex);
 			}
 		}
+		//osDelayUntil(tick_count);
 	}
 }

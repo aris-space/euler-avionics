@@ -13,6 +13,7 @@
 #include "stm32l4xx_hal.h"
 #include "util.h"
 #include "main.h"
+#define SAMPLING_RATE_PREP 10
 
 /* Lowpass Filter Constants */
 static const double B1 = -0.44444444444;

@@ -36,6 +36,9 @@ default.size.stdout \
 OBJDUMP_LIST += \
 IMUDummy.list \
 
+OBJCOPY_BIN += \
+IMUDummy.bin \
+
 
 # All Target
 all: IMUDummy.elf secondary-outputs
@@ -56,12 +59,17 @@ IMUDummy.list: $(EXECUTABLES)
 	@echo 'Finished building: $@'
 	@echo ' '
 
+IMUDummy.bin: $(EXECUTABLES)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "IMUDummy.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
 	-$(RM) *
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)
 
 .PHONY: all clean dependents
 .SECONDARY:

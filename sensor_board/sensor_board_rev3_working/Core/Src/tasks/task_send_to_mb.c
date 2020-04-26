@@ -37,9 +37,9 @@ void vTaskSendToMb(void *argument) {
 		fullsb_data.baro = last_baro_data;
 		fullsb_data.imu = last_imu_data;
 
-		UsbPrint("[DBG] P: %ld; T: %ld; t: %lu\n", last_baro_data.pressure,
-				last_baro_data.temperature, last_baro_data.ts);
-
+//		UsbPrint("[DBG] P: %ld; T: %ld; t: %lu\n", last_baro_data.pressure,
+//				last_baro_data.temperature, last_baro_data.ts);
+//
 		UsbPrint(
 				"[DBG] Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld; t: %lu\n",
 				last_imu_data.gyro_x, last_imu_data.gyro_y,

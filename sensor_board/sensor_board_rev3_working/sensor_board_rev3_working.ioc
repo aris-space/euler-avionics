@@ -1,7 +1,7 @@
 #MicroXplorer Configuration settings - do not modify
 FREERTOS.FootprintOK=true
 FREERTOS.IPParameters=Tasks01,FootprintOK
-FREERTOS.Tasks01=defaultTask,24,128,StartDefaultTask,Default,NULL,Dynamic,NULL,NULL;task_baro_read,24,2048,vTaskBaroRead,Default,NULL,Static,task_baro_readBuffer,task_baro_readControlBlock;task_imu_read,24,2048,vTaskImuRead,Default,NULL,Static,task_imu_readBuffer,task_imu_readControlBlock;task_send_to_mb,24,2048,vTaskSendToMb,Default,NULL,Static,task_send_to_mbBuffer,task_send_to_mbControlBlock;task_preprocess,24,2048,vTaskPreprocess,Default,NULL,Static,task_preprocessBuffer,task_preprocessControlBlock
+FREERTOS.Tasks01=defaultTask,24,128,StartDefaultTask,Default,NULL,Dynamic,NULL,NULL;task_baro_read,24,2048,vTaskBaroRead,Default,NULL,Static,task_baro_readBuffer,task_baro_readControlBlock;task_imu_read,24,4096,vTaskImuRead,Default,NULL,Static,task_imu_readBuffer,task_imu_readControlBlock;task_send_to_mb,24,2048,vTaskSendToMb,Default,NULL,Static,task_send_to_mbBuffer,task_send_to_mbControlBlock;task_preprocess,24,2048,vTaskPreprocess,Default,NULL,Static,task_preprocessBuffer,task_preprocessControlBlock
 File.Version=6
 I2C1.I2C_Speed_Mode=I2C_Fast
 I2C1.IPParameters=I2C_Speed_Mode,Timing

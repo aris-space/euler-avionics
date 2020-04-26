@@ -16,7 +16,7 @@
 
 /* Constants */
 #define BARO_ADDRESS 0xEE
-#define BARO_SAMPLING_FREQ 50
+#define BARO_SAMPLING_FREQ 10
 #define BARO_I2C_TIMEOUT 10
 
 #define BARO_COMMAND_LENGTH 1

@@ -74,7 +74,7 @@ const osThreadAttr_t task_baro_read_attributes = {
 };
 /* Definitions for task_imu_read */
 osThreadId_t task_imu_readHandle;
-uint32_t task_imu_readBuffer[ 2048 ];
+uint32_t task_imu_readBuffer[ 4096 ];
 osStaticThreadDef_t task_imu_readControlBlock;
 const osThreadAttr_t task_imu_read_attributes = {
   .name = "task_imu_read",
@@ -500,7 +500,7 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void *argument)
 {
   /* init code for USB_DEVICE */
-  //MX_USB_DEVICE_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)

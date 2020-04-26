@@ -15,7 +15,7 @@
 #include "util.h"
 
 /* Constants */
-#define IMU20601_SAMPLING_FREQ 50
+#define IMU20601_SAMPLING_FREQ 10
 #define IMU20601_SPI_TIMEOUT 3000
 #define IMU20601_COMMAND_LENGTH 2
 
