@@ -9,8 +9,8 @@
 #include "usb_device.h"
 #include "usbd_cdc_if.h"
 
-void vInitImu20600Read();
-void vReadImu20600(uint32_t gyroscope_data[], uint32_t acceleration[]);
+void vInitImu20600Read(int16_t offset[]);
+void vReadImu20600(int16_t gyroscope_data[], int16_t acceleration[], int16_t offset[]);
 
 /**
  * @brief Function implementing the task_baro_read thread.
@@ -21,8 +21,9 @@ void vTaskImuRead(void *argument) {
 	uint32_t tick_count, tick_update;
 
 	/* initialize data variables */
-	uint32_t gyroscope_data[3] = { 5, 10, 15 }; /* 0 = x, 1 = y, 2 = z */
-	uint32_t acceleration[3] = { 50, 100, 200 }; /* 0 = x, 1 = y, 2 = z */
+	int16_t gyroscope_data[3] = { 0 }; /* 0 = x, 1 = y, 2 = z */
+	int16_t acceleration[3] = { 0 }; /* 0 = x, 1 = y, 2 = z */
+	int16_t offset[6] = { 0 };
 
 	/* initialize counter as we want to average over 4 samples every time */
 	int8_t counter = 0;
@@ -30,14 +31,25 @@ void vTaskImuRead(void *argument) {
 	/* initialize queue message */
 	imu_data_t queue_data = { 0 };
 
-	vInitImu20600Read();
+	vInitImu20600Read(offset);
 
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();
 	tick_update = osKernelGetTickFreq() / IMU20601_SAMPLING_FREQ;
 	for (;;) {
 		tick_count += tick_update;
-		vReadImu20600(gyroscope_data, acceleration);
+		vReadImu20600(gyroscope_data, acceleration, offset);
+		float test[3] = { 0 };
+
+		test[0] = (float)acceleration[0]/1024;
+		test[1] = (float)acceleration[1]/1024;
+		test[2] = (float)acceleration[2]/1024;
+
+		float test2[3] = { 0 };
+
+		test2[0] = (float)gyroscope_data[0] /65;
+		test2[1] = (float)gyroscope_data[1] /65;
+		test2[2] = (float)gyroscope_data[2] /65;
 
 		/* Debugging */
 
@@ -78,10 +90,10 @@ void vTaskImuRead(void *argument) {
 	}
 }
 
-void vInitImu20600Read() {
+void vInitImu20600Read(int16_t offset[]) {
 	osDelayUntil(2000);
 	while (1) {
-		HAL_Delay(100);
+		HAL_Delay(1);
 		/* sensor management 1 */
 		/* Reset Sensor */
 		uint8_t register_sensor_powerMgmt1[2] = { 0 };
@@ -273,44 +285,42 @@ void vInitImu20600Read() {
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
 		HAL_Delay(1);
 
-		uint8_t commandaccread = IMU20601_COMMAND_GYRO_READ;
-		uint8_t commandaccread2 = IMU20601_COMMAND_GYRO_READ + 1;
-		volatile uint8_t read = 0;
-		volatile uint8_t read2 = 0;
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, &commandaccread, 1, IMU20601_SPI_TIMEOUT);
-		HAL_SPI_Receive(&hspi1, &read, 1, IMU20601_SPI_TIMEOUT);
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-		HAL_Delay(1);
-
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, &commandaccread2, 1, IMU20601_SPI_TIMEOUT);
-		HAL_SPI_Receive(&hspi1, &read2, 1, IMU20601_SPI_TIMEOUT);
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-		HAL_Delay(1);
-
 
 		/* Test if what we measure is possible */
-		uint32_t gyroscope_data[3]; /* 0 = x, 1 = y, 2 = z */
-		uint32_t acceleration[3]; /* 0 = x, 1 = y, 2 = z */
-		vReadImu20600(gyroscope_data, acceleration);
-		UsbPrint("[DBG] RAW Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld\n",
-				gyroscope_data[0], gyroscope_data[1], gyroscope_data[2],
-				acceleration[0], acceleration[1], acceleration[2]);
-//		uint32_t abs_value = acceleration[0] * acceleration[0]
-//															+ acceleration[1] * acceleration[1]
-//																							 + acceleration[2] * acceleration[2];
+		int16_t gyroscope_data[3]; /* 0 = x, 1 = y, 2 = z */
+		int16_t acceleration[3]; /* 0 = x, 1 = y, 2 = z */
+		int32_t offsetholder[6] = { 0 };
+		for(int k = 0; k < 1024; k++){
+			vReadImu20600(gyroscope_data, acceleration, offset);
+			offsetholder[0] += (int32_t) acceleration[0];
+			offsetholder[1] += (int32_t)acceleration[1];
+			offsetholder[2] += (int32_t)acceleration[2];
+			offsetholder[3] += (int32_t)gyroscope_data[0];
+			offsetholder[4] += (int32_t)gyroscope_data[1];
+			offsetholder[5] += (int32_t)gyroscope_data[2];
+		}
+		offset[0] = offsetholder[0] >> 10;
+		offset[1] = offsetholder[1] >> 10;
+		offset[2] = (offsetholder[2] >> 10) - (1 << 10) ;
+		offset[3] = offsetholder[3] >> 10;
+		offset[4] = offsetholder[4] >> 10;
+		offset[5] = offsetholder[5] >> 10;
+
+
+//		float abs_value = test[0] * test[0]
+//										 + test[1] * test[1]
+//														  + test[2] * test[2];
 //		if (((abs_value > 0.25 && abs_value < 2.25)
-//				&& (gyroscope_data[0] > -50 && gyroscope_data[0] < 50
-//						&& gyroscope_data[1] > -50 && gyroscope_data[1] < 50
-//						&& gyroscope_data[2] > -50 && gyroscope_data[2] < 50))) {
+//				&& (test2[0] > -50 && test2[0] < 50
+//						&& test2[1] > -50 && test2[1] < 50
+//						&& test2[2] > -50 && test2[2] < 50))) {
 			/* initialization successful */
 			break;
 //		}
 	}
 }
 
-void vReadImu20600(uint32_t gyroscope_data[], uint32_t acceleration[]) {
+void vReadImu20600(int16_t gyroscope_data[], int16_t acceleration[], int16_t offset[]) {
 
 	/* Read Accelerometer Data */
 	uint8_t bufferAcc[6] = { 0 };
@@ -325,9 +335,13 @@ void vReadImu20600(uint32_t gyroscope_data[], uint32_t acceleration[]) {
 	acceleration[1] = bufferAcc[2] << 8 | bufferAcc[3];
 	acceleration[2] = bufferAcc[4] << 8 | bufferAcc[5];
 
+	acceleration[0] = acceleration[0] - offset[0];
+	acceleration[1] = acceleration[1] - offset[1];
+	acceleration[2] = acceleration[2] - offset[2];
+
+
 	/* Read Gyroscope Data */
 	uint8_t bufferGyro[6] = { 0 };
-	uint8_t gyro[3] = { 0 };
 	uint8_t commandgyroread = IMU20601_COMMAND_GYRO_READ;
 
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
@@ -338,6 +352,11 @@ void vReadImu20600(uint32_t gyroscope_data[], uint32_t acceleration[]) {
 	gyroscope_data[0] = bufferGyro[0] << 8 | bufferGyro[1];
 	gyroscope_data[1] = bufferGyro[2] << 8 | bufferGyro[3];
 	gyroscope_data[2] = bufferGyro[4] << 8 | bufferGyro[5];
+
+	gyroscope_data[0] = gyroscope_data[0] - offset[3];
+	gyroscope_data[1] = gyroscope_data[1] - offset[4];
+	gyroscope_data[2] = gyroscope_data[2] - offset[5];
+
 
 }
 

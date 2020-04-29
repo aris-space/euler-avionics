@@ -42,7 +42,7 @@ void vTaskPreprocess(void *argument) {
 			/* Write Result into Motherboard Variable if Mutex is available */
 			if (osMutexAcquire(imu_mutex, IMU_MUTEX_TIMEOUT) == osOK) {
 				imu_data_to_mb = queue_data;
-				imu_data_to_mb.acc_z = filtered_acc_z; /* Insert filtered data */
+//				imu_data_to_mb.acc_z = filtered_acc_z; /* Insert filtered data */
 				osMutexRelease(imu_mutex);
 			}
 		}
