@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link href="/static/css/bootstrap/bootstrap.css" rel="stylesheet" type="text/css">
+<link href="/static/css/style.css" rel="stylesheet" type="text/css">
+<title>Launch Overlay</title>
+</head>
+<body>
+    <div id="time">
+        Hello there!! The current time is: <span id="current_time">...</span>.
+    </div>
+    <br/>
+    <div id="countdown">
+        Hello again!! Time to launch is: T <span id="countdown_sign">?</span> <span id="countdown_minutes">..</span>:<span id="countdown_seconds">..</span>.
+    </div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+    let socket = io();
+    socket.on('connect', function() {
+        socket.emit('start_time');
+        socket.emit('countdown_start', {sign: '-', minutes: 1, seconds: 15, hold : Boolean(0)});
+    });
+    socket.on('countdown_update', function(data) {
+      document.getElementById("countdown_sign").innerHTML = data.negative ? '-' : '+';
+      document.getElementById("countdown_minutes").innerHTML = ('0' + data.minutes).slice(-2);
+      document.getElementById("countdown_seconds").innerHTML = ('0' + data.seconds).slice(-2);
+    });
+    socket.on('time_update', function(data) {
+      document.getElementById("current_time").innerHTML = data.current_time;
+    });
+</script>
+</body>
+</html>
+
