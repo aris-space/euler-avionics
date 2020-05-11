@@ -40,11 +40,11 @@ void vTaskSendToMb(void *argument) {
 //		UsbPrint("[DBG] P: %ld; T: %ld; t: %lu\n", last_baro_data.pressure,
 //				last_baro_data.temperature, last_baro_data.ts);
 //
-		UsbPrint(
-				"[DBG] Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld; t: %lu\n",
-				last_imu_data.gyro_x, last_imu_data.gyro_y,
-				last_imu_data.gyro_z, last_imu_data.acc_x, last_imu_data.acc_y,
-				last_imu_data.acc_z, last_imu_data.ts);
+//		UsbPrint(
+//				"[DBG Task Send] Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld; t: %lu\n",
+//				last_imu_data.gyro_x, last_imu_data.gyro_y,
+//				last_imu_data.gyro_z, last_imu_data.acc_x, last_imu_data.acc_y,
+//				last_imu_data.acc_z, last_imu_data.ts);
 
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_RESET);
 		HAL_SPI_Transmit(&hspi2, (uint8_t*) &fullsb_data, sizeof(fullsb_data), SPI_TIMEOUT);

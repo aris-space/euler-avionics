@@ -53,8 +53,8 @@ mb_working_jonas_sd_card.bin \
 all: mb_working_jonas_sd_card.elf secondary-outputs
 
 # Tool invocations
-mb_working_jonas_sd_card.elf: $(OBJS) $(USER_OBJS) D:\ARIS\EULER\github\euler-avionics\main_board\mb_working_jonas_sd_card\STM32F745VETX_FLASH.ld
-	arm-none-eabi-gcc -o "mb_working_jonas_sd_card.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"D:\ARIS\EULER\github\euler-avionics\main_board\mb_working_jonas_sd_card\STM32F745VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="mb_working_jonas_sd_card.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+mb_working_jonas_sd_card.elf: $(OBJS) $(USER_OBJS) C:\Users\Jonas\Desktop\Git\aris-euler-avionics\main_board\mb_working_jonas_sd_card\STM32F745VETX_FLASH.ld
+	arm-none-eabi-gcc -o "mb_working_jonas_sd_card.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\Jonas\Desktop\Git\aris-euler-avionics\main_board\mb_working_jonas_sd_card\STM32F745VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="mb_working_jonas_sd_card.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
