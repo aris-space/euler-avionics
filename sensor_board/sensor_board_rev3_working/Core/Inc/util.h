@@ -24,8 +24,8 @@ typedef uint32_t timestamp_t;
 
 /* IMU data */
 typedef struct {
-	int32_t gyro_x, gyro_y, gyro_z;
-	int32_t acc_x, acc_y, acc_z;
+	int16_t gyro_x, gyro_y, gyro_z;
+	int16_t acc_x, acc_y, acc_z;
 	timestamp_t ts;
 } imu_data_t;
 
