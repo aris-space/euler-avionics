@@ -174,6 +174,50 @@ void vInitImu20600Read(int16_t offset[]) {
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
 		HAL_Delay(1);
 
+		/* Remove Offset Acc*/
+		uint8_t test[2] = {0x77, 0x00};
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, test,
+				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+		HAL_Delay(1);
+
+		test[1] = 0x78;
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, test,
+				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+		HAL_Delay(1);
+
+		test[1] = 0x7A;
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, test,
+				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+		HAL_Delay(1);
+
+		test[1] = 0x7B;
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, test,
+				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+		HAL_Delay(1);
+
+		test[1] = 0x7D;
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, test,
+				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+		HAL_Delay(1);
+
+		test[1] = 0x7E;
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+		HAL_SPI_Transmit(&hspi1, test,
+				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+		HAL_Delay(1);
+
+
 		/* FIFO disable */
 		uint8_t register_FIFO[2] = { 0 };
 		register_FIFO[0] = IMU20601_COMMAND_FIFO_ENABLE_WRITE;
