@@ -20,13 +20,28 @@
 #define NUMBER_STATES 3	/* NUMBER_STATES x NUMBER_STATES -> A Matrix */
 #define NUMBER_INPUTS 1	/* NUMBER_STATES x NUMBER_INPUTS -> B Matrix */
 #define NUMBER_NOISE 1	/* NUMBER_STATES x NUMBER_NOISE -> G Matrix */
-#define NUMBER_SENSOR 3 /* NUMBER_SENSOR x NUMBER_STATES -> H Matrix */
+#define NUMBER_SENSOR 6 /* NUMBER_SENSOR x NUMBER_STATES -> H Matrix */
 #define LAMBDA 0.1		/* Lambda for Moore Penrose Pseudoinverse */
 
 
 /* Commands */
 
 /* Extern */
+/* Sensor Board 1 */
+extern osMutexId_t sb1_mutex;
+extern sb_data_t sb1_data;
+
+/* Sensor Board 2 */
+extern osMutexId_t sb2_mutex;
+extern sb_data_t sb2_data;
+
+/* Sensor Board 3 */
+extern osMutexId_t sb3_mutex;
+extern sb_data_t sb3_data;
+
+/* State Estimation Mutex */
+extern osMutexId_t state_est_mutex;
+extern state_est_data_t state_est_data;
 
 /* Tasks */
 void vTaskStateEst(void *argument);

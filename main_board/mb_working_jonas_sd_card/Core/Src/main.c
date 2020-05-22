@@ -122,6 +122,8 @@ sb_data_t sb2_data = { 0 };
 baro_data_t sb3_baro = { 0 };
 imu_data_t sb3_imu = { 0 };
 sb_data_t sb3_data = { 0 };
+state_est_data_t state_est_data = { 0 };
+osMutexId_t state_est_mutex;
 osMessageQueueId_t log_queue;
 /* USER CODE END PV */
 
@@ -191,7 +193,7 @@ int main(void)
   osKernelInitialize();
 
   /* USER CODE BEGIN RTOS_MUTEX */
-  /* Barometer Mutex */
+  /* Sensor Board 1 Mutex */
    const osMutexAttr_t sb1_mutex_attr = {
      "sb1_mutex",                              // human readable mutex name
      osMutexPrioInherit,                       // attr_bits
@@ -201,7 +203,7 @@ int main(void)
 
    sb1_mutex = osMutexNew(&sb1_mutex_attr);
 
-   /* Barometer Mutex */
+   /* Sensor Board 2 Mutex */
     const osMutexAttr_t sb2_mutex_attr = {
       "sb2_mutex",                              // human readable mutex name
       osMutexPrioInherit,                       // attr_bits
@@ -211,7 +213,7 @@ int main(void)
 
     sb2_mutex = osMutexNew(&sb2_mutex_attr);
 
-    /* Barometer Mutex */
+    /* Sensor Board 3 Mutex */
      const osMutexAttr_t sb3_mutex_attr = {
        "sb3_mutex",                              // human readable mutex name
        osMutexPrioInherit,    					 // attr_bits
@@ -220,6 +222,16 @@ int main(void)
      };
 
      sb3_mutex = osMutexNew(&sb3_mutex_attr);
+
+     /* State Estimation Output Mutex */
+      const osMutexAttr_t state_est_mutex_attr = {
+        "state_est_mutex",                              // human readable mutex name
+        osMutexPrioInherit,    					 // attr_bits
+        NULL,                                     // memory for control block
+        0U                                        // size for control block
+      };
+
+      state_est_mutex = osMutexNew(&state_est_mutex_attr);
 
 #ifdef DEBUG
   const osMutexAttr_t print_mutex_attr = {

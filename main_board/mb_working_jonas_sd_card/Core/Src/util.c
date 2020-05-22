@@ -71,11 +71,10 @@ osStatus_t logRocketState(timestamp_t ts, rocket_state_e rocket_state) {
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
 }
 
-osStatus_t logEstimatorVar(timestamp_t ts, int32_t estimator_var_data) {
+osStatus_t logEstimatorVar(timestamp_t ts, state_est_data_t estimator_data) {
 	log_entry_t log_entry = { 0 };
-
-	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld\n", ts, ESTIMATOR_VAR,
-			estimator_var_data);
+	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld;%ld\n", ts, ESTIMATOR_VAR,
+			estimator_data.altitude_above_GL, estimator_data.velocity);
 
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
 }

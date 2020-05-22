@@ -64,6 +64,11 @@ typedef struct {
 	timestamp_t ts;
 } gps_data_t;
 
+typedef struct {
+	int32_t velocity;
+	int32_t altitude_above_GL;
+} state_est_data_t;
+
 /* Sensor Board Mutexes */
 osMutexId_t sb1_mutex;
 osMutexId_t sb2_mutex;
@@ -86,7 +91,7 @@ osStatus_t logSensor(timestamp_t ts, board_id_t sensor_board_id,
 		sensor_type_e sens_type, void *sensor_data);
 osStatus_t logRocketState(timestamp_t ts, rocket_state_e rocket_state);
 /* TODO [nstojosk] - this signature & implementation should be adjusted */
-osStatus_t logEstimatorVar(timestamp_t ts, int32_t estimator_var_data);
+osStatus_t logEstimatorVar(timestamp_t ts, state_est_data_t estimator_data);
 osStatus_t logMsg(timestamp_t ts, char *msg);
 
 

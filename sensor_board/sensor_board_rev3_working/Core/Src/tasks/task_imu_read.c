@@ -174,48 +174,14 @@ void vInitImu20600Read(int16_t offset[]) {
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
 		HAL_Delay(1);
 
-		/* Remove Offset Acc*/
-		uint8_t test[2] = {0x77, 0x00};
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, test,
-				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-		HAL_Delay(1);
 
-		test[1] = 0x78;
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, test,
-				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-		HAL_Delay(1);
-
-		test[1] = 0x7A;
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, test,
-				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-		HAL_Delay(1);
-
-		test[1] = 0x7B;
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, test,
-				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-		HAL_Delay(1);
-
-		test[1] = 0x7D;
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, test,
-				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-		HAL_Delay(1);
-
-		test[1] = 0x7E;
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-		HAL_SPI_Transmit(&hspi1, test,
-				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-		HAL_Delay(1);
+//		test[0] = 0x11;
+//		test[1] = 0xC9;
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+//		HAL_SPI_Transmit(&hspi1, test,
+//				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+//		HAL_Delay(1);
 
 
 		/* FIFO disable */
@@ -253,13 +219,15 @@ void vInitImu20600Read(int16_t offset[]) {
 		int32_t offsetholder[6] = { 0 };
 		for(int k = 0; k < 1024; k++){
 			vReadImu20600(gyroscope_data, acceleration, offset);
-			offsetholder[0] += (int32_t) acceleration[0];
+			offsetholder[0] += (int32_t)acceleration[0];
 			offsetholder[1] += (int32_t)acceleration[1];
 			offsetholder[2] += (int32_t)acceleration[2];
 			offsetholder[3] += (int32_t)gyroscope_data[0];
 			offsetholder[4] += (int32_t)gyroscope_data[1];
 			offsetholder[5] += (int32_t)gyroscope_data[2];
+			HAL_Delay(1);
 		}
+
 		offset[0] = offsetholder[0] >> 10;
 		offset[1] = offsetholder[1] >> 10;
 		offset[2] = (offsetholder[2] >> 10) - (1 << 10) ;
@@ -267,17 +235,68 @@ void vInitImu20600Read(int16_t offset[]) {
 		offset[4] = offsetholder[4] >> 10;
 		offset[5] = offsetholder[5] >> 10;
 
+		/* Remove Offset Acc*/
+//		uint8_t test[2] = {0x77, (uint8_t)(offsetholder[0] >> 8)};
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+//		HAL_SPI_Transmit(&hspi1, test,
+//				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+//		HAL_Delay(1);
+//
+//		test[0] = 0x78;
+//		test[1] = (uint8_t)(offsetholder[0]);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+//		HAL_SPI_Transmit(&hspi1, test,
+//				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+//		HAL_Delay(1);
+//
+//		test[0] = 0x7A;
+//		test[1] = (uint8_t)(offsetholder[1] >> 8);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+//		HAL_SPI_Transmit(&hspi1, test,
+//				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+//		HAL_Delay(1);
+//
+//		test[0] = 0x7B;
+//		test[1] = (uint8_t)(offsetholder[1]);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+//		HAL_SPI_Transmit(&hspi1, test,
+//				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+//		HAL_Delay(1);
+//
+//		test[0] = 0x7D;
+//		test[1] = (uint8_t)(offsetholder[2] >> 8);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+//		HAL_SPI_Transmit(&hspi1, test,
+//				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+//		HAL_Delay(1);
+//
+//		test[0] = 0x7E;
+//		test[1] = (uint8_t)(offsetholder[2]);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+//		HAL_SPI_Transmit(&hspi1, test,
+//				IMU20601_COMMAND_LENGTH, IMU20601_SPI_TIMEOUT);
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+//		HAL_Delay(1);
 
-//		float abs_value = test[0] * test[0]
-//										 + test[1] * test[1]
-//														  + test[2] * test[2];
-//		if (((abs_value > 0.25 && abs_value < 2.25)
-//				&& (test2[0] > -50 && test2[0] < 50
-//						&& test2[1] > -50 && test2[1] < 50
-//						&& test2[2] > -50 && test2[2] < 50))) {
-			/* initialization successful */
-			break;
-//		}
+
+
+
+
+		//		float abs_value = test[0] * test[0]
+		//										 + test[1] * test[1]
+		//														  + test[2] * test[2];
+		//		if (((abs_value > 0.25 && abs_value < 2.25)
+		//				&& (test2[0] > -50 && test2[0] < 50
+		//						&& test2[1] > -50 && test2[1] < 50
+		//						&& test2[2] > -50 && test2[2] < 50))) {
+		/* initialization successful */
+		break;
+		//		}
 	}
 }
 
@@ -297,9 +316,9 @@ void vReadImu20600(int16_t gyroscope_data[], int16_t acceleration[], int16_t off
 	acceleration[1] = bufferAcc[2] << 8 | bufferAcc[3];
 	acceleration[2] = bufferAcc[4] << 8 | bufferAcc[5];
 
-//	acceleration[0] = acceleration[0] - offset[0];
-//	acceleration[1] = acceleration[1] - offset[1];
-//	acceleration[2] = acceleration[2] - offset[2];
+//		acceleration[0] = acceleration[0] - offset[0];
+//		acceleration[1] = acceleration[1] - offset[1];
+//		acceleration[2] = acceleration[2] - offset[2];
 
 
 	/* Read Gyroscope Data */
@@ -316,9 +335,9 @@ void vReadImu20600(int16_t gyroscope_data[], int16_t acceleration[], int16_t off
 	gyroscope_data[1] = bufferGyro[2] << 8 | bufferGyro[3];
 	gyroscope_data[2] = bufferGyro[4] << 8 | bufferGyro[5];
 
-//	gyroscope_data[0] = gyroscope_data[0] - offset[3];
-//	gyroscope_data[1] = gyroscope_data[1] - offset[4];
-//	gyroscope_data[2] = gyroscope_data[2] - offset[5];
+//		gyroscope_data[0] = gyroscope_data[0] - offset[3];
+//		gyroscope_data[1] = gyroscope_data[1] - offset[4];
+//		gyroscope_data[2] = gyroscope_data[2] - offset[5];
 
 
 }
