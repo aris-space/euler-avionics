@@ -29,6 +29,8 @@
 #include "tasks/task_controller.h"
 #include "tasks/task_sens_read.h"
 #include "tasks/task_state_est.h"
+#include "tasks/task_motor_control.h"
+#include "tasks/task_fsm.h"
 #include "util.h"
 /* USER CODE END Includes */
 
@@ -56,6 +58,8 @@ DMA_HandleTypeDef hdma_sdmmc1_tx;
 SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi2;
 SPI_HandleTypeDef hspi3;
+
+UART_HandleTypeDef huart7;
 
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -112,6 +116,30 @@ const osThreadAttr_t task_sd_card_attributes = {
   .cb_size = sizeof(task_sd_cardControlBlock),
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for task_motor_cont */
+osThreadId_t task_motor_contHandle;
+uint32_t task_motor_contBuffer[ 2048 ];
+osStaticThreadDef_t task_motor_contControlBlock;
+const osThreadAttr_t task_motor_cont_attributes = {
+  .name = "task_motor_cont",
+  .stack_mem = &task_motor_contBuffer[0],
+  .stack_size = sizeof(task_motor_contBuffer),
+  .cb_mem = &task_motor_contControlBlock,
+  .cb_size = sizeof(task_motor_contControlBlock),
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for tas_fsm */
+osThreadId_t tas_fsmHandle;
+uint32_t tas_fsmBuffer[ 2048 ];
+osStaticThreadDef_t tas_fsmControlBlock;
+const osThreadAttr_t tas_fsm_attributes = {
+  .name = "tas_fsm",
+  .stack_mem = &tas_fsmBuffer[0],
+  .stack_size = sizeof(tas_fsmBuffer),
+  .cb_mem = &tas_fsmControlBlock,
+  .cb_size = sizeof(tas_fsmControlBlock),
+  .priority = (osPriority_t) osPriorityNormal,
+};
 /* USER CODE BEGIN PV */
 baro_data_t sb1_baro = { 0 };
 imu_data_t sb1_imu = { 0 };
@@ -135,11 +163,14 @@ static void MX_SPI3_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_SDMMC1_SD_Init(void);
 static void MX_SPI2_Init(void);
+static void MX_UART7_Init(void);
 void StartDefaultTask(void *argument);
 extern void vTaskStateEst(void *argument);
 extern void vTaskController(void *argument);
 extern void vTaskSensRead(void *argument);
 extern void vTaskSdCard(void *argument);
+extern void vTaskMotorCont(void *argument);
+extern void vTaskFSM(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -185,6 +216,7 @@ int main(void)
   MX_SDMMC1_SD_Init();
   MX_SPI2_Init();
   MX_FATFS_Init();
+  MX_UART7_Init();
   /* USER CODE BEGIN 2 */
   MX_USB_DEVICE_Init();
   /* USER CODE END 2 */
@@ -273,6 +305,12 @@ int main(void)
   /* creation of task_sd_card */
   task_sd_cardHandle = osThreadNew(vTaskSdCard, NULL, &task_sd_card_attributes);
 
+  /* creation of task_motor_cont */
+  task_motor_contHandle = osThreadNew(vTaskMotorCont, NULL, &task_motor_cont_attributes);
+
+  /* creation of tas_fsm */
+  tas_fsmHandle = osThreadNew(vTaskFSM, NULL, &tas_fsm_attributes);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -333,7 +371,9 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SDMMC1|RCC_PERIPHCLK_CLK48;
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_UART7|RCC_PERIPHCLK_SDMMC1
+                              |RCC_PERIPHCLK_CLK48;
+  PeriphClkInitStruct.Uart7ClockSelection = RCC_UART7CLKSOURCE_PCLK1;
   PeriphClkInitStruct.Clk48ClockSelection = RCC_CLK48SOURCE_PLL;
   PeriphClkInitStruct.Sdmmc1ClockSelection = RCC_SDMMC1CLKSOURCE_CLK48;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
@@ -487,6 +527,41 @@ static void MX_SPI3_Init(void)
 
 }
 
+/**
+  * @brief UART7 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_UART7_Init(void)
+{
+
+  /* USER CODE BEGIN UART7_Init 0 */
+
+  /* USER CODE END UART7_Init 0 */
+
+  /* USER CODE BEGIN UART7_Init 1 */
+
+  /* USER CODE END UART7_Init 1 */
+  huart7.Instance = UART7;
+  huart7.Init.BaudRate = 115200;
+  huart7.Init.WordLength = UART_WORDLENGTH_8B;
+  huart7.Init.StopBits = UART_STOPBITS_1;
+  huart7.Init.Parity = UART_PARITY_NONE;
+  huart7.Init.Mode = UART_MODE_TX_RX;
+  huart7.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart7.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart7.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart7.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart7) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN UART7_Init 2 */
+
+  /* USER CODE END UART7_Init 2 */
+
+}
+
 /** 
   * Enable DMA controller clock
   */
@@ -520,17 +595,18 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOE_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : LED_Pin */
-  GPIO_InitStruct.Pin = LED_Pin;
+  /*Configure GPIO pin : PC3 */
+  GPIO_InitStruct.Pin = GPIO_PIN_3;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
 }
 
@@ -548,7 +624,7 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void *argument)
 {
   /* init code for USB_DEVICE */
-  //MX_USB_DEVICE_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)

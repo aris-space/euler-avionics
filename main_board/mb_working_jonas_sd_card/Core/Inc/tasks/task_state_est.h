@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include "math_utils.h"
 /* Constants */
 #define STATE_ESTIMATION_FREQUENCY 1
 /* Matrix Sizes */
@@ -42,6 +43,43 @@ extern sb_data_t sb3_data;
 /* State Estimation Mutex */
 extern osMutexId_t state_est_mutex;
 extern state_est_data_t state_est_data;
+
+
+/* State Estimation Full State */
+typedef struct {
+	/* Fixed Variables */
+    float Ad[NUMBER_STATES][NUMBER_STATES];
+	float Ad_T[NUMBER_STATES][NUMBER_STATES];
+	float Bd[NUMBER_STATES][NUMBER_INPUTS];
+	float Gd[NUMBER_STATES][NUMBER_NOISE];
+	float Gd_T[NUMBER_NOISE][NUMBER_STATES];
+	float H[NUMBER_SENSOR][NUMBER_STATES];
+	float H_T[NUMBER_STATES][NUMBER_SENSOR];
+	float Q[NUMBER_NOISE][NUMBER_NOISE];
+	float R[NUMBER_SENSOR][NUMBER_SENSOR];
+
+	/* State Variables */
+    float u[NUMBER_INPUTS]; // inputs
+	float x_est[NUMBER_STATES]; // estimated state (posteriori)
+	float P_est[NUMBER_STATES][NUMBER_STATES]; // estimated covariance (posteriori)
+	float x_priori[NUMBER_STATES]; // estimated state (priori)
+	float P_priori[NUMBER_STATES][NUMBER_STATES]; // estimated covariance (priori)
+    float z[NUMBER_SENSOR]; // measurements
+	float y[NUMBER_SENSOR]; // state innovation
+	float S[NUMBER_SENSOR][NUMBER_SENSOR]; // covariance innovation
+	float S_inv[NUMBER_SENSOR][NUMBER_SENSOR];
+	float K[NUMBER_STATES][NUMBER_SENSOR];
+
+    /* Placeholder Variables for increased speed */
+	float Placeholder_Ad_mult_P_est[NUMBER_STATES][NUMBER_STATES];
+    float Placeholder_Gd_mult_Q[NUMBER_STATES][NUMBER_NOISE];
+	float Placeholder_H_mult_P_priori[NUMBER_SENSOR][NUMBER_SENSOR];
+	float Placeholder_P_priori_mult_H_T[NUMBER_STATES][NUMBER_SENSOR];
+	float Placeholder_P_est[NUMBER_STATES][NUMBER_STATES];
+    float Placeholder_eye[NUMBER_STATES][NUMBER_STATES];
+    float Placeholder_K_mult_H[NUMBER_STATES][NUMBER_STATES];
+} ekf_state_t;
+
 
 /* Tasks */
 void vTaskStateEst(void *argument);

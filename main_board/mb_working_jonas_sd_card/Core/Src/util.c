@@ -62,11 +62,11 @@ osStatus_t logSensor(timestamp_t ts, board_id_t sensor_board_id,
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
 }
 
-osStatus_t logRocketState(timestamp_t ts, rocket_state_e rocket_state) {
+osStatus_t logRocketState(timestamp_t ts, flight_phase_e flight_phase) {
 	log_entry_t log_entry = { 0 };
 
 	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%d\n", ts, STATE,
-			rocket_state);
+			flight_phase);
 
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
 }
