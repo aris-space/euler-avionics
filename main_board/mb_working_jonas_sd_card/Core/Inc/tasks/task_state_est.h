@@ -15,6 +15,7 @@
 #include <math.h>
 #include <string.h>
 #include "math_utils.h"
+#include "Sensor_Fusion_Helper/env.h"
 /* Constants */
 #define STATE_ESTIMATION_FREQUENCY 1
 /* Matrix Sizes */
@@ -22,6 +23,7 @@
 #define NUMBER_INPUTS 1	/* NUMBER_STATES x NUMBER_INPUTS -> B Matrix */
 #define NUMBER_NOISE 1	/* NUMBER_STATES x NUMBER_NOISE -> G Matrix */
 #define NUMBER_SENSOR 6 /* NUMBER_SENSOR x NUMBER_STATES -> H Matrix */
+#define NUMBER_SENSORBOARDS 3 /* Number of Sensor Boards */
 #define LAMBDA 0.1		/* Lambda for Moore Penrose Pseudoinverse */
 
 
@@ -43,6 +45,12 @@ extern sb_data_t sb3_data;
 /* State Estimation Mutex */
 extern osMutexId_t state_est_mutex;
 extern state_est_data_t state_est_data;
+
+/* fsm Mutex */
+extern osMutexId_t fsm_mutex;
+extern osMutexId_t environment_mutex;
+extern flight_phase_detection_t global_flight_phase_detection;
+extern env global_env;
 
 
 /* State Estimation Full State */
@@ -79,6 +87,12 @@ typedef struct {
     float Placeholder_eye[NUMBER_STATES][NUMBER_STATES];
     float Placeholder_K_mult_H[NUMBER_STATES][NUMBER_STATES];
 } ekf_state_t;
+
+/* State Estimation Data struct */
+typedef struct {
+	baro_data_t baro_data[NUMBER_SENSORBOARDS];
+	imu_data_t imu_data[NUMBER_SENSORBOARDS];
+} state_est_meas_t;
 
 
 /* Tasks */

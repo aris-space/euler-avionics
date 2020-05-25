@@ -74,7 +74,7 @@ osStatus_t logRocketState(timestamp_t ts, flight_phase_e flight_phase) {
 osStatus_t logEstimatorVar(timestamp_t ts, state_est_data_t estimator_data) {
 	log_entry_t log_entry = { 0 };
 	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld;%ld\n", ts, ESTIMATOR_VAR,
-			estimator_data.altitude_above_GL, estimator_data.velocity);
+			estimator_data.position_world[2], estimator_data.velocity_rocket[0]);
 
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
 }

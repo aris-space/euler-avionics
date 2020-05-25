@@ -7,7 +7,7 @@
 
 #include "tasks/task_fsm.h"
 
-void detect_flight_phase(flight_phase_detection_t *flight_phase_detection, state_est_data_t *state_est_data);
+void detect_flight_phase(flight_phase_detection_t *flight_phase_detection, state_est_data_t *state_est_data, env *env);
 
 void reset_flight_phase_detection(flight_phase_detection_t *flight_phase_detection);
 
@@ -23,6 +23,12 @@ void vTaskFSM(void *argument) {
 	/*State Estimation data */
 	state_est_data_t state_est_data_fsm = { 0 };
 	state_est_data_t state_est_data_fsm_dummy = { 0 };
+
+	/* environment data */
+	env environment;
+	env dummy_env;
+	init_env(&dummy_env);
+	init_env(&environment);
 
 
 	/* Infinite loop */
@@ -44,11 +50,22 @@ void vTaskFSM(void *argument) {
 				state_est_data_fsm = state_est_data_fsm_dummy;
 			}
 		}
+		/* Update Environment */
+		if(osMutexGetOwner(environment_mutex) == NULL){
+			dummy_env = global_env;
+			if(osMutexGetOwner(state_est_mutex) == NULL){
+				environment = dummy_env;
+			}
+		}
 
 		/* get Flight Phase update */
-		detect_flight_phase(&flight_phase_detection, &state_est_data_fsm);
+		detect_flight_phase(&flight_phase_detection, &state_est_data_fsm, &environment);
 
 		/* TODO Write NEW State in GLobal Variable */
+		if(osMutexAcquire(fsm_mutex, 10) == osOK){
+			global_flight_phase_detection = flight_phase_detection;
+			osMutexRelease(fsm_mutex);
+		}
 
 		/* Sleep */
 		osDelayUntil(tick_count);
@@ -56,21 +73,13 @@ void vTaskFSM(void *argument) {
 }
 
 
-void detect_flight_phase(flight_phase_detection_t *flight_phase_detection, state_est_data_t *state_est_data) {
-    /* altitude above ground level in world frame [m]*/
-    float X_z = (float)(state_est_data->altitude_above_GL);
-    X_z = X_z/1000;
-    /* vertical velocity in world frame [m/s]*/
-    float V_z = (float)(state_est_data->velocity);
-    V_z = V_z/1000;
-    /* acceleration in x-dir in rocket frame [m/s^2]*/
-    float Vdot_z = (float)(state_est_data->acceleration);
-    Vdot_z = Vdot_z/1000;
+void detect_flight_phase(flight_phase_detection_t *flight_phase_detection, state_est_data_t *state_est_data, env *environment)
 
+{
     /* determine state transition events */
     switch (flight_phase_detection->flight_phase) {
         case IDLE:
-            if (Vdot_z > 20) {
+            if (((float)(state_est_data->acceleration_rocket[0]))/1000 > 20) {
                 flight_phase_detection->num_samples_positive += 1;
                 if (flight_phase_detection->num_samples_positive >= 4) {
                     flight_phase_detection->flight_phase = THRUSTING;
@@ -80,7 +89,7 @@ void detect_flight_phase(flight_phase_detection_t *flight_phase_detection, state
         break;
 
         case THRUSTING:
-            if (Vdot_z < 0) {
+            if (((float)(state_est_data->acceleration_rocket[0]))/1000 < 0) {
                 flight_phase_detection->num_samples_positive += 1;
                 if (flight_phase_detection->num_samples_positive >= 4) {
                     flight_phase_detection->flight_phase = COASTING;
@@ -90,7 +99,7 @@ void detect_flight_phase(flight_phase_detection_t *flight_phase_detection, state
         break;
 
         case COASTING:
-            if (V_z < 0) {
+            if (((float)(state_est_data->velocity_world[2]))/1000 < 0) {
                 flight_phase_detection->num_samples_positive += 1;
                 if (flight_phase_detection->num_samples_positive >= 4) {
                     flight_phase_detection->flight_phase = DESCENT;
@@ -100,7 +109,7 @@ void detect_flight_phase(flight_phase_detection_t *flight_phase_detection, state
         break;
 
         case DESCENT:
-            if (X_z < 20) {
+            if (((float)(state_est_data->position_world[2]))/1000 < 20) {
                 flight_phase_detection->num_samples_positive += 1;
                 if (flight_phase_detection->num_samples_positive >= 4) {
                     flight_phase_detection->flight_phase = RECOVERY;
@@ -109,12 +118,11 @@ void detect_flight_phase(flight_phase_detection_t *flight_phase_detection, state
             }
         break;
 
-        case RECOVERY:
+        default:
         break;
     }
 
-    // TODO @maxi: Implement update of mach number
-    flight_phase_detection->mach_number = 0.0;
+    flight_phase_detection->mach_number = mach_number(environment, state_est_data->velocity_rocket[0]);
 
     /* determine the mach regime */
     if (flight_phase_detection->mach_number >= 1.3) {
@@ -126,8 +134,9 @@ void detect_flight_phase(flight_phase_detection_t *flight_phase_detection, state
     {
         flight_phase_detection->mach_regime = SUBSONIC;
     }
-}
 
+
+}
 
 void reset_flight_phase_detection(flight_phase_detection_t *flight_phase_detection){
     flight_phase_detection->flight_phase = IDLE;

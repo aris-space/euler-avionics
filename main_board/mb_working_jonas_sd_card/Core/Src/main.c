@@ -32,6 +32,7 @@
 #include "tasks/task_motor_control.h"
 #include "tasks/task_fsm.h"
 #include "util.h"
+#include "Sensor_Fusion_Helper/env.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -151,6 +152,10 @@ baro_data_t sb3_baro = { 0 };
 imu_data_t sb3_imu = { 0 };
 sb_data_t sb3_data = { 0 };
 state_est_data_t state_est_data = { 0 };
+env global_env = { 0 };
+flight_phase_detection_t global_flight_phase_detection = { 0 };
+osMutexId_t environment_mutex;
+osMutexId_t fsm_mutex;
 osMutexId_t state_est_mutex;
 osMessageQueueId_t log_queue;
 /* USER CODE END PV */
@@ -206,6 +211,8 @@ int main(void)
   /* USER CODE BEGIN SysInit */
   (DBGMCU)->APB1FZ = 0x7E01BFF;
   (DBGMCU)->APB2FZ = 0x70003;
+  init_env(&global_env);
+  reset_flight_phase_detection(&global_flight_phase_detection);
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -264,6 +271,26 @@ int main(void)
       };
 
       state_est_mutex = osMutexNew(&state_est_mutex_attr);
+
+      /* FSM Output Mutex */
+       const osMutexAttr_t fsm_mutex_attr = {
+         "fsm_mutex",                              // human readable mutex name
+         osMutexPrioInherit,    					 // attr_bits
+         NULL,                                     // memory for control block
+         0U                                        // size for control block
+       };
+
+       fsm_mutex = osMutexNew(&fsm_mutex_attr);
+
+       /* Environment Mutex */
+        const osMutexAttr_t environment_mutex_attr = {
+          "environment_mutex",                              // human readable mutex name
+          osMutexPrioInherit,    					 // attr_bits
+          NULL,                                     // memory for control block
+          0U                                        // size for control block
+        };
+
+        environment_mutex = osMutexNew(&environment_mutex_attr);
 
 #ifdef DEBUG
   const osMutexAttr_t print_mutex_attr = {

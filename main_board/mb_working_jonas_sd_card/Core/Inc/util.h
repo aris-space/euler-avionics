@@ -71,11 +71,12 @@ typedef struct {
 
 /* State Estimation Output */
 typedef struct {
-	int32_t velocity;
-	int32_t altitude_above_GL;
-	int32_t acceleration;
+	int32_t position_world[3];
+	int32_t velocity_rocket[3];
+	int32_t acceleration_rocket[3];
+	int32_t velocity_world[3];
+	int32_t acceleration_world[3];
 } state_est_data_t;
-
 
 /* FSM States */
 typedef struct {

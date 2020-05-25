@@ -19,12 +19,24 @@ void vTaskStateEst(void *argument) {
 	uint32_t tick_count, tick_update;
 
 
+	/* Initialise Variables */
+	env environment;
+	init_env(&environment);
+
+	flight_phase_detection_t dummy_flight_phase_detection = { 0 };
+	flight_phase_detection_t flight_phase_detection = { 0 };
+	reset_flight_phase_detection(&flight_phase_detection);
+	reset_flight_phase_detection(&dummy_flight_phase_detection);
+	state_est_meas_t measured_data = { 0 };
+
 	/* Initialise States */
 	ekf_state_t ekf_state = { 0 };
 	reset_ekf_state(&ekf_state);
 
 	/* Initialise placeholder variables for sensor reading */
-	float Placeholder_measurement[2] = { 0 };
+	float Placeholder_measurement[3] = { 0 };
+	uint32_t Placeholder_timestamps[2] = { 0 };
+
 
 
 	/* Infinite loop */
@@ -34,34 +46,64 @@ void vTaskStateEst(void *argument) {
 		tick_count += tick_update;
 
 		/* Acquire the Sensor data */
-		/* TODO: get correct input sequence */
 		/* Sensor Board 1 */
 		if(osMutexGetOwner(sb1_mutex) == NULL){
 			Placeholder_measurement[0] = (float) sb1_data.baro.pressure;
+			Placeholder_timestamps[0] = sb1_data.baro.ts;
 			Placeholder_measurement[1] = (float) sb1_data.imu.acc_z;
+			Placeholder_timestamps[1] = sb1_data.imu.ts;
+			Placeholder_measurement[2] = (float) sb1_data.baro.temperature;
+
 			if(osMutexGetOwner(sb1_mutex) == NULL){
-				ekf_state.z[0] = Placeholder_measurement[0];
-				ekf_state.z[1] = Placeholder_measurement[1];
+				measured_data.baro_data[0].pressure = Placeholder_measurement[0];
+				measured_data.baro_data[0].temperature = Placeholder_measurement[2];
+				measured_data.baro_data[0].ts = Placeholder_timestamps[0];
+
+				measured_data.imu_data[0].acc_z = Placeholder_measurement[1];
+				measured_data.imu_data[0].ts = Placeholder_timestamps[1];
 			}
 		}
 
 		/* Sensor Board 2 */
 		if(osMutexGetOwner(sb2_mutex) == NULL){
 			Placeholder_measurement[0] = (float) sb2_data.baro.pressure;
+			Placeholder_timestamps[0] = sb2_data.baro.ts;
 			Placeholder_measurement[1] = (float) sb2_data.imu.acc_z;
+			Placeholder_timestamps[1] = sb2_data.imu.ts;
+			Placeholder_measurement[2] = (float) sb2_data.baro.temperature;
 			if(osMutexGetOwner(sb2_mutex) == NULL){
-				ekf_state.z[2] = Placeholder_measurement[0];
-				ekf_state.z[3] = Placeholder_measurement[1];
+				measured_data.baro_data[1].pressure = Placeholder_measurement[0];
+				measured_data.baro_data[1].temperature = Placeholder_measurement[2];
+				measured_data.baro_data[1].ts = Placeholder_timestamps[0];
+
+				measured_data.imu_data[1].acc_z = Placeholder_measurement[1];
+				measured_data.imu_data[1].ts = Placeholder_timestamps[1];
+
 			}
 		}
 
 		/* Sensor Board 3 */
 		if(osMutexGetOwner(sb3_mutex) == NULL){
 			Placeholder_measurement[0] = (float) sb3_data.baro.pressure;
+			Placeholder_timestamps[0] = sb3_data.baro.ts;
 			Placeholder_measurement[1] = (float) sb3_data.imu.acc_z;
+			Placeholder_timestamps[1] = sb3_data.imu.ts;
+			Placeholder_measurement[2] = (float) sb2_data.baro.temperature;
 			if(osMutexGetOwner(sb3_mutex) == NULL){
-				ekf_state.z[4] = Placeholder_measurement[0];
-				ekf_state.z[5] = Placeholder_measurement[1];
+				measured_data.baro_data[2].pressure = Placeholder_measurement[0];
+				measured_data.baro_data[2].temperature = Placeholder_measurement[2];
+				measured_data.baro_data[2].ts = Placeholder_timestamps[0];
+
+				measured_data.imu_data[2].acc_z = Placeholder_measurement[1];
+				measured_data.imu_data[2].ts = Placeholder_timestamps[1];
+			}
+		}
+
+		/* get new Phase Detection*/
+		if(osMutexGetOwner(fsm_mutex) == NULL){
+			dummy_flight_phase_detection = global_flight_phase_detection;
+			if(osMutexGetOwner(fsm_mutex) == NULL){
+				flight_phase_detection = dummy_flight_phase_detection;
 			}
 		}
 
@@ -91,10 +133,18 @@ void vTaskStateEst(void *argument) {
 			/* the value is multiplied by 1000 for conversion to int datatype for easy transport
 			 * careful in other tasks!
 			 */
-			state_est_data.altitude_above_GL = (int32_t)(ekf_state.x_est[0]*1000);
-			state_est_data.velocity = (int32_t)(ekf_state.x_est[1]*1000);
-			state_est_data.acceleration = (int32_t)(ekf_state.u[0]*1000);
+			state_est_data.position_world[2] = (int32_t)(ekf_state.x_est[0]*1000);
+			state_est_data.velocity_rocket[0] = (int32_t)(ekf_state.x_est[1]*1000);
+			state_est_data.velocity_world[2] = (int32_t)(ekf_state.x_est[1]*1000);
+			state_est_data.acceleration_rocket[0] = (int32_t)(ekf_state.u[0]*1000);
+			state_est_data.acceleration_rocket[2] = (int32_t)(ekf_state.u[0]*1000);
 			osMutexRelease(state_est_mutex);
+		}
+
+		/* Update Environment for FSM */
+		if(osMutexAcquire(environment_mutex, 10) == osOK){
+			global_env = environment;
+			osMutexRelease(environment_mutex);
 		}
 
 		/* Write to logging system */

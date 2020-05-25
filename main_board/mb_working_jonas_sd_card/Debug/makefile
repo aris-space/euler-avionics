@@ -23,6 +23,7 @@ RM := rm -rf
 -include Drivers/STM32F7xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/tasks/subdir.mk
+-include Core/Src/Sensor_Fusion_Helper/subdir.mk
 -include Core/Src/subdir.mk
 -include subdir.mk
 -include objects.mk
