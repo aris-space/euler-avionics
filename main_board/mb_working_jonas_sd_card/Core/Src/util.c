@@ -62,20 +62,19 @@ osStatus_t logSensor(timestamp_t ts, board_id_t sensor_board_id,
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
 }
 
-osStatus_t logRocketState(timestamp_t ts, rocket_state_e rocket_state) {
+osStatus_t logRocketState(timestamp_t ts, flight_phase_e flight_phase) {
 	log_entry_t log_entry = { 0 };
 
 	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%d\n", ts, STATE,
-			rocket_state);
+			flight_phase);
 
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
 }
 
-osStatus_t logEstimatorVar(timestamp_t ts, int32_t estimator_var_data) {
+osStatus_t logEstimatorVar(timestamp_t ts, state_est_data_t estimator_data) {
 	log_entry_t log_entry = { 0 };
-
-	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld\n", ts, ESTIMATOR_VAR,
-			estimator_var_data);
+	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld;%ld\n", ts, ESTIMATOR_VAR,
+			estimator_data.position_world[2], estimator_data.velocity_rocket[0]);
 
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
 }

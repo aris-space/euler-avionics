@@ -66,10 +66,6 @@ void vTaskController(void *argument) {
 		/* Update Previous Control Input */
 		previous_control_input = control_input;
 
-		//char* msg = (char*) malloc(30 * sizeof(char));
-		//sprintf(msg, "Controlling sth...");
-		logMsg(tick_count, "Controlling something...");
-		logEstimatorVar(tick_count, 20202020);
 		/* Sleep */
 		osDelayUntil(tick_count);
 	}

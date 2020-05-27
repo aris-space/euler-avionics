@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  000201f4  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0003145d  00000000  00000000  00020224  2**0
+ 12 .debug_info   00031463  00000000  00000000  00020224  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_abbrev 00005961  00000000  00000000  00051681  2**0
+ 13 .debug_abbrev 0000598a  00000000  00000000  00051687  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_aranges 00001fe8  00000000  00000000  00056fe8  2**3
+ 14 .debug_aranges 00001fe8  00000000  00000000  00057018  2**3
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_ranges 00001d50  00000000  00000000  00058fd0  2**3
+ 15 .debug_ranges 00001d50  00000000  00000000  00059000  2**3
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_macro  0000913a  00000000  00000000  0005ad20  2**0
+ 16 .debug_macro  0000913a  00000000  00000000  0005ad50  2**0
                   CONTENTS, READONLY, DEBUGGING
- 17 .debug_line   0001f07f  00000000  00000000  00063e5a  2**0
+ 17 .debug_line   0001f086  00000000  00000000  00063e8a  2**0
                   CONTENTS, READONLY, DEBUGGING
- 18 .debug_str    000e45ae  00000000  00000000  00082ed9  2**0
+ 18 .debug_str    000e45ae  00000000  00000000  00082f10  2**0
                   CONTENTS, READONLY, DEBUGGING
- 19 .comment      0000007b  00000000  00000000  00167487  2**0
+ 19 .comment      0000007b  00000000  00000000  001674be  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00008828  00000000  00000000  00167504  2**2
+ 20 .debug_frame  00008828  00000000  00000000  0016753c  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -3095,7 +3095,7 @@ void vTaskImuRead(void *argument) {
  8001854:	f107 0124 	add.w	r1, r7, #36	; 0x24
  8001858:	f107 032c 	add.w	r3, r7, #44	; 0x2c
  800185c:	4618      	mov	r0, r3
- 800185e:	f000 fa83 	bl	8001d68 <vReadImu20600>
+ 800185e:	f000 fa85 	bl	8001d6c <vReadImu20600>
 
 		/* Debugging */
 
@@ -3597,6 +3597,9 @@ void vInitImu20600Read(int16_t offset[]) {
 		HAL_Delay(1);
  8001bfc:	2001      	movs	r0, #1
  8001bfe:	f000 fbc9 	bl	8002394 <HAL_Delay>
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+//		HAL_Delay(1);
+
 
 		/* FIFO disable */
 		uint8_t register_FIFO[2] = { 0 };
@@ -3697,15 +3700,15 @@ void vInitImu20600Read(int16_t offset[]) {
 		for(int k = 0; k < 1024; k++){
  8001caa:	2300      	movs	r3, #0
  8001cac:	64fb      	str	r3, [r7, #76]	; 0x4c
- 8001cae:	e02a      	b.n	8001d06 <vInitImu20600Read+0x33a>
+ 8001cae:	e02d      	b.n	8001d0c <vInitImu20600Read+0x340>
  8001cb0:	2000c02c 	.word	0x2000c02c
 			vReadImu20600(gyroscope_data, acceleration, offset);
  8001cb4:	f107 0120 	add.w	r1, r7, #32
  8001cb8:	f107 0328 	add.w	r3, r7, #40	; 0x28
  8001cbc:	687a      	ldr	r2, [r7, #4]
  8001cbe:	4618      	mov	r0, r3
- 8001cc0:	f000 f852 	bl	8001d68 <vReadImu20600>
-			offsetholder[0] += (int32_t) acceleration[0];
+ 8001cc0:	f000 f854 	bl	8001d6c <vReadImu20600>
+			offsetholder[0] += (int32_t)acceleration[0];
  8001cc4:	68bb      	ldr	r3, [r7, #8]
  8001cc6:	f9b7 2020 	ldrsh.w	r2, [r7, #32]
  8001cca:	4413      	add	r3, r2
@@ -3735,232 +3738,234 @@ void vInitImu20600Read(int16_t offset[]) {
  8001cf8:	f9b7 202c 	ldrsh.w	r2, [r7, #44]	; 0x2c
  8001cfc:	4413      	add	r3, r2
  8001cfe:	61fb      	str	r3, [r7, #28]
+			HAL_Delay(1);
+ 8001d00:	2001      	movs	r0, #1
+ 8001d02:	f000 fb47 	bl	8002394 <HAL_Delay>
 		for(int k = 0; k < 1024; k++){
- 8001d00:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 8001d02:	3301      	adds	r3, #1
- 8001d04:	64fb      	str	r3, [r7, #76]	; 0x4c
  8001d06:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
- 8001d08:	f5b3 6f80 	cmp.w	r3, #1024	; 0x400
- 8001d0c:	dbd2      	blt.n	8001cb4 <vInitImu20600Read+0x2e8>
+ 8001d08:	3301      	adds	r3, #1
+ 8001d0a:	64fb      	str	r3, [r7, #76]	; 0x4c
+ 8001d0c:	6cfb      	ldr	r3, [r7, #76]	; 0x4c
+ 8001d0e:	f5b3 6f80 	cmp.w	r3, #1024	; 0x400
+ 8001d12:	dbcf      	blt.n	8001cb4 <vInitImu20600Read+0x2e8>
 		}
+
 		offset[0] = offsetholder[0] >> 10;
- 8001d0e:	68bb      	ldr	r3, [r7, #8]
- 8001d10:	129b      	asrs	r3, r3, #10
- 8001d12:	b21a      	sxth	r2, r3
- 8001d14:	687b      	ldr	r3, [r7, #4]
- 8001d16:	801a      	strh	r2, [r3, #0]
+ 8001d14:	68bb      	ldr	r3, [r7, #8]
+ 8001d16:	129b      	asrs	r3, r3, #10
+ 8001d18:	b21a      	sxth	r2, r3
+ 8001d1a:	687b      	ldr	r3, [r7, #4]
+ 8001d1c:	801a      	strh	r2, [r3, #0]
 		offset[1] = offsetholder[1] >> 10;
- 8001d18:	68fb      	ldr	r3, [r7, #12]
- 8001d1a:	129a      	asrs	r2, r3, #10
- 8001d1c:	687b      	ldr	r3, [r7, #4]
- 8001d1e:	3302      	adds	r3, #2
- 8001d20:	b212      	sxth	r2, r2
- 8001d22:	801a      	strh	r2, [r3, #0]
+ 8001d1e:	68fb      	ldr	r3, [r7, #12]
+ 8001d20:	129a      	asrs	r2, r3, #10
+ 8001d22:	687b      	ldr	r3, [r7, #4]
+ 8001d24:	3302      	adds	r3, #2
+ 8001d26:	b212      	sxth	r2, r2
+ 8001d28:	801a      	strh	r2, [r3, #0]
 		offset[2] = (offsetholder[2] >> 10) - (1 << 10) ;
- 8001d24:	693b      	ldr	r3, [r7, #16]
- 8001d26:	129b      	asrs	r3, r3, #10
- 8001d28:	b29b      	uxth	r3, r3
- 8001d2a:	f5a3 6380 	sub.w	r3, r3, #1024	; 0x400
- 8001d2e:	b29a      	uxth	r2, r3
- 8001d30:	687b      	ldr	r3, [r7, #4]
- 8001d32:	3304      	adds	r3, #4
- 8001d34:	b212      	sxth	r2, r2
- 8001d36:	801a      	strh	r2, [r3, #0]
+ 8001d2a:	693b      	ldr	r3, [r7, #16]
+ 8001d2c:	129b      	asrs	r3, r3, #10
+ 8001d2e:	b29b      	uxth	r3, r3
+ 8001d30:	f5a3 6380 	sub.w	r3, r3, #1024	; 0x400
+ 8001d34:	b29a      	uxth	r2, r3
+ 8001d36:	687b      	ldr	r3, [r7, #4]
+ 8001d38:	3304      	adds	r3, #4
+ 8001d3a:	b212      	sxth	r2, r2
+ 8001d3c:	801a      	strh	r2, [r3, #0]
 		offset[3] = offsetholder[3] >> 10;
- 8001d38:	697b      	ldr	r3, [r7, #20]
- 8001d3a:	129a      	asrs	r2, r3, #10
- 8001d3c:	687b      	ldr	r3, [r7, #4]
- 8001d3e:	3306      	adds	r3, #6
- 8001d40:	b212      	sxth	r2, r2
- 8001d42:	801a      	strh	r2, [r3, #0]
+ 8001d3e:	697b      	ldr	r3, [r7, #20]
+ 8001d40:	129a      	asrs	r2, r3, #10
+ 8001d42:	687b      	ldr	r3, [r7, #4]
+ 8001d44:	3306      	adds	r3, #6
+ 8001d46:	b212      	sxth	r2, r2
+ 8001d48:	801a      	strh	r2, [r3, #0]
 		offset[4] = offsetholder[4] >> 10;
- 8001d44:	69bb      	ldr	r3, [r7, #24]
- 8001d46:	129a      	asrs	r2, r3, #10
- 8001d48:	687b      	ldr	r3, [r7, #4]
- 8001d4a:	3308      	adds	r3, #8
- 8001d4c:	b212      	sxth	r2, r2
- 8001d4e:	801a      	strh	r2, [r3, #0]
+ 8001d4a:	69bb      	ldr	r3, [r7, #24]
+ 8001d4c:	129a      	asrs	r2, r3, #10
+ 8001d4e:	687b      	ldr	r3, [r7, #4]
+ 8001d50:	3308      	adds	r3, #8
+ 8001d52:	b212      	sxth	r2, r2
+ 8001d54:	801a      	strh	r2, [r3, #0]
 		offset[5] = offsetholder[5] >> 10;
- 8001d50:	69fb      	ldr	r3, [r7, #28]
- 8001d52:	129a      	asrs	r2, r3, #10
- 8001d54:	687b      	ldr	r3, [r7, #4]
- 8001d56:	330a      	adds	r3, #10
- 8001d58:	b212      	sxth	r2, r2
- 8001d5a:	801a      	strh	r2, [r3, #0]
-//		if (((abs_value > 0.25 && abs_value < 2.25)
-//				&& (test2[0] > -50 && test2[0] < 50
-//						&& test2[1] > -50 && test2[1] < 50
-//						&& test2[2] > -50 && test2[2] < 50))) {
-			/* initialization successful */
-			break;
- 8001d5c:	bf00      	nop
-//		}
+ 8001d56:	69fb      	ldr	r3, [r7, #28]
+ 8001d58:	129a      	asrs	r2, r3, #10
+ 8001d5a:	687b      	ldr	r3, [r7, #4]
+ 8001d5c:	330a      	adds	r3, #10
+ 8001d5e:	b212      	sxth	r2, r2
+ 8001d60:	801a      	strh	r2, [r3, #0]
+		//		if (((abs_value > 0.25 && abs_value < 2.25)
+		//				&& (test2[0] > -50 && test2[0] < 50
+		//						&& test2[1] > -50 && test2[1] < 50
+		//						&& test2[2] > -50 && test2[2] < 50))) {
+		/* initialization successful */
+		break;
+ 8001d62:	bf00      	nop
+		//		}
 	}
 }
- 8001d5e:	bf00      	nop
- 8001d60:	3750      	adds	r7, #80	; 0x50
- 8001d62:	46bd      	mov	sp, r7
- 8001d64:	bd80      	pop	{r7, pc}
- 8001d66:	bf00      	nop
+ 8001d64:	bf00      	nop
+ 8001d66:	3750      	adds	r7, #80	; 0x50
+ 8001d68:	46bd      	mov	sp, r7
+ 8001d6a:	bd80      	pop	{r7, pc}
 
-08001d68 <vReadImu20600>:
+08001d6c <vReadImu20600>:
 
 void vReadImu20600(int16_t gyroscope_data[], int16_t acceleration[], int16_t offset[]) {
- 8001d68:	b580      	push	{r7, lr}
- 8001d6a:	b08a      	sub	sp, #40	; 0x28
- 8001d6c:	af00      	add	r7, sp, #0
- 8001d6e:	60f8      	str	r0, [r7, #12]
- 8001d70:	60b9      	str	r1, [r7, #8]
- 8001d72:	607a      	str	r2, [r7, #4]
+ 8001d6c:	b580      	push	{r7, lr}
+ 8001d6e:	b08a      	sub	sp, #40	; 0x28
+ 8001d70:	af00      	add	r7, sp, #0
+ 8001d72:	60f8      	str	r0, [r7, #12]
+ 8001d74:	60b9      	str	r1, [r7, #8]
+ 8001d76:	607a      	str	r2, [r7, #4]
 
 	/* Read Accelerometer Data */
 	uint8_t bufferAcc[6] = { 0 };
- 8001d74:	f107 0320 	add.w	r3, r7, #32
- 8001d78:	2200      	movs	r2, #0
- 8001d7a:	601a      	str	r2, [r3, #0]
- 8001d7c:	809a      	strh	r2, [r3, #4]
+ 8001d78:	f107 0320 	add.w	r3, r7, #32
+ 8001d7c:	2200      	movs	r2, #0
+ 8001d7e:	601a      	str	r2, [r3, #0]
+ 8001d80:	809a      	strh	r2, [r3, #4]
 	uint8_t commandaccread = IMU20601_COMMAND_ACC_READ;
- 8001d7e:	23bb      	movs	r3, #187	; 0xbb
- 8001d80:	77fb      	strb	r3, [r7, #31]
+ 8001d82:	23bb      	movs	r3, #187	; 0xbb
+ 8001d84:	77fb      	strb	r3, [r7, #31]
 	//uint8_t commandaccread = 0xF7;
 
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
- 8001d82:	2200      	movs	r2, #0
- 8001d84:	2110      	movs	r1, #16
- 8001d86:	f04f 4090 	mov.w	r0, #1207959552	; 0x48000000
- 8001d8a:	f000 fdc3 	bl	8002914 <HAL_GPIO_WritePin>
+ 8001d86:	2200      	movs	r2, #0
+ 8001d88:	2110      	movs	r1, #16
+ 8001d8a:	f04f 4090 	mov.w	r0, #1207959552	; 0x48000000
+ 8001d8e:	f000 fdc1 	bl	8002914 <HAL_GPIO_WritePin>
 	HAL_SPI_Transmit(&hspi1, &commandaccread, 1, IMU20601_SPI_TIMEOUT);
- 8001d8e:	f107 011f 	add.w	r1, r7, #31
- 8001d92:	f640 33b8 	movw	r3, #3000	; 0xbb8
- 8001d96:	2201      	movs	r2, #1
- 8001d98:	483b      	ldr	r0, [pc, #236]	; (8001e88 <vReadImu20600+0x120>)
- 8001d9a:	f003 fc79 	bl	8005690 <HAL_SPI_Transmit>
+ 8001d92:	f107 011f 	add.w	r1, r7, #31
+ 8001d96:	f640 33b8 	movw	r3, #3000	; 0xbb8
+ 8001d9a:	2201      	movs	r2, #1
+ 8001d9c:	483b      	ldr	r0, [pc, #236]	; (8001e8c <vReadImu20600+0x120>)
+ 8001d9e:	f003 fc77 	bl	8005690 <HAL_SPI_Transmit>
 	HAL_SPI_Receive(&hspi1, bufferAcc, 6, IMU20601_SPI_TIMEOUT);
- 8001d9e:	f107 0120 	add.w	r1, r7, #32
- 8001da2:	f640 33b8 	movw	r3, #3000	; 0xbb8
- 8001da6:	2206      	movs	r2, #6
- 8001da8:	4837      	ldr	r0, [pc, #220]	; (8001e88 <vReadImu20600+0x120>)
- 8001daa:	f003 fdd7 	bl	800595c <HAL_SPI_Receive>
+ 8001da2:	f107 0120 	add.w	r1, r7, #32
+ 8001da6:	f640 33b8 	movw	r3, #3000	; 0xbb8
+ 8001daa:	2206      	movs	r2, #6
+ 8001dac:	4837      	ldr	r0, [pc, #220]	; (8001e8c <vReadImu20600+0x120>)
+ 8001dae:	f003 fdd5 	bl	800595c <HAL_SPI_Receive>
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
- 8001dae:	2201      	movs	r2, #1
- 8001db0:	2110      	movs	r1, #16
- 8001db2:	f04f 4090 	mov.w	r0, #1207959552	; 0x48000000
- 8001db6:	f000 fdad 	bl	8002914 <HAL_GPIO_WritePin>
+ 8001db2:	2201      	movs	r2, #1
+ 8001db4:	2110      	movs	r1, #16
+ 8001db6:	f04f 4090 	mov.w	r0, #1207959552	; 0x48000000
+ 8001dba:	f000 fdab 	bl	8002914 <HAL_GPIO_WritePin>
 
 	acceleration[0] = bufferAcc[0] << 8 | bufferAcc[1];
- 8001dba:	f897 3020 	ldrb.w	r3, [r7, #32]
- 8001dbe:	021b      	lsls	r3, r3, #8
- 8001dc0:	b21a      	sxth	r2, r3
- 8001dc2:	f897 3021 	ldrb.w	r3, [r7, #33]	; 0x21
- 8001dc6:	b21b      	sxth	r3, r3
- 8001dc8:	4313      	orrs	r3, r2
- 8001dca:	b21a      	sxth	r2, r3
- 8001dcc:	68bb      	ldr	r3, [r7, #8]
- 8001dce:	801a      	strh	r2, [r3, #0]
+ 8001dbe:	f897 3020 	ldrb.w	r3, [r7, #32]
+ 8001dc2:	021b      	lsls	r3, r3, #8
+ 8001dc4:	b21a      	sxth	r2, r3
+ 8001dc6:	f897 3021 	ldrb.w	r3, [r7, #33]	; 0x21
+ 8001dca:	b21b      	sxth	r3, r3
+ 8001dcc:	4313      	orrs	r3, r2
+ 8001dce:	b21a      	sxth	r2, r3
+ 8001dd0:	68bb      	ldr	r3, [r7, #8]
+ 8001dd2:	801a      	strh	r2, [r3, #0]
 	acceleration[1] = bufferAcc[2] << 8 | bufferAcc[3];
- 8001dd0:	f897 3022 	ldrb.w	r3, [r7, #34]	; 0x22
- 8001dd4:	021b      	lsls	r3, r3, #8
- 8001dd6:	b219      	sxth	r1, r3
- 8001dd8:	f897 3023 	ldrb.w	r3, [r7, #35]	; 0x23
- 8001ddc:	b21a      	sxth	r2, r3
- 8001dde:	68bb      	ldr	r3, [r7, #8]
- 8001de0:	3302      	adds	r3, #2
- 8001de2:	430a      	orrs	r2, r1
- 8001de4:	b212      	sxth	r2, r2
- 8001de6:	801a      	strh	r2, [r3, #0]
+ 8001dd4:	f897 3022 	ldrb.w	r3, [r7, #34]	; 0x22
+ 8001dd8:	021b      	lsls	r3, r3, #8
+ 8001dda:	b219      	sxth	r1, r3
+ 8001ddc:	f897 3023 	ldrb.w	r3, [r7, #35]	; 0x23
+ 8001de0:	b21a      	sxth	r2, r3
+ 8001de2:	68bb      	ldr	r3, [r7, #8]
+ 8001de4:	3302      	adds	r3, #2
+ 8001de6:	430a      	orrs	r2, r1
+ 8001de8:	b212      	sxth	r2, r2
+ 8001dea:	801a      	strh	r2, [r3, #0]
 	acceleration[2] = bufferAcc[4] << 8 | bufferAcc[5];
- 8001de8:	f897 3024 	ldrb.w	r3, [r7, #36]	; 0x24
- 8001dec:	021b      	lsls	r3, r3, #8
- 8001dee:	b219      	sxth	r1, r3
- 8001df0:	f897 3025 	ldrb.w	r3, [r7, #37]	; 0x25
- 8001df4:	b21a      	sxth	r2, r3
- 8001df6:	68bb      	ldr	r3, [r7, #8]
- 8001df8:	3304      	adds	r3, #4
- 8001dfa:	430a      	orrs	r2, r1
- 8001dfc:	b212      	sxth	r2, r2
- 8001dfe:	801a      	strh	r2, [r3, #0]
-//	acceleration[1] = acceleration[1] - offset[1];
-//	acceleration[2] = acceleration[2] - offset[2];
+ 8001dec:	f897 3024 	ldrb.w	r3, [r7, #36]	; 0x24
+ 8001df0:	021b      	lsls	r3, r3, #8
+ 8001df2:	b219      	sxth	r1, r3
+ 8001df4:	f897 3025 	ldrb.w	r3, [r7, #37]	; 0x25
+ 8001df8:	b21a      	sxth	r2, r3
+ 8001dfa:	68bb      	ldr	r3, [r7, #8]
+ 8001dfc:	3304      	adds	r3, #4
+ 8001dfe:	430a      	orrs	r2, r1
+ 8001e00:	b212      	sxth	r2, r2
+ 8001e02:	801a      	strh	r2, [r3, #0]
+//		acceleration[1] = acceleration[1] - offset[1];
+//		acceleration[2] = acceleration[2] - offset[2];
 
 
 	/* Read Gyroscope Data */
 	uint8_t bufferGyro[6] = { 0 };
- 8001e00:	f107 0318 	add.w	r3, r7, #24
- 8001e04:	2200      	movs	r2, #0
- 8001e06:	601a      	str	r2, [r3, #0]
- 8001e08:	809a      	strh	r2, [r3, #4]
+ 8001e04:	f107 0318 	add.w	r3, r7, #24
+ 8001e08:	2200      	movs	r2, #0
+ 8001e0a:	601a      	str	r2, [r3, #0]
+ 8001e0c:	809a      	strh	r2, [r3, #4]
 	uint8_t commandgyroread = IMU20601_COMMAND_GYRO_READ;
- 8001e0a:	23c3      	movs	r3, #195	; 0xc3
- 8001e0c:	75fb      	strb	r3, [r7, #23]
+ 8001e0e:	23c3      	movs	r3, #195	; 0xc3
+ 8001e10:	75fb      	strb	r3, [r7, #23]
 	//uint8_t commandgyroread = 0x93;
 
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
- 8001e0e:	2200      	movs	r2, #0
- 8001e10:	2110      	movs	r1, #16
- 8001e12:	f04f 4090 	mov.w	r0, #1207959552	; 0x48000000
- 8001e16:	f000 fd7d 	bl	8002914 <HAL_GPIO_WritePin>
+ 8001e12:	2200      	movs	r2, #0
+ 8001e14:	2110      	movs	r1, #16
+ 8001e16:	f04f 4090 	mov.w	r0, #1207959552	; 0x48000000
+ 8001e1a:	f000 fd7b 	bl	8002914 <HAL_GPIO_WritePin>
 	HAL_SPI_Transmit(&hspi1, &commandgyroread, 1, IMU20601_SPI_TIMEOUT);
- 8001e1a:	f107 0117 	add.w	r1, r7, #23
- 8001e1e:	f640 33b8 	movw	r3, #3000	; 0xbb8
- 8001e22:	2201      	movs	r2, #1
- 8001e24:	4818      	ldr	r0, [pc, #96]	; (8001e88 <vReadImu20600+0x120>)
- 8001e26:	f003 fc33 	bl	8005690 <HAL_SPI_Transmit>
+ 8001e1e:	f107 0117 	add.w	r1, r7, #23
+ 8001e22:	f640 33b8 	movw	r3, #3000	; 0xbb8
+ 8001e26:	2201      	movs	r2, #1
+ 8001e28:	4818      	ldr	r0, [pc, #96]	; (8001e8c <vReadImu20600+0x120>)
+ 8001e2a:	f003 fc31 	bl	8005690 <HAL_SPI_Transmit>
 	HAL_SPI_Receive(&hspi1, bufferGyro, 6, IMU20601_SPI_TIMEOUT);
- 8001e2a:	f107 0118 	add.w	r1, r7, #24
- 8001e2e:	f640 33b8 	movw	r3, #3000	; 0xbb8
- 8001e32:	2206      	movs	r2, #6
- 8001e34:	4814      	ldr	r0, [pc, #80]	; (8001e88 <vReadImu20600+0x120>)
- 8001e36:	f003 fd91 	bl	800595c <HAL_SPI_Receive>
+ 8001e2e:	f107 0118 	add.w	r1, r7, #24
+ 8001e32:	f640 33b8 	movw	r3, #3000	; 0xbb8
+ 8001e36:	2206      	movs	r2, #6
+ 8001e38:	4814      	ldr	r0, [pc, #80]	; (8001e8c <vReadImu20600+0x120>)
+ 8001e3a:	f003 fd8f 	bl	800595c <HAL_SPI_Receive>
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
- 8001e3a:	2201      	movs	r2, #1
- 8001e3c:	2110      	movs	r1, #16
- 8001e3e:	f04f 4090 	mov.w	r0, #1207959552	; 0x48000000
- 8001e42:	f000 fd67 	bl	8002914 <HAL_GPIO_WritePin>
+ 8001e3e:	2201      	movs	r2, #1
+ 8001e40:	2110      	movs	r1, #16
+ 8001e42:	f04f 4090 	mov.w	r0, #1207959552	; 0x48000000
+ 8001e46:	f000 fd65 	bl	8002914 <HAL_GPIO_WritePin>
 
 	gyroscope_data[0] = bufferGyro[0] << 8 | bufferGyro[1];
- 8001e46:	7e3b      	ldrb	r3, [r7, #24]
- 8001e48:	021b      	lsls	r3, r3, #8
- 8001e4a:	b21a      	sxth	r2, r3
- 8001e4c:	7e7b      	ldrb	r3, [r7, #25]
- 8001e4e:	b21b      	sxth	r3, r3
- 8001e50:	4313      	orrs	r3, r2
- 8001e52:	b21a      	sxth	r2, r3
- 8001e54:	68fb      	ldr	r3, [r7, #12]
- 8001e56:	801a      	strh	r2, [r3, #0]
+ 8001e4a:	7e3b      	ldrb	r3, [r7, #24]
+ 8001e4c:	021b      	lsls	r3, r3, #8
+ 8001e4e:	b21a      	sxth	r2, r3
+ 8001e50:	7e7b      	ldrb	r3, [r7, #25]
+ 8001e52:	b21b      	sxth	r3, r3
+ 8001e54:	4313      	orrs	r3, r2
+ 8001e56:	b21a      	sxth	r2, r3
+ 8001e58:	68fb      	ldr	r3, [r7, #12]
+ 8001e5a:	801a      	strh	r2, [r3, #0]
 	gyroscope_data[1] = bufferGyro[2] << 8 | bufferGyro[3];
- 8001e58:	7ebb      	ldrb	r3, [r7, #26]
- 8001e5a:	021b      	lsls	r3, r3, #8
- 8001e5c:	b219      	sxth	r1, r3
- 8001e5e:	7efb      	ldrb	r3, [r7, #27]
- 8001e60:	b21a      	sxth	r2, r3
- 8001e62:	68fb      	ldr	r3, [r7, #12]
- 8001e64:	3302      	adds	r3, #2
- 8001e66:	430a      	orrs	r2, r1
- 8001e68:	b212      	sxth	r2, r2
- 8001e6a:	801a      	strh	r2, [r3, #0]
+ 8001e5c:	7ebb      	ldrb	r3, [r7, #26]
+ 8001e5e:	021b      	lsls	r3, r3, #8
+ 8001e60:	b219      	sxth	r1, r3
+ 8001e62:	7efb      	ldrb	r3, [r7, #27]
+ 8001e64:	b21a      	sxth	r2, r3
+ 8001e66:	68fb      	ldr	r3, [r7, #12]
+ 8001e68:	3302      	adds	r3, #2
+ 8001e6a:	430a      	orrs	r2, r1
+ 8001e6c:	b212      	sxth	r2, r2
+ 8001e6e:	801a      	strh	r2, [r3, #0]
 	gyroscope_data[2] = bufferGyro[4] << 8 | bufferGyro[5];
- 8001e6c:	7f3b      	ldrb	r3, [r7, #28]
- 8001e6e:	021b      	lsls	r3, r3, #8
- 8001e70:	b219      	sxth	r1, r3
- 8001e72:	7f7b      	ldrb	r3, [r7, #29]
- 8001e74:	b21a      	sxth	r2, r3
- 8001e76:	68fb      	ldr	r3, [r7, #12]
- 8001e78:	3304      	adds	r3, #4
- 8001e7a:	430a      	orrs	r2, r1
- 8001e7c:	b212      	sxth	r2, r2
- 8001e7e:	801a      	strh	r2, [r3, #0]
-//	gyroscope_data[0] = gyroscope_data[0] - offset[3];
-//	gyroscope_data[1] = gyroscope_data[1] - offset[4];
-//	gyroscope_data[2] = gyroscope_data[2] - offset[5];
+ 8001e70:	7f3b      	ldrb	r3, [r7, #28]
+ 8001e72:	021b      	lsls	r3, r3, #8
+ 8001e74:	b219      	sxth	r1, r3
+ 8001e76:	7f7b      	ldrb	r3, [r7, #29]
+ 8001e78:	b21a      	sxth	r2, r3
+ 8001e7a:	68fb      	ldr	r3, [r7, #12]
+ 8001e7c:	3304      	adds	r3, #4
+ 8001e7e:	430a      	orrs	r2, r1
+ 8001e80:	b212      	sxth	r2, r2
+ 8001e82:	801a      	strh	r2, [r3, #0]
+//		gyroscope_data[0] = gyroscope_data[0] - offset[3];
+//		gyroscope_data[1] = gyroscope_data[1] - offset[4];
+//		gyroscope_data[2] = gyroscope_data[2] - offset[5];
 
 
 }
- 8001e80:	bf00      	nop
- 8001e82:	3728      	adds	r7, #40	; 0x28
- 8001e84:	46bd      	mov	sp, r7
- 8001e86:	bd80      	pop	{r7, pc}
- 8001e88:	2000c02c 	.word	0x2000c02c
- 8001e8c:	00000000 	.word	0x00000000
+ 8001e84:	bf00      	nop
+ 8001e86:	3728      	adds	r7, #40	; 0x28
+ 8001e88:	46bd      	mov	sp, r7
+ 8001e8a:	bd80      	pop	{r7, pc}
+ 8001e8c:	2000c02c 	.word	0x2000c02c
 
 08001e90 <vTaskPreprocess>:
  *      Author: Jonas
