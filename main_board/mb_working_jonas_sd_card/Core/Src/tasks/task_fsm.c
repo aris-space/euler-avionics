@@ -122,7 +122,7 @@ void detect_flight_phase(flight_phase_detection_t *flight_phase_detection, state
         break;
     }
 
-    flight_phase_detection->mach_number = mach_number(environment, state_est_data->velocity_rocket[0]);
+    flight_phase_detection->mach_number = mach_number(environment, ((float)state_est_data->velocity_rocket[0])/1000);
 
     /* determine the mach regime */
     if (flight_phase_detection->mach_number >= 1.3) {

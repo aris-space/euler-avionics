@@ -9,11 +9,11 @@
 #define INC_TASKS_TASK_FSM_H_
 
 /* Includes */
+#include <Helper_Functions/env.h>
 #include "stm32f7xx_hal.h"
 #include "cmsis_os.h"
 #include "main.h"
 #include "util.h"
-#include "Sensor_Fusion_Helper/env.h"
 
 /* Constants */
 #define FSM_SAMPLING_FREQ 1
@@ -38,5 +38,9 @@ extern state_est_data_t state_est_data;
 
 /* Tasks */
 void vTaskFSM(void *argument);
+
+/* functions */
+void detect_flight_phase(flight_phase_detection_t *flight_phase_detection, state_est_data_t *state_est_data, env *environment);
+void reset_flight_phase_detection(flight_phase_detection_t *flight_phase_detection);
 
 #endif /* INC_TASKS_TASK_FSM_H_ */

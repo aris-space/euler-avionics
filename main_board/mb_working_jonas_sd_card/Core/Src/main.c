@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include <Helper_Functions/env.h>
 #include "main.h"
 #include "cmsis_os.h"
 #include "fatfs.h"
@@ -32,7 +33,6 @@
 #include "tasks/task_motor_control.h"
 #include "tasks/task_fsm.h"
 #include "util.h"
-#include "Sensor_Fusion_Helper/env.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
