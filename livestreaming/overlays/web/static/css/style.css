@@ -5,17 +5,25 @@ body
     font-size: 30px;
 }
 
-#time, #countdown, #hold_btn
+#time
 {
     display: inline-block;
     vertical-align: top;
     margin-top: 30px;
-    margin-left: 30px;
     alignment: left;
-    /*width: 25%;*/
 }
 
-#countdown_in {
+#countdown, #hold_btn, #altitude, #speed {
+    display: inline-block;
+    vertical-align: top;
     margin-top: 30px;
-    margin-left: 30px;
+    text-align: right;
+}
+
+#countdown_set {
+    text-align: right;
+}
+#countdown_in {
+    /*margin-top: 30px;*/
+    /*margin-left: 30px;*/
 }
