@@ -1,34 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<link href="/static/css/bootstrap/bootstrap.css" rel="stylesheet" type="text/css">
-<link href="/static/css/style.css" rel="stylesheet" type="text/css">
-<title>Launch Overlay</title>
+    <meta charset="UTF-8">
+    <link href="/static/css/bootstrap/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css">
+    <title>Launch Overlay</title>
 </head>
 <body>
-    <div id="time">
-        Hello there!! The current time is: <span id="current_time">...</span>.
+<div class="container-fluid">
+    <div class="row justify-content-between no-gutters">
+        <div class="col-md-5" id="time">
+            Current time: <span id="current_time">...</span>
+        </div>
+        <br/>
+        <div class="col-md-5" id="countdown">
+            Countdown: T <span id="countdown_sign">?</span> <span id="countdown_minutes">..</span>:<span
+                id="countdown_seconds">..</span>
+        </div>
     </div>
-    <br/>
-    <div id="countdown">
-        Hello again!! Time to launch is: T <span id="countdown_sign">?</span> <span id="countdown_minutes">..</span>:<span id="countdown_seconds">..</span>.
+    <div class="row border justify-content-end no-gutters">
+        <div class="col-md-2 border" id="speed">
+            Altitude: <span id="speed_val">...</span> km
+        </div>
+        <div class="col-md-2 border" id="altitude">
+            Speed: <span id="altitude_val">...</span> km/h
+        </div>
     </div>
+</div>
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+        integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
 <script type="text/javascript" charset="utf-8">
     let socket = io();
-    socket.on('connect', function() {
-        socket.emit('start_time');
-        socket.emit('countdown_start', {sign: '-', minutes: 1, seconds: 15, hold : Boolean(0)});
+    socket.on('connect', function () {
+        socket.emit('time_start');
+        socket.emit('position_start');
     });
-    socket.on('countdown_update', function(data) {
-      document.getElementById("countdown_sign").innerHTML = data.negative ? '-' : '+';
-      document.getElementById("countdown_minutes").innerHTML = ('0' + data.minutes).slice(-2);
-      document.getElementById("countdown_seconds").innerHTML = ('0' + data.seconds).slice(-2);
+    socket.on('countdown_update', function (data) {
+        document.getElementById("countdown_sign").innerHTML = data.negative ? '-' : '+';
+        document.getElementById("countdown_minutes").innerHTML = ('0' + data.minutes).slice(-2);
+        document.getElementById("countdown_seconds").innerHTML = ('0' + data.seconds).slice(-2);
     });
-    socket.on('time_update', function(data) {
-      document.getElementById("current_time").innerHTML = data.current_time;
+    socket.on('time_update', function (data) {
+        document.getElementById("current_time").innerHTML = data.current_time;
+    });
+    socket.on('position_update', function (data) {
+        document.getElementById("speed_val").innerHTML = data.speed;
+        document.getElementById("altitude_val").innerHTML = data.altitude;
+    });
+    socket.on('speed_update', function (data) {
     });
 </script>
 </body>

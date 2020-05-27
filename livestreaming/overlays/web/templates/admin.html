@@ -1,65 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<link href="../static/css/bootstrap/bootstrap.css" rel="stylesheet" type="text/css">
-<link href="../static/css/style.css" rel="stylesheet" type="text/css">
-<title>Launch Overlay</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="../static/css/bootstrap/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="../static/css/style.css" rel="stylesheet" type="text/css">
+    <title>Launch Overlay</title>
 </head>
 <body>
-    <div id="time">
-        Hello there!! The current time is: <span id="current_time">...</span>.
+<div class="container-fluid">
+    <div class="row justify-content-between no-gutters">
+        <div class="col-md-5" id="time">
+            Current time: <span id="current_time">...</span>
+        </div>
+        <br/>
+        <div class="col-md-5" id="countdown">
+            <button type="button" class="btn btn-danger invisible" id="countdown_ctrl"></button>
+            Countdown: T <span id="countdown_sign">?</span> <span id="countdown_minutes">..</span>:<span
+                id="countdown_seconds">..</span>
+        </div>
     </div>
-    <br/>
-    <div id="countdown">
-        Hello again!! Time to launch is: T <span id="countdown_sign">?</span> <span id="countdown_minutes">..</span>:<span id="countdown_seconds">..</span>.
+
+    <div class="border form-row justify-content-end no-gutters" style="margin-top: 10px">
+        <form id="countdown_set" class="form-inline">
+            T&nbsp;
+            <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="countdown_set_sign">
+                <option selected value="-">-</option>
+                <option value="+">+</option>
+            </select>
+
+            <input type="number" class="form-control mb-2 mr-sm-2 mb-sm-0" id="countdown_set_min"
+                   placeholder="Minutes"
+                   min="0">
+            :&nbsp;
+            <input type="number" class="form-control" id="countdown_set_sec" placeholder="Seconds" min="0">
+            &nbsp;
+            <label class="form-check-label" for="countdown_start_on_set">
+                Start on set
+            </label>&nbsp;
+            <input class="form-check-input" type="checkbox" value="" id="countdown_start_on_set">
+
+            &nbsp;<button type="button" class="btn btn-primary" id="countdown_set_btn">Set</button>
+        </form>
     </div>
-    <br/>
-    <button type="button" class="btn btn-danger" id="hold_btn">Hold</button>
-    <br/>
-    <form id = "countdown_in" class="form-inline">
-      T&nbsp;
-      <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="countdown_in_sign">
-        <option selected value="-">-</option>
-        <option value="+">+</option>
-      </select>
+</div>
 
-      <input type="number" class="form-control mb-2 mr-sm-2 mb-sm-0" id="countdown_in_min" placeholder="Minutes" min="0">
-        :&nbsp;
-      <input type="number" class="form-control" id="countdown_in_sec" placeholder="Seconds" min="0">
-      &nbsp;<button type="button" class="btn btn-primary" id="countdown_in_btn">Update Countdown</button>
-    </form>
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+        integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
 <script src="../static/js/jquery-3.5.0.min.js"></script>
 <script type="text/javascript" charset="utf-8">
+    let play_btn = '<i class="fa fa-play"></i>'
+    let pause_btn = '<i class="fa fa-pause"></i>'
+
     var socket = io();
-    socket.on('connect', function() {
+    socket.on('connect', function () {
         socket.emit('my event', {data: 'Admin connected!'});
     });
-    socket.on('countdown_update', function(data) {
-      document.getElementById("countdown_sign").innerHTML = data.negative ? '-' : '+';
-      document.getElementById("countdown_minutes").innerHTML = ('0' + data.minutes).slice(-2);
-      document.getElementById("countdown_seconds").innerHTML = ('0' + data.seconds).slice(-2);
+    socket.on('countdown_update', function (data) {
+        document.getElementById("countdown_sign").innerHTML = data.negative ? '-' : '+';
+        document.getElementById("countdown_minutes").innerHTML = ('0' + data.minutes).slice(-2);
+        document.getElementById("countdown_seconds").innerHTML = ('0' + data.seconds).slice(-2);
     });
-    socket.on('time_update', function(data) {
-      document.getElementById("current_time").innerHTML = data.current_time;
+    socket.on('time_update', function (data) {
+        document.getElementById("current_time").innerHTML = data.current_time;
     });
-    let hold_btn = $('#hold_btn');
-    hold_btn.on('click', function (e) {
-        if(hold_btn.html() === 'Hold'){
-            socket.emit('countdown_hold');
-            hold_btn.html('Unhold');
-        }else {
+
+    let countdown_ctrl_btn = $('#countdown_ctrl');
+    countdown_ctrl_btn.on('click', function (e) {
+        console.log(countdown_ctrl_btn.html())
+        if (countdown_ctrl_btn.html().includes('play')) {
             socket.emit('countdown_unhold');
-            hold_btn.html('Hold');
+            countdown_ctrl_btn.html(pause_btn);
+        } else {
+            socket.emit('countdown_hold');
+            countdown_ctrl_btn.html(play_btn);
         }
     })
 
-    $('#countdown_in_btn').on('click', function (e) {
-        socket.emit('countdown_restart',{sign: $('#countdown_in_sign').val(),
-                                         minutes: parseInt($('#countdown_in_min').val()),
-                                         seconds: parseInt($('#countdown_in_sec').val())}, Boolean(0));
+    $('#countdown_set_btn').on('click', function (e) {
+        let start_on_set = $('#countdown_start_on_set')
+        socket.emit('countdown_set', {
+            sign: $('#countdown_set_sign').val(),
+            minutes: parseInt($('#countdown_set_min').val()),
+            seconds: parseInt($('#countdown_set_sec').val()),
+            hold: !(start_on_set.is(":checked"))
+        });
+
+        if (start_on_set.is(":checked")) {
+            countdown_ctrl_btn.html(pause_btn)
+        } else {
+            countdown_ctrl_btn.html(play_btn)
+        }
+        if (countdown_ctrl_btn.hasClass('invisible')) {
+            countdown_ctrl_btn.removeClass('invisible').addClass('visible');
+        }
     })
 </script>
 </body>
