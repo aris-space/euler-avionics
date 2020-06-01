@@ -154,7 +154,7 @@ void vTaskSdCard(void *argument) {
 		goto resetSDCard;
 	}
 
-	int msgCounter = 0;
+	volatile int32_t msgCounter = 0;
 	char log_header[32] = "Timestamp;Log Entry Type;Data\n";
 	uint32_t num_bytes = 0;
 	res = f_write(&EULER_LOG_FILE, log_header, strlen(log_header),

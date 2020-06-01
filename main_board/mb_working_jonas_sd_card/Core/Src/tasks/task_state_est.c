@@ -171,16 +171,47 @@ void vTaskStateEst(void *argument) {
 
 void reset_ekf_state(ekf_state_t *ekf_state){
 
-	float A_init[NUMBER_STATES][NUMBER_STATES] = {{1.0E-0, 1.0E-3, 5.0E-7}, {0, 1.0E-0, 1.0E-3}, {0.0, 0.0, 1.0E-0}};
-	float B_init[NUMBER_STATES][NUMBER_INPUTS] = {{5.0E-7}, {1.0E-3}, {0.0}};
-	float G_init[NUMBER_STATES][NUMBER_NOISE] = {{5.0E-7}, {1.0E-3}, {0.0}};
+    if (STATE_ESTIMATION_FREQUENCY == 1000) {
+        float A_init[NUMBER_STATES][NUMBER_STATES] = {{1.0E-0, 1.0E-3, 5.0E-7}, {0, 1.0E-0, 1.0E-3}, {0.0, 0.0, 1.0E-0}};
+        float B_init[NUMBER_STATES][NUMBER_INPUTS] = {{5.0E-7}, {1.0E-3}, {0.0}};
+        float G_init[NUMBER_STATES][NUMBER_NOISE] = {{5.0E-7}, {1.0E-3}, {0.0}};
+        memcpy(ekf_state->Ad, A_init, sizeof(ekf_state->Ad));
+        memcpy(ekf_state->Bd, B_init, sizeof(ekf_state->Bd));
+        memcpy(ekf_state->Gd, G_init, sizeof(ekf_state->Gd));
+    }
+    else if (STATE_ESTIMATION_FREQUENCY == 200) {
+        float A_init[NUMBER_STATES][NUMBER_STATES] = {{1.0E-0, 5.0E-3, 1.25E-5}, {0, 1.0E-0, 5.0E-3}, {0.0, 0.0, 1.0E-0}};
+        float B_init[NUMBER_STATES][NUMBER_INPUTS] = {{1.25E-5}, {5.0E-3}, {0.0}};
+        float G_init[NUMBER_STATES][NUMBER_NOISE] = {{1.25E-5}, {5.0E-3}, {0.0}};
+        memcpy(ekf_state->Ad, A_init, sizeof(ekf_state->Ad));
+        memcpy(ekf_state->Bd, B_init, sizeof(ekf_state->Bd));
+        memcpy(ekf_state->Gd, G_init, sizeof(ekf_state->Gd));
+    }
+    else if (STATE_ESTIMATION_FREQUENCY == 100) {
+        float A_init[NUMBER_STATES][NUMBER_STATES] = {{1.0E-0, 1.0E-2, 5.0E-5}, {0, 1.0E-0, 1.0E-2}, {0.0, 0.0, 1.0E-0}};
+        float B_init[NUMBER_STATES][NUMBER_INPUTS] = {{5.0E-5}, {1.0E-2}, {0.0}};
+        float G_init[NUMBER_STATES][NUMBER_NOISE] = {{5.0E-5}, {1.0E-2}, {0.0}};
+        memcpy(ekf_state->Ad, A_init, sizeof(ekf_state->Ad));
+        memcpy(ekf_state->Bd, B_init, sizeof(ekf_state->Bd));
+        memcpy(ekf_state->Gd, G_init, sizeof(ekf_state->Gd));
+    }
+    else if (STATE_ESTIMATION_FREQUENCY == 1) {
+        float A_init[NUMBER_STATES][NUMBER_STATES] = {{1.0E-0, 1.0E-0, 5.0E-1}, {0, 1.0E-0, 1.0E-0}, {0.0, 0.0, 1.0E-0}};
+        float B_init[NUMBER_STATES][NUMBER_INPUTS] = {{5.0E-1}, {1.0E-0}, {0.0}};
+        float G_init[NUMBER_STATES][NUMBER_NOISE] = {{5.0E-1}, {1.0E-0}, {0.0}};
+        memcpy(ekf_state->Ad, A_init, sizeof(ekf_state->Ad));
+        memcpy(ekf_state->Bd, B_init, sizeof(ekf_state->Bd));
+        memcpy(ekf_state->Gd, G_init, sizeof(ekf_state->Gd));
+    }
+    else {
+        memset(ekf_state->Ad, 0, sizeof(ekf_state->Ad));
+        memset(ekf_state->Bd, 0, sizeof(ekf_state->Bd));
+        memset(ekf_state->Gd, 0, sizeof(ekf_state->Gd));
+    }
 
 	float x_est_init[NUMBER_STATES] = {0, 0, 0};
 	float P_est_init[NUMBER_STATES][NUMBER_STATES] = {{1.0E-9, 0, 0}, {0, 1.0E-12, 0}, {0, 0, 0}};
 
-	memcpy(ekf_state->Ad, A_init, sizeof(A_init));
-	memcpy(ekf_state->Bd, B_init, sizeof(B_init));
-    memcpy(ekf_state->Gd, G_init, sizeof(G_init));
     memcpy(ekf_state->x_est, x_est_init, sizeof(x_est_init));
     memcpy(ekf_state->P_est, P_est_init, sizeof(P_est_init));
 
@@ -232,14 +263,14 @@ void ekf_update(ekf_state_t *ekf_state) {
     matvecprod(NUMBER_MEASUREMENTS, NUMBER_STATES, ekf_state->H, ekf_state->x_priori, ekf_state->y, true);
     vecsub(NUMBER_MEASUREMENTS, ekf_state->z, ekf_state->y, ekf_state->y);
 
-    /* S = H*P*H_T + R */
+    /* S = H * P_priori * H_T + R */
     matmul(NUMBER_MEASUREMENTS, NUMBER_STATES, NUMBER_STATES, ekf_state->H, ekf_state->P_priori, ekf_state->Placeholder_H_mult_P_priori, true);
     matmul(NUMBER_MEASUREMENTS, NUMBER_STATES, NUMBER_MEASUREMENTS, ekf_state->Placeholder_H_mult_P_priori, ekf_state->H_T, ekf_state->S, true);
     matadd(NUMBER_MEASUREMENTS,  NUMBER_MEASUREMENTS, ekf_state->S, ekf_state->R, ekf_state->S);
 
     /* Calculate Pseudoinverse of covariance innovation */
     memset(ekf_state->S_inv, 0, NUMBER_MEASUREMENTS*NUMBER_MEASUREMENTS*sizeof(ekf_state->S_inv[0][0]));
-    pinv(NUMBER_MEASUREMENTS, LAMBDA, ekf_state->S, ekf_state->S_inv);
+    inverse(NUMBER_MEASUREMENTS, ekf_state->S, ekf_state->S_inv, LAMBDA);
 
     /* K  = P_priori * H_T * S_inv */
     matmul(NUMBER_STATES, NUMBER_STATES, NUMBER_MEASUREMENTS, ekf_state->P_priori, ekf_state->H_T, ekf_state->Placeholder_P_priori_mult_H_T, true);

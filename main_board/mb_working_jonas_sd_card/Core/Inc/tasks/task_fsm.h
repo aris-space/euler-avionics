@@ -16,7 +16,7 @@
 #include "util.h"
 
 /* Constants */
-#define FSM_SAMPLING_FREQ 1
+#define FSM_SAMPLING_FREQ 100
 
 /* Parameters */
 

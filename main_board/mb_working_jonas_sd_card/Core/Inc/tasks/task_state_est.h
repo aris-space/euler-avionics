@@ -18,12 +18,12 @@
 #include <string.h>
 #include "math_utils.h"
 /* Constants */
-#define STATE_ESTIMATION_FREQUENCY 1
+#define STATE_ESTIMATION_FREQUENCY 100
 /* Matrix Sizes */
 #define NUMBER_STATES 3	/* NUMBER_STATES x NUMBER_STATES -> A Matrix */
 #define NUMBER_INPUTS 1	/* NUMBER_STATES x NUMBER_INPUTS -> B Matrix */
 #define NUMBER_NOISE 1	/* NUMBER_STATES x NUMBER_NOISE -> G Matrix */
-#define NUMBER_MEASUREMENTS 6 /* NUMBER_SENSOR x NUMBER_STATES -> H Matrix */
+#define NUMBER_MEASUREMENTS 3 /* NUMBER_MEASUREMENT x NUMBER_STATES -> H Matrix */
 #define NUMBER_SENSORBOARDS 3 /* Number of Sensor Boards */
 #define MAX_LENGTH_ROLLING_MEMORY 18
 #define LAMBDA 0.0001		/* Lambda for Moore Penrose Pseudoinverse */
