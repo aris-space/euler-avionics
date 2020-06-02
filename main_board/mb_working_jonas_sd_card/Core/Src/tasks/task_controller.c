@@ -7,7 +7,7 @@
 
 #include "tasks/task_controller.h"
 
-#include <stdlib.h>
+
 
 
 void CalcPolynomial(float ref_height, float *ref_vel, float gains[], float coefficients[][POLY_DEG]);
@@ -19,6 +19,8 @@ void vTaskController(void *argument) {
 
 	/* Polynomial Coefficients for Gains and Reference Traj */
 	float coeff[4][POLY_DEG] = { 0 };
+
+	state_est_data_t state_placeholder;
 
 	/* State Estimation Values */
 	float sf_velocity = 0;
@@ -42,7 +44,15 @@ void vTaskController(void *argument) {
 		tick_count += tick_update;
 
 		/* Update Sensor Fusion Variables */
-		/* TODO once Mutex Managment has been set up */
+
+		if (osMutexGetOwner(state_est_mutex) == NULL) {
+			state_placeholder.position_world[2] = state_est_data.position_world[2];
+			state_placeholder.velocity_world[2] = state_est_data.velocity_world[2];
+			if (osMutexGetOwner(state_est_mutex) == NULL) {
+				sf_velocity = ((float) state_placeholder.velocity_world[2]) / 1000;
+				sf_height = ((float) state_placeholder.velocity_world[2]) / 1000;
+			}
+		}
 
 		/* caluclate Gains and Reference velocity for given height */
 		CalcPolynomial(sf_height, &ref_vel, gains, coeff);
@@ -57,8 +67,11 @@ void vTaskController(void *argument) {
 
 		control_input = fmax(0, fmin(control_input, 1));
 
-		/* Send Control Output to motor control Task */
-		/* TODO */
+		/* Write Control Input into Global Variable */
+		if (osMutexAcquire(controller_mutex, 10) == osOK) {
+			controller_output = (int32_t) (control_input*1000);
+			osMutexRelease(controller_mutex);
+		}
 
 		/* Update Integrated Error */
 		integrated_error = fmax(-10, fmin(integrated_error + delta_t*vel_error, 10));
@@ -75,7 +88,7 @@ void vTaskController(void *argument) {
 /* Does the Polynomial Calculation of the reference velocity */
 void CalcPolynomial(float ref_height, float *ref_vel, float gains[], float coefficients[][POLY_DEG]){
 	/* For Speed */
-	uint32_t x_placeholder = 0;
+	float x_placeholder = 0;
 
 	/* For loop */
 	for(int i = 0; i < POLY_DEG; ++i){

@@ -26,6 +26,10 @@
 /* Commands */
 
 /* Extern */
+extern osMutexId_t controller_mutex;
+extern osMutexId_t state_est_mutex;
+extern state_est_data_t state_est_data;
+extern int32_t controller_output;
 
 /* Tasks */
 void vTaskController(void *argument);

@@ -19,7 +19,6 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include <Helper_Functions/env.h>
 #include "main.h"
 #include "cmsis_os.h"
 #include "fatfs.h"
@@ -152,11 +151,13 @@ baro_data_t sb3_baro = { 0 };
 imu_data_t sb3_imu = { 0 };
 sb_data_t sb3_data = { 0 };
 state_est_data_t state_est_data = { 0 };
+int32_t controller_output = 0;
 env global_env = { 0 };
 flight_phase_detection_t global_flight_phase_detection = { 0 };
 osMutexId_t environment_mutex;
 osMutexId_t fsm_mutex;
 osMutexId_t state_est_mutex;
+osMutexId_t controller_mutex;
 osMessageQueueId_t log_queue;
 /* USER CODE END PV */
 
@@ -271,6 +272,16 @@ int main(void)
       };
 
       state_est_mutex = osMutexNew(&state_est_mutex_attr);
+
+      /* Controller Output Mutex */
+       const osMutexAttr_t controller_mutex_attr = {
+         "controller_mutex",                              // human readable mutex name
+         osMutexPrioInherit,    					 // attr_bits
+         NULL,                                     // memory for control block
+         0U                                        // size for control block
+       };
+
+       controller_mutex = osMutexNew(&controller_mutex_attr);
 
       /* FSM Output Mutex */
        const osMutexAttr_t fsm_mutex_attr = {
