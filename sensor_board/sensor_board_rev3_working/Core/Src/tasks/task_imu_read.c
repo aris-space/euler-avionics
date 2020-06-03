@@ -26,7 +26,7 @@ void vTaskImuRead(void *argument) {
 	int16_t offset[6] = { 0 };
 
 	/* initialize counter as we want to average over 4 samples every time */
-	int8_t counter = 0;
+//	int8_t counter = 0;
 
 	/* initialize queue message */
 	imu_data_t queue_data = { 0 };
@@ -42,40 +42,39 @@ void vTaskImuRead(void *argument) {
 
 		/* Debugging */
 
-		UsbPrint("[DBG] RAW Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld; t: %lu\n",
-				gyroscope_data[0], gyroscope_data[1], gyroscope_data[2],
-				acceleration[0], acceleration[1], acceleration[2], tick_count);
+//		UsbPrint("[DBG] RAW Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld; t: %lu\n",
+//				gyroscope_data[0], gyroscope_data[1], gyroscope_data[2],
+//				acceleration[0], acceleration[1], acceleration[2], tick_count);
 
 
-		//TODO [nstojosk] : can this overflow?
-		queue_data.gyro_x += gyroscope_data[0];
-		queue_data.gyro_y += gyroscope_data[1];
-		queue_data.gyro_z += gyroscope_data[2];
-		queue_data.acc_x += acceleration[0];
-		queue_data.acc_y += acceleration[1];
-		queue_data.acc_z += acceleration[2];
-		++counter;
-		if (counter == 4) {
-			/* reset counter */
-			counter = 0;
-
-			/* Average Data */
-			queue_data.gyro_x /= 4;
-			queue_data.gyro_y /= 4;
-			queue_data.gyro_z /= 4;
-			queue_data.acc_x /= 4;
-			queue_data.acc_y /= 4;
-			queue_data.acc_z /= 4;
-			/* I dont know it this works with the overflow of the tick_count! */
+		queue_data.gyro_x = gyroscope_data[0];
+		queue_data.gyro_y = gyroscope_data[1];
+		queue_data.gyro_z = gyroscope_data[2];
+		queue_data.acc_x = acceleration[0];
+		queue_data.acc_y = acceleration[1];
+		queue_data.acc_z = acceleration[2];
+//		++counter;
+//		if (counter == 4) {
+//			/* reset counter */
+//			counter = 0;
+//
+//			/* Average Data */
+//			queue_data.gyro_x /= 4;
+//			queue_data.gyro_y /= 4;
+//			queue_data.gyro_z /= 4;
+//			queue_data.acc_x /= 4;
+//			queue_data.acc_y /= 4;
+//			queue_data.acc_z /= 4;
+//			/* I dont know it this works with the overflow of the tick_count! */
 			queue_data.ts = tick_count;
 
 			/* Send Data to Queue */
 			osMessageQueuePut(preprocess_queue, &queue_data, 0U, 0U);
-
-			/* reset queue value */
-			queue_data = EMPTY_IMU;
-			counter = 0;
-		}
+//
+//			/* reset queue value */
+//			queue_data = EMPTY_IMU;
+//			counter = 0;
+//		}
 		osDelayUntil(tick_count);
 	}
 }
@@ -316,9 +315,9 @@ void vReadImu20600(int16_t gyroscope_data[], int16_t acceleration[], int16_t off
 	acceleration[1] = bufferAcc[2] << 8 | bufferAcc[3];
 	acceleration[2] = bufferAcc[4] << 8 | bufferAcc[5];
 
-//		acceleration[0] = acceleration[0] - offset[0];
-//		acceleration[1] = acceleration[1] - offset[1];
-//		acceleration[2] = acceleration[2] - offset[2];
+		acceleration[0] = acceleration[0] - offset[0];
+		acceleration[1] = acceleration[1] - offset[1];
+		acceleration[2] = acceleration[2] - offset[2];
 
 
 	/* Read Gyroscope Data */
@@ -335,9 +334,9 @@ void vReadImu20600(int16_t gyroscope_data[], int16_t acceleration[], int16_t off
 	gyroscope_data[1] = bufferGyro[2] << 8 | bufferGyro[3];
 	gyroscope_data[2] = bufferGyro[4] << 8 | bufferGyro[5];
 
-//		gyroscope_data[0] = gyroscope_data[0] - offset[3];
-//		gyroscope_data[1] = gyroscope_data[1] - offset[4];
-//		gyroscope_data[2] = gyroscope_data[2] - offset[5];
+		gyroscope_data[0] = gyroscope_data[0] - offset[3];
+		gyroscope_data[1] = gyroscope_data[1] - offset[4];
+		gyroscope_data[2] = gyroscope_data[2] - offset[5];
 
 
 }

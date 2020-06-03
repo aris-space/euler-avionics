@@ -1,4 +1,4 @@
-/*
+ /*
  * task_sens_read.c
  *
  *  Created on: Nov 29, 2019
@@ -15,6 +15,7 @@ void vTaskSensRead(void *argument) {
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();
 	tick_update = osKernelGetTickFreq() / SENSOR_READ_FREQUENCY;
+	uint8_t checksum = 0;
 	//HAL_SPI_Receive_IT(&hspi3, (uint8_t*) &sb3_data, sizeof(sb3_data));
 
 	for (;;) {
@@ -28,6 +29,8 @@ void vTaskSensRead(void *argument) {
 		if(osMutexAcquire(sb3_mutex, SB_MUTEX_TIMEOUT) == osOK) {
 			sb3_baro = sb3_data.baro;
 			sb3_imu = sb3_data.imu;
+			checksum = sb3_data.checksum;
+
 //			sb3_baro.timestamp = tick_count;
 //			sb3_imu.timestamp = tick_count;
 			osMutexRelease(sb3_mutex);
@@ -36,6 +39,7 @@ void vTaskSensRead(void *argument) {
 		if(osMutexAcquire(sb2_mutex, SB_MUTEX_TIMEOUT) == osOK) {
 			sb2_baro = sb3_data.baro;
 			sb2_imu = sb3_data.imu;
+			checksum = sb3_data.checksum;
 //			sb2_baro.timestamp = tick_count;
 //			sb2_imu.timestamp = tick_count;
 			osMutexRelease(sb2_mutex);
@@ -44,6 +48,7 @@ void vTaskSensRead(void *argument) {
 		if(osMutexAcquire(sb1_mutex, SB_MUTEX_TIMEOUT) == osOK) {
 			sb1_baro = sb3_data.baro;
 			sb1_imu = sb3_data.imu;
+			checksum = sb3_data.checksum;
 //			sb1_baro.timestamp = tick_count;
 //			sb1_imu.timestamp = tick_count;
 			osMutexRelease(sb1_mutex);

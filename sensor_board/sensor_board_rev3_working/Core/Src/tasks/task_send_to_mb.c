@@ -36,15 +36,18 @@ void vTaskSendToMb(void *argument) {
 
 		fullsb_data.baro = last_baro_data;
 		fullsb_data.imu = last_imu_data;
+		fullsb_data.checksum = fullsb_data.baro.pressure + fullsb_data.baro.temperature +
+				fullsb_data.imu.gyro_x + fullsb_data.imu.gyro_y + fullsb_data.imu.gyro_z +
+				fullsb_data.imu.acc_x + fullsb_data.imu.acc_y +  fullsb_data.imu.acc_z;
 
-//		UsbPrint("[DBG] P: %ld; T: %ld; t: %lu\n", last_baro_data.pressure,
-//				last_baro_data.temperature, last_baro_data.ts);
-//
-//		UsbPrint(
-//				"[DBG Task Send] Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld; t: %lu\n",
-//				last_imu_data.gyro_x, last_imu_data.gyro_y,
-//				last_imu_data.gyro_z, last_imu_data.acc_x, last_imu_data.acc_y,
-//				last_imu_data.acc_z, last_imu_data.ts);
+		UsbPrint("[DBG] P: %ld; T: %ld; t: %lu; %lu\n", last_baro_data.pressure,
+				last_baro_data.temperature, last_baro_data.ts, fullsb_data.checksum);
+
+		UsbPrint(
+				"[DBG Task Send] Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld; t: %lu\n",
+				last_imu_data.gyro_x, last_imu_data.gyro_y,
+				last_imu_data.gyro_z, last_imu_data.acc_x, last_imu_data.acc_y,
+				last_imu_data.acc_z, last_imu_data.ts);
 
 		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_RESET);
 		HAL_SPI_Transmit(&hspi2, (uint8_t*) &fullsb_data, sizeof(fullsb_data), SPI_TIMEOUT);

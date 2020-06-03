@@ -61,6 +61,7 @@ typedef struct {
 typedef struct {
 	baro_data_t baro;
 	imu_data_t imu;
+	uint8_t checksum;
 } sb_data_t;
 
 /* GPS data */
@@ -120,7 +121,7 @@ osStatus_t logMsg(timestamp_t ts, char *msg);
 #undef DEBUG
 #endif
 /* Comment the next line in order to disable debug mode */
-#define DEBUG
+//#define DEBUG
 
 #ifdef DEBUG
 osMutexId_t print_mutex;
