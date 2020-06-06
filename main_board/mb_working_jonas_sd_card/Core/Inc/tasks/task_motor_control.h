@@ -15,7 +15,7 @@
 #include <string.h>
 
 
-#define MOTOR_TASK_FREQUENCY 1
+#define MOTOR_TASK_FREQUENCY 10
 
 
 

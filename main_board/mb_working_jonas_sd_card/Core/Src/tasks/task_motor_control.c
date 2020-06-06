@@ -8,13 +8,16 @@
 #include "tasks/task_motor_control.h"
 
 uint16_t calculateCRC(uint8_t *data, uint8_t len);
+void enableMotor();
+void MoveToPosition();
 
-uint8_t rx_data[10] = { 0 };
+uint8_t rx_data[14] = { 0 };
 
 void vTaskMotorCont(void *argument) {
 
 	/* For periodic update */
 	uint32_t tick_count, tick_update;
+	enableMotor();
 
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();
@@ -23,99 +26,100 @@ void vTaskMotorCont(void *argument) {
 
 	for (;;) {
 		tick_count += tick_update;
+		MoveToPosition();
 
-		/* Read Command */
-		uint8_t byte_stream_read[10] = { 0 };
-		byte_stream_read[0] = 0x90;		// DLE
-		byte_stream_read[1] = 0x02;		// STX
-		byte_stream_read[2] = 0x60;		// Read Object
-		byte_stream_read[3] = 0x02;		// Length of stuff sent
-		byte_stream_read[4] = 0x01;		// Node ID
-		byte_stream_read[5] = 0x7A;		// Index Low Byte
-		byte_stream_read[6] = 0x60;		// Index High byte
-		byte_stream_read[7] = 0x00;		// Subindex of object
+//		/* Read Command */
+//		uint8_t byte_stream_read[10] = { 0 };
+//		byte_stream_read[0] = 0x90;		// DLE
+//		byte_stream_read[1] = 0x02;		// STX
+//		byte_stream_read[2] = 0x60;		// Read Object
+//		byte_stream_read[3] = 0x02;		// Length of stuff sent
+//		byte_stream_read[4] = 0x01;		// Node ID
+//		byte_stream_read[5] = 0xB0;		// Index Low Byte
+//		byte_stream_read[6] = 0x30;		// Index High byte
+//		byte_stream_read[7] = 0x00;		// Subindex of object
+//
+//		/* CRC data array */
+//		uint8_t crc_data_array[6] = { 0 };
+//		memcpy(crc_data_array, &byte_stream_read[2], 6*sizeof(*byte_stream_read));
+//
+//		uint16_t crc_calc = 0;
+//		crc_calc = calculateCRC(crc_data_array, 6);
+//
+//		byte_stream_read[8] = crc_calc & 0xFF;;		// CRC low byte
+//		byte_stream_read[9] = (crc_calc >> 8) & 0xFF;;		// CRC high byte
+//		byte_stream_read[8] = 0x2E;		// CRC low byte
+//		byte_stream_read[9] = 0x62;		// CRC high byte
+//
+//
+//		/* rx buffer */
+//		HAL_StatusTypeDef status;
+//		status = HAL_UART_Transmit(&huart7, byte_stream_read, 10, 10);
+//		HAL_UART_Receive(&huart7, rx_data, 14, 10);
 
-		/* CRC data array */
-		uint8_t crc_data_array[6] = { 0 };
-		memcpy(crc_data_array, &byte_stream_read[2], 6*sizeof(*byte_stream_read));
-
-		uint16_t crc_calc = 0;
-		crc_calc = calculateCRC(crc_data_array, 6);
-
-		byte_stream_read[8] = crc_calc & 0xFF;;		// CRC low byte
-		byte_stream_read[9] = (crc_calc >> 8) & 0xFF;;		// CRC high byte
-		byte_stream_read[8] = 0x6C;		// CRC low byte
-		byte_stream_read[9] = 0xE6;		// CRC high byte
-
-
-		/* rx buffer */
-		HAL_StatusTypeDef status;
-		status = HAL_UART_Transmit(&huart7, byte_stream_read, 10, 10);
-		HAL_UART_Receive_IT(&huart7, rx_data, 10);
-
-		uint8_t byte_stream_write[14] = { 0 };
-
-		if (counter > 20){
-			counter = 10;
-			byte_stream_write[12] = 0x41;		// CRC low byte
-			byte_stream_write[13] = 0xBF;		// CRC high byte
-		}
-		else{
-			byte_stream_write[12] = 0x87;		// CRC low byte
-			byte_stream_write[13] = 0x39;		// CRC high byte
-			counter = 30;
-		}
-		/* Write Command */
-
-		byte_stream_write[0] = 0x90;		// DLE
-		byte_stream_write[1] = 0x02;		// STX
-		byte_stream_write[2] = 0x68;		// Write Object
-		byte_stream_write[3] = 0x04;		// Length of stuff sent
-		byte_stream_write[4] = 0x01;		// Node ID
-		byte_stream_write[5] = 0x7A;		// Index Low Byte
-		byte_stream_write[6] = 0x60;		// Index High byte
-		byte_stream_write[7] = 0x00;		// Subindex of object
-		byte_stream_write[8] = counter;		// Data LSB
-		byte_stream_write[9] = 0x00;		//
-		byte_stream_write[10] = 0x00;		//
-		byte_stream_write[11] = 0x00;		// Data MSB
-//		byte_stream_write[12] = 0x41;		// CRC low byte
-//		byte_stream_write[13] = 0xBF;		// CRC high byte
-		status = HAL_UART_Transmit(&huart7, byte_stream_write, 14, 10);
-		osDelay(1);
-
-		byte_stream_write[0] = 0x90;		// DLE
-		byte_stream_write[1] = 0x02;		// STX
-		byte_stream_write[2] = 0x68;		// Write Object
-		byte_stream_write[3] = 0x04;		// Length of stuff sent
-		byte_stream_write[4] = 0x01;		// Node ID
-		byte_stream_write[5] = 0x40;		// Index Low Byte
-		byte_stream_write[6] = 0x60;		// Index High byte
-		byte_stream_write[7] = 0x00;		// Subindex of object
-		byte_stream_write[8] = 0x3F;		// Data LSB
-		byte_stream_write[9] = 0x00;		//
-		byte_stream_write[10] = 0x00;		//
-		byte_stream_write[11] = 0x00;		// Data MSB
-		byte_stream_write[12] = 0x16;		// CRC low byte
-		byte_stream_write[13] = 0xC2;		// CRC high byte
-		status = HAL_UART_Transmit(&huart7, byte_stream_write, 14, 10);
-		osDelay(1);
-
-		byte_stream_write[0] = 0x90;		// DLE
-		byte_stream_write[1] = 0x02;		// STX
-		byte_stream_write[2] = 0x68;		// Write Object
-		byte_stream_write[3] = 0x04;		// Length of stuff sent
-		byte_stream_write[4] = 0x01;		// Node ID
-		byte_stream_write[5] = 0x40;		// Index Low Byte
-		byte_stream_write[6] = 0x60;		// Index High byte
-		byte_stream_write[7] = 0x00;		// Subindex of object
-		byte_stream_write[8] = 0x0F;		// Data LSB
-		byte_stream_write[9] = 0x00;		//
-		byte_stream_write[10] = 0x00;		//
-		byte_stream_write[11] = 0x00;		// Data MSB
-		byte_stream_write[12] = 0xB3;		// CRC low byte
-		byte_stream_write[13] = 0x07;		// CRC high byte
-		status = HAL_UART_Transmit(&huart7, byte_stream_write, 14, 10);
+//		uint8_t byte_stream_write[14] = { 0 };
+//
+//		if (counter > 20){
+//			counter = 10;
+//			byte_stream_write[12] = 0x41;		// CRC low byte
+//			byte_stream_write[13] = 0xBF;		// CRC high byte
+//		}
+//		else{
+//			byte_stream_write[12] = 0x87;		// CRC low byte
+//			byte_stream_write[13] = 0x39;		// CRC high byte
+//			counter = 30;
+//		}
+//		/* Write Command */
+//
+//		byte_stream_write[0] = 0x90;		// DLE
+//		byte_stream_write[1] = 0x02;		// STX
+//		byte_stream_write[2] = 0x68;		// Write Object
+//		byte_stream_write[3] = 0x04;		// Length of stuff sent
+//		byte_stream_write[4] = 0x01;		// Node ID
+//		byte_stream_write[5] = 0x7A;		// Index Low Byte
+//		byte_stream_write[6] = 0x60;		// Index High byte
+//		byte_stream_write[7] = 0x00;		// Subindex of object
+//		byte_stream_write[8] = counter;		// Data LSB
+//		byte_stream_write[9] = 0x00;		//
+//		byte_stream_write[10] = 0x00;		//
+//		byte_stream_write[11] = 0x00;		// Data MSB
+////		byte_stream_write[12] = 0x41;		// CRC low byte
+////		byte_stream_write[13] = 0xBF;		// CRC high byte
+//		status = HAL_UART_Transmit(&huart7, byte_stream_write, 14, 10);
+//		osDelay(1);
+//
+//		byte_stream_write[0] = 0x90;		// DLE
+//		byte_stream_write[1] = 0x02;		// STX
+//		byte_stream_write[2] = 0x68;		// Write Object
+//		byte_stream_write[3] = 0x04;		// Length of stuff sent
+//		byte_stream_write[4] = 0x01;		// Node ID
+//		byte_stream_write[5] = 0x40;		// Index Low Byte
+//		byte_stream_write[6] = 0x60;		// Index High byte
+//		byte_stream_write[7] = 0x00;		// Subindex of object
+//		byte_stream_write[8] = 0x3F;		// Data LSB
+//		byte_stream_write[9] = 0x00;		//
+//		byte_stream_write[10] = 0x00;		//
+//		byte_stream_write[11] = 0x00;		// Data MSB
+//		byte_stream_write[12] = 0x16;		// CRC low byte
+//		byte_stream_write[13] = 0xC2;		// CRC high byte
+//		status = HAL_UART_Transmit(&huart7, byte_stream_write, 14, 10);
+//		osDelay(1);
+//
+//		byte_stream_write[0] = 0x90;		// DLE
+//		byte_stream_write[1] = 0x02;		// STX
+//		byte_stream_write[2] = 0x68;		// Write Object
+//		byte_stream_write[3] = 0x04;		// Length of stuff sent
+//		byte_stream_write[4] = 0x01;		// Node ID
+//		byte_stream_write[5] = 0x40;		// Index Low Byte
+//		byte_stream_write[6] = 0x60;		// Index High byte
+//		byte_stream_write[7] = 0x00;		// Subindex of object
+//		byte_stream_write[8] = 0x0F;		// Data LSB
+//		byte_stream_write[9] = 0x00;		//
+//		byte_stream_write[10] = 0x00;		//
+//		byte_stream_write[11] = 0x00;		// Data MSB
+//		byte_stream_write[12] = 0xB3;		// CRC low byte
+//		byte_stream_write[13] = 0x07;		// CRC high byte
+//		status = HAL_UART_Transmit(&huart7, byte_stream_write, 14, 10);
 
 
 		osDelayUntil(tick_count);
@@ -152,3 +156,102 @@ uint16_t calculateCRC(uint8_t *data, uint8_t len) {
   return crcCalc;
 }
 
+
+void enableMotor(){
+	/* Read Command */
+	uint8_t byte_stream_write[14] = { 0 };
+
+	byte_stream_write[0] = 0x90;		// DLE
+	byte_stream_write[1] = 0x02;		// STX
+	byte_stream_write[2] = 0x68;		// Read Object
+	byte_stream_write[3] = 0x04;		// Length of stuff sent
+	byte_stream_write[4] = 0x01;		// Node ID
+	byte_stream_write[5] = 0x40;		// Index Low Byte
+	byte_stream_write[6] = 0x60;		// Index High byte
+	byte_stream_write[7] = 0x00;		// Subindex of object
+	byte_stream_write[8] = 0x06;		// Length of stuff sent
+	byte_stream_write[9] = 0x00;		// Node ID
+	byte_stream_write[10] = 0x00;		// Index Low Byte
+	byte_stream_write[11] = 0x00;		// Index High byte
+	byte_stream_write[12] = 0x22;		// Subindex of object
+	byte_stream_write[13] = 0x99;		// Index High byte
+
+
+	HAL_UART_Transmit(&huart7, byte_stream_write, 14, 10);
+
+	byte_stream_write[0] = 0x90;		// DLE
+	byte_stream_write[1] = 0x02;		// STX
+	byte_stream_write[2] = 0x68;		// Read Object
+	byte_stream_write[3] = 0x04;		// Length of stuff sent
+	byte_stream_write[4] = 0x01;		// Node ID
+	byte_stream_write[5] = 0x40;		// Index Low Byte
+	byte_stream_write[6] = 0x60;		// Index High byte
+	byte_stream_write[7] = 0x00;		// Subindex of object
+	byte_stream_write[8] = 0x0F;		// Length of stuff sent
+	byte_stream_write[9] = 0x00;		// Node ID
+	byte_stream_write[10] = 0x00;		// Index Low Byte
+	byte_stream_write[11] = 0x00;		// Index High byte
+	byte_stream_write[12] = 0xB3;		// Subindex of object
+	byte_stream_write[13] = 0x07;		// Index High byte
+
+
+
+	HAL_UART_Transmit(&huart7, byte_stream_write, 14, 10);
+
+}
+
+void MoveToPosition(){
+	/* Read Command */
+	uint8_t byte_stream_write[14] = { 0 };
+
+	byte_stream_write[0] = 0x90;		// DLE
+	byte_stream_write[1] = 0x02;		// STX
+	byte_stream_write[2] = 0x68;		// Read Object
+	byte_stream_write[3] = 0x04;		// Length of stuff sent
+	byte_stream_write[4] = 0x01;		// Node ID
+	byte_stream_write[5] = 0x7A;		// Index Low Byte
+	byte_stream_write[6] = 0x60;		// Index High byte
+	byte_stream_write[7] = 0x00;		// Subindex of object
+	byte_stream_write[8] = 0xE8;		// Length of stuff sent
+	byte_stream_write[9] = 0x03;		// Node ID
+	byte_stream_write[10] = 0x00;		// Index Low Byte
+	byte_stream_write[11] = 0x00;		// Index High byte
+	byte_stream_write[12] = 0x6E;		// Subindex of object
+	byte_stream_write[13] = 0x6E;		// Index High byte
+
+	HAL_UART_Transmit(&huart7, byte_stream_write, 14, 10);
+
+	byte_stream_write[0] = 0x90;		// DLE
+	byte_stream_write[1] = 0x02;		// STX
+	byte_stream_write[2] = 0x68;		// Read Object
+	byte_stream_write[3] = 0x04;		// Length of stuff sent
+	byte_stream_write[4] = 0x01;		// Node ID
+	byte_stream_write[5] = 0x40;		// Index Low Byte
+	byte_stream_write[6] = 0x60;		// Index High byte
+	byte_stream_write[7] = 0x00;		// Subindex of object
+	byte_stream_write[8] = 0x7F;		// Length of stuff sent
+	byte_stream_write[9] = 0x00;		// Node ID
+	byte_stream_write[10] = 0x00;		// Index Low Byte
+	byte_stream_write[11] = 0x00;		// Index High byte
+	byte_stream_write[12] = 0xBB;		// Subindex of object
+	byte_stream_write[13] = 0xDF;		// Index High byte
+
+	HAL_UART_Transmit(&huart7, byte_stream_write, 14, 10);
+
+	byte_stream_write[0] = 0x90;		// DLE
+	byte_stream_write[1] = 0x02;		// STX
+	byte_stream_write[2] = 0x68;		// Read Object
+	byte_stream_write[3] = 0x04;		// Length of stuff sent
+	byte_stream_write[4] = 0x01;		// Node ID
+	byte_stream_write[5] = 0x40;		// Index Low Byte
+	byte_stream_write[6] = 0x60;		// Index High byte
+	byte_stream_write[7] = 0x00;		// Subindex of object
+	byte_stream_write[8] = 0x0F;		// Length of stuff sent
+	byte_stream_write[9] = 0x00;		// Node ID
+	byte_stream_write[10] = 0x00;		// Index Low Byte
+	byte_stream_write[11] = 0x00;		// Index High byte
+	byte_stream_write[12] = 0xB3;		// Subindex of object
+	byte_stream_write[13] = 0x07;		// Index High byte
+
+	HAL_UART_Transmit(&huart7, byte_stream_write, 14, 10);
+}
