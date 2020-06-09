@@ -154,3 +154,5 @@ geckodriver.log
 *.code-workspace
 .history
 .vscode
+
+livestreaming/overlays/web/venv
