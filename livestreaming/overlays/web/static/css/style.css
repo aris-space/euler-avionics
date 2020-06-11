@@ -1,7 +1,8 @@
 body
 {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: #d9d6d6;
+    /*font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;*/
+    /*color: #d9d6d6;*/
+    color: #a71d2a;
     font-size: 30px;
 }
 
@@ -13,11 +14,25 @@ body
     alignment: left;
 }
 
-#countdown, #hold_btn, #altitude, #speed {
+
+
+#hold_btn, #altitude, #speed {
     display: inline-block;
     vertical-align: top;
     margin-top: 30px;
     text-align: right;
+}
+
+#countdown{
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 30px;
+    position: absolute;
+    bottom: 15px;
+    alignment: center;
+    width: 98%;
+    max-width: 100%;
+    text-align: center;
 }
 
 #countdown_set {
@@ -26,4 +41,22 @@ body
 #countdown_in {
     /*margin-top: 30px;*/
     /*margin-left: 30px;*/
+}
+
+.events{
+    position: absolute;
+    bottom: 120px;
+    width: 98%;
+    height: 30px;
+}
+
+.event{
+    position: absolute;
+    bottom: 120px;
+}
+
+.progress{
+    position: absolute;
+    bottom: 70px;
+    width: 98%;
 }

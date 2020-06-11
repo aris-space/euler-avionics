@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<!--    <script src="https://use.fontawesome.com/d4185732c4.js"></script>-->
+
     <link href="../static/css/bootstrap/bootstrap.css" rel="stylesheet" type="text/css">
     <link href="../static/css/style.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <title>Launch Overlay</title>
 </head>
 <body>
@@ -16,7 +20,7 @@
         <br/>
         <div class="col-md-5" id="countdown">
             <button type="button" class="btn btn-danger invisible" id="countdown_ctrl"></button>
-            Countdown: T <span id="countdown_sign">?</span> <span id="countdown_minutes">..</span>:<span
+            T <span id="countdown_sign">?</span> <span id="countdown_minutes">..</span>:<span
                 id="countdown_seconds">..</span>
         </div>
     </div>
@@ -42,6 +46,41 @@
 
             &nbsp;<button type="button" class="btn btn-primary" id="countdown_set_btn">Set</button>
         </form>
+    </div>
+    <div class="border form-row justify-content-end no-gutters" style="margin-top: 10px">
+        <form id="event_bar_timespan" class="form-inline">
+            Event bar timespan&nbsp;
+            <input type="number" class="form-control mb-2 mr-sm-2 mb-sm-0" id="event_bar_timespan3"
+                   placeholder="Minutes"
+                   min="0">
+            :&nbsp;
+            <input type="number" class="form-control" id="event_bar_timespan4" placeholder="Seconds" min="0">
+
+            &nbsp;<button type="button" class="btn btn-primary" id="event_bar_timespan_btn">Set</button>
+        </form>
+    </div>
+
+    <div class="border form-row justify-content-end no-gutters" style="margin-top: 10px">
+        <form class="form-inline">
+            Enter a new event&nbsp;
+            <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder="Event name" id="event_name">
+            <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="event_sign">
+                <option selected value="-">-</option>
+                <option value="+">+</option>
+            </select>
+            &nbsp;
+            <input type="number" class="form-control mb-2 mr-sm-2 mb-sm-0" id="event_set_min"
+                   placeholder="Minutes"
+                   min="0">
+            :&nbsp;
+            <input type="number" class="form-control" placeholder="Seconds" min="0" id="event_set_sec">
+
+            &nbsp;<button type="button" class="btn btn-primary" id="add_event_btn">Set</button>
+        </form>
+    </div>
+    <div class="events" id="events">Stuff<span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></i></div>
+    <div class="progress">
+        <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
 </div>
 
@@ -76,6 +115,25 @@
             socket.emit('countdown_hold');
             countdown_ctrl_btn.html(play_btn);
         }
+    })
+    var events_counter = 0
+
+    let add_event_btn = $('#add_event_btn');
+    add_event_btn.on('click', function (e) {
+        console.log(add_event_btn.html())
+        let t = parseInt($('#event_set_min').val()) * 60 + parseInt($('#event_set_sec').val())
+        socket.emit('add_event', {
+            id: events_counter,
+            name: $('#event_name').val(),
+            sign: $('#event_sign').val(),
+            t: t,
+        })
+        let event = document.createElement('div');
+        event.id = events_counter
+        event.textContent = $("#event_name").val()
+        event.className = "event"
+        $("#events")[0].appendChild(event)
+        events_counter += 1
     })
 
     $('#countdown_set_btn').on('click', function (e) {
