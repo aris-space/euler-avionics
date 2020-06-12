@@ -5,8 +5,8 @@
  *      Author: stoja
  */
 
-#ifndef INC_UTIL_H_
-#define INC_UTIL_H_
+#ifndef INC_UTIL_UTIL_H_
+#define INC_UTIL_UTIL_H_
 
 #include "cmsis_os.h"
 
@@ -17,7 +17,6 @@ typedef uint32_t timestamp_t;
 
 /* Board ID */
 typedef uint8_t board_id_t;
-
 
 /** ENUMS **/
 
@@ -38,7 +37,7 @@ typedef enum {
 
 /* Log entry */
 typedef enum {
-	SENSOR = 1, STATE, ESTIMATOR_VAR, MSG
+	SENSOR = 1, STATE, ESTIMATOR_VAR, CONTROLLER_OUTPUT, MSG
 } log_entry_type_e;
 
 
@@ -88,6 +87,7 @@ typedef struct {
 } flight_phase_detection_t;
 
 
+
 /* Sensor Board Mutexes */
 osMutexId_t sb1_mutex;
 osMutexId_t sb2_mutex;
@@ -111,6 +111,7 @@ osStatus_t logSensor(timestamp_t ts, board_id_t sensor_board_id,
 osStatus_t logRocketState(timestamp_t ts, flight_phase_e flight_phase);
 /* TODO [nstojosk] - this signature & implementation should be adjusted */
 osStatus_t logEstimatorVar(timestamp_t ts, state_est_data_t estimator_data);
+osStatus_t logControllerOutput(timestamp_t ts, int32_t controller_output);
 osStatus_t logMsg(timestamp_t ts, char *msg);
 
 
@@ -131,4 +132,4 @@ char print_buffer[PRINT_BUFFER_LEN];
 
 uint8_t UsbPrint(const char *format, ...);
 
-#endif /* INC_UTIL_H_ */
+#endif /* INC_UTIL_UTIL_H_ */

@@ -5,7 +5,6 @@
  *      Author: stoja
  */
 
-#include "util.h"
 #include "fatfs.h"
 
 #include "tasks/task_sd_card.h"
@@ -14,6 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <Util/util.h>
 
 extern Disk_drvTypeDef disk;
 

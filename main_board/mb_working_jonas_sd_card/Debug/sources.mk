@@ -17,7 +17,9 @@ OBJCOPY_BIN :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
-Core/Src/Helper_Functions \
+Core/Src/EPOS4 \
+Core/Src/Sim_Con \
+Core/Src/Util \
 Core/Src \
 Core/Src/tasks \
 Core/Startup \

@@ -9,9 +9,9 @@
 #define INC_TASKS_TASK_SENS_READ_H_
 
 /* Includes */
+#include <Util/util.h>
 #include "cmsis_os.h"
 #include "main.h"
-#include "util.h"
 
 /* Constants */
 #define SENSOR_READ_FREQUENCY 1000

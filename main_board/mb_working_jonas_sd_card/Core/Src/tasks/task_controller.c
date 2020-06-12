@@ -7,33 +7,20 @@
 
 #include "tasks/task_controller.h"
 
-
-
-
-void CalcPolynomial(float ref_height, float *ref_vel, float gains[], float coefficients[][POLY_DEG]);
+/* Abbreviation 'aw' is used to described everything related to the antiwindup */
 
 
 void vTaskController(void *argument) {
 	/* For periodic update */
 	uint32_t tick_count, tick_update;
 
-	/* Polynomial Coefficients for Gains and Reference Traj */
-	float coeff[4][POLY_DEG] = { 0 };
-
 	state_est_data_t state_placeholder;
+    flight_phase_detection_t flight_phase_detection_placeholder = { 0 };
+    flight_phase_detection_t current_flight_phase_detection = { 0 };
 
-	/* State Estimation Values */
-	float sf_velocity = 0;
-	float sf_height = 0;
-
-	/* Gain Values and Trajectory Values to increase speed */
-	float gains[3] = { 0 };
-	float ref_vel = 0;
-	float vel_error = 0;
-	float control_input = 0;
-	float integrated_error = 0;
-	float previous_control_input = 0;
-	uint32_t delta_t = 1 / CONTROLLER_SAMPLING_FREQ; 	/* That is probably very optimistic! */
+    /* Initialize the control_data struct */
+    control_data_t control_data = { 0 };
+    control_data_init(&control_data);
 
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();
@@ -44,59 +31,46 @@ void vTaskController(void *argument) {
 		tick_count += tick_update;
 
 		/* Update Sensor Fusion Variables */
-
 		if (osMutexGetOwner(state_est_mutex) == NULL) {
-			state_placeholder.position_world[2] = state_est_data.position_world[2];
-			state_placeholder.velocity_world[2] = state_est_data.velocity_world[2];
+			state_placeholder.position_world[2] = state_est_data_global.position_world[2];
+			state_placeholder.velocity_world[2] = state_est_data_global.velocity_world[2];
 			if (osMutexGetOwner(state_est_mutex) == NULL) {
-				sf_velocity = ((float) state_placeholder.velocity_world[2]) / 1000;
-				sf_height = ((float) state_placeholder.velocity_world[2]) / 1000;
+				control_data.sf_velocity = ((float)state_placeholder.position_world[2]) / 1000;
+				control_data.sf_ref_altitude_AGL = ((float)state_placeholder.velocity_world[2]) / 1000;
 			}
 		}
 
-		/* caluclate Gains and Reference velocity for given height */
-		CalcPolynomial(sf_height, &ref_vel, gains, coeff);
+		/* update flight Phase */
+		if (osMutexGetOwner(fsm_mutex) == NULL) {
+			flight_phase_detection_placeholder.flight_phase = global_flight_phase_detection.flight_phase;
+			flight_phase_detection_placeholder.mach_regime = global_flight_phase_detection.mach_regime;
+			flight_phase_detection_placeholder.mach_number = global_flight_phase_detection.mach_number;
+			if (osMutexGetOwner(fsm_mutex) == NULL) {
+				current_flight_phase_detection.flight_phase = flight_phase_detection_placeholder.flight_phase;
+				current_flight_phase_detection.mach_regime = flight_phase_detection_placeholder.mach_regime;
+				current_flight_phase_detection.mach_number = flight_phase_detection_placeholder.mach_number;
+			}
+		}
 
-		/* Calculate Velocity Error */
-		vel_error = sf_velocity - ref_vel;
-
-		/* Calculate Control Input */
-		control_input = - gains[0] * vel_error - gains[1] * integrated_error
-				- gains[2] * (previous_control_input - OPT_TRAJ_CONTROL_INPUT)
-				+ previous_control_input;
-
-		control_input = fmax(0, fmin(control_input, 1));
-
+		/** MAKE SURE THE RIGHT CONTROLLER IS ACTIVE IS ACTIVE!!!!! **/
+        if(LQR_ACTIVE) {
+            compute_control_input(&control_data, &current_flight_phase_detection);
+        }
+        else {
+            compute_test_control_input(&control_data);
+        }
 		/* Write Control Input into Global Variable */
 		if (osMutexAcquire(controller_mutex, 10) == osOK) {
-			controller_output = (int32_t) (control_input*1000);
+			controller_output_global = (int32_t)(control_data.control_input * 1000);
 			osMutexRelease(controller_mutex);
 		}
 
-		/* Update Integrated Error */
-		integrated_error = fmax(-10, fmin(integrated_error + delta_t*vel_error, 10));
+		/* Log to SD Card */
 
-		/* Update Previous Control Input */
-		previous_control_input = control_input;
+		logControllerOutput(osKernelGetTickCount(), controller_output_global);
+
 
 		/* Sleep */
 		osDelayUntil(tick_count);
 	}
-}
-
-
-/* Does the Polynomial Calculation of the reference velocity */
-void CalcPolynomial(float ref_height, float *ref_vel, float gains[], float coefficients[][POLY_DEG]){
-	/* For Speed */
-	float x_placeholder = 0;
-
-	/* For loop */
-	for(int i = 0; i < POLY_DEG; ++i){
-		x_placeholder = pow(ref_height, (POLY_DEG - 1 - i));
-		gains[0] += coefficients[0][i] * x_placeholder;
-		gains[1] += coefficients[1][i] * x_placeholder;
-		gains[2] += coefficients[2][i] * x_placeholder;
-		*ref_vel += coefficients[3][i] * x_placeholder;
-	}
-
 }
