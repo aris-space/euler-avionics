@@ -74,7 +74,6 @@ local.properties
 ## Pycharm/Flask
 
 .DS_Store
-.env
 .flaskenv
 *.pyc
 *.pyo
@@ -131,7 +130,6 @@ __pycache__
 .#*
 .coverage
 .pytest_cache
-src
 
 *.swp
 *.map
