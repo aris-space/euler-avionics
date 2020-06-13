@@ -39,6 +39,7 @@ typedef struct {
 typedef struct {
 	baro_data_t baro;
 	imu_data_t imu;
+	uint8_t checksum;
 } sb_data_t;
 
 static const imu_data_t EMPTY_IMU = { 0 };

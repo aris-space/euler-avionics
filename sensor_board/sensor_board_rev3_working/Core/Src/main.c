@@ -127,10 +127,10 @@ static void MX_I2C1_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_SPI2_Init(void);
 void StartDefaultTask(void *argument);
-void vTaskBaroRead(void *argument);
-void vTaskImuRead(void *argument);
-void vTaskSendToMb(void *argument);
-void vTaskPreprocess(void *argument);
+extern void vTaskBaroRead(void *argument);
+extern void vTaskImuRead(void *argument);
+extern void vTaskSendToMb(void *argument);
+extern void vTaskPreprocess(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -433,7 +433,7 @@ static void MX_SPI2_Init(void)
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -509,7 +509,6 @@ void StartDefaultTask(void *argument)
   }
   /* USER CODE END 5 */ 
 }
-
 
  /**
   * @brief  Period elapsed callback in non blocking mode

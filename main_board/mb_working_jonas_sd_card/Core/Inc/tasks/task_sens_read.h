@@ -9,12 +9,12 @@
 #define INC_TASKS_TASK_SENS_READ_H_
 
 /* Includes */
+#include <Util/util.h>
 #include "cmsis_os.h"
 #include "main.h"
-#include "util.h"
 
 /* Constants */
-#define SENSOR_READ_FREQUENCY 100
+#define SENSOR_READ_FREQUENCY 1000
 #define SB_MUTEX_TIMEOUT 30
 #define SB1_SPI_TIMEOUT 30
 #define SB3_SPI_TIMEOUT 30

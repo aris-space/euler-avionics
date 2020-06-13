@@ -9,14 +9,15 @@
 #define INC_TASKS_TASK_FSM_H_
 
 /* Includes */
+#include "Sim_Con/env.h"
+#include "Sim_Con/flight_phase_detection.h"
+#include "Util/util.h"
 #include "stm32f7xx_hal.h"
 #include "cmsis_os.h"
 #include "main.h"
-#include "util.h"
-#include "Sensor_Fusion_Helper/env.h"
 
 /* Constants */
-#define FSM_SAMPLING_FREQ 1
+#define FSM_SAMPLING_FREQ 100
 
 /* Parameters */
 
@@ -29,14 +30,15 @@
 extern osMutexId_t fsm_mutex;
 extern osMutexId_t environment_mutex;
 
-extern env global_env;
+extern env_t global_env;
 extern flight_phase_detection_t global_flight_phase_detection;
 
 /* State Estimation Mutex */
 extern osMutexId_t state_est_mutex;
-extern state_est_data_t state_est_data;
+extern state_est_data_t state_est_data_global;
 
 /* Tasks */
 void vTaskFSM(void *argument);
+
 
 #endif /* INC_TASKS_TASK_FSM_H_ */

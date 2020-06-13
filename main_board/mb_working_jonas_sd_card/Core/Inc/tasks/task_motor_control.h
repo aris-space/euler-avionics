@@ -9,19 +9,16 @@
 #define INC_TASKS_TASK_MOTOR_CONTROL_H_
 
 /* Includes */
+#include <Util/util.h>
 #include "cmsis_os.h"
 #include "main.h"
-#include "util.h"
-#include <string.h>
+#include "EPOS4/epos4.h"
 
 
-#define MOTOR_TASK_FREQUENCY 1
+#define MOTOR_TASK_FREQUENCY 0.5
 
-
-
-
-/* external */
-extern UART_HandleTypeDef huart7;
+/* extern */
+extern osMutexId_t motor_controller_mutex;
 
 
 void vTaskMotorCont(void *argument);

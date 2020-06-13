@@ -74,12 +74,9 @@ local.properties
 ## Pycharm/Flask
 
 .DS_Store
-.env
 .flaskenv
 *.pyc
 *.pyo
-env/
-env*
 dist/
 build/
 *.egg
@@ -131,7 +128,6 @@ __pycache__
 .#*
 .coverage
 .pytest_cache
-src
 
 *.swp
 *.map
@@ -154,3 +150,5 @@ geckodriver.log
 *.code-workspace
 .history
 .vscode
+
+livestreaming/overlays/web/venv

@@ -49,6 +49,22 @@ class Countdown:
             sleep(1)
 
 
+class Event:
+    def __init__(self, id, name, sign, t):
+        self.id = id
+        self.name = name
+        self.sign = sign
+        self.t = t
+
+
+events = []
+
+
+@socketio.on('add_event')
+def add_event(json):
+    events.append(Event(json["id"], json["name"], json["sign"], json["t"]))
+
+
 # TODO: don't init here
 countdown = Countdown('-', 0, 0, True)
 
