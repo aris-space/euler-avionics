@@ -39,9 +39,9 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  17 .debug_line   0001f0bd  00000000  00000000  00063e92  2**0
                   CONTENTS, READONLY, DEBUGGING
- 18 .debug_str    000e45b1  00000000  00000000  00082f4f  2**0
+ 18 .debug_str    000e45b0  00000000  00000000  00082f4f  2**0
                   CONTENTS, READONLY, DEBUGGING
- 19 .comment      0000007b  00000000  00000000  00167500  2**0
+ 19 .comment      0000007b  00000000  00000000  001674ff  2**0
                   CONTENTS, READONLY
  20 .debug_frame  00008828  00000000  00000000  0016757c  2**2
                   CONTENTS, READONLY, DEBUGGING
@@ -3080,7 +3080,7 @@ void vTaskImuRead(void *argument) {
  8001836:	4602      	mov	r2, r0
  8001838:	4b18      	ldr	r3, [pc, #96]	; (800189c <vTaskImuRead+0xb0>)
  800183a:	fba3 2302 	umull	r2, r3, r3, r2
- 800183e:	099b      	lsrs	r3, r3, #6
+ 800183e:	095b      	lsrs	r3, r3, #5
  8001840:	63bb      	str	r3, [r7, #56]	; 0x38
 	for (;;) {
 		tick_count += tick_update;
@@ -3144,7 +3144,7 @@ void vTaskImuRead(void *argument) {
  8001896:	f007 fef9 	bl	800968c <osDelayUntil>
 		tick_count += tick_update;
  800189a:	e7d2      	b.n	8001842 <vTaskImuRead+0x56>
- 800189c:	10624dd3 	.word	0x10624dd3
+ 800189c:	51eb851f 	.word	0x51eb851f
  80018a0:	20001dc8 	.word	0x20001dc8
 
 080018a4 <vInitImu20600Read>:
@@ -4327,7 +4327,7 @@ void vTaskSendToMb(void *argument) {
  8002194:	4602      	mov	r2, r0
  8002196:	4b57      	ldr	r3, [pc, #348]	; (80022f4 <vTaskSendToMb+0x18c>)
  8002198:	fba3 2302 	umull	r2, r3, r3, r2
- 800219c:	099b      	lsrs	r3, r3, #6
+ 800219c:	095b      	lsrs	r3, r3, #5
  800219e:	62bb      	str	r3, [r7, #40]	; 0x28
 
 	for (;;) {
