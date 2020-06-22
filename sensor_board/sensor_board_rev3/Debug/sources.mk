@@ -16,7 +16,6 @@ C_DEPS :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
-Core/Src/devices \
 Core/Src \
 Core/Src/tasks \
 Core/Startup \
