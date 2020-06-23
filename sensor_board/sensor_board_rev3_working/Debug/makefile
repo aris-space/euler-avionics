@@ -42,13 +42,16 @@ default.size.stdout \
 OBJDUMP_LIST += \
 sensor_board_rev3_working.list \
 
+OBJCOPY_BIN += \
+sensor_board_rev3_working.bin \
+
 
 # All Target
 all: sensor_board_rev3_working.elf secondary-outputs
 
 # Tool invocations
-sensor_board_rev3_working.elf: $(OBJS) $(USER_OBJS) C:\Users\Luca\Google\ Drive\Projects\ARIS\Software\aris-euler-avionics\sensor_board\sensor_board_rev3_working\STM32L433CBTX_FLASH.ld
-	arm-none-eabi-gcc -o "sensor_board_rev3_working.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Luca\Google Drive\Projects\ARIS\Software\aris-euler-avionics\sensor_board\sensor_board_rev3_working\STM32L433CBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="sensor_board_rev3_working.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+sensor_board_rev3_working.elf: $(OBJS) $(USER_OBJS) C:\Users\Jonas\Desktop\Git\aris-euler-avionics\sensor_board\sensor_board_rev3_working\STM32L433CBTX_FLASH.ld
+	arm-none-eabi-gcc -o "sensor_board_rev3_working.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Jonas\Desktop\Git\aris-euler-avionics\sensor_board\sensor_board_rev3_working\STM32L433CBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="sensor_board_rev3_working.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -62,12 +65,17 @@ sensor_board_rev3_working.list: $(EXECUTABLES)
 	@echo 'Finished building: $@'
 	@echo ' '
 
+sensor_board_rev3_working.bin: $(EXECUTABLES)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "sensor_board_rev3_working.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
 	-$(RM) *
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)
 
 .PHONY: all clean dependents
 .SECONDARY:

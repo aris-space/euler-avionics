@@ -31,6 +31,9 @@
 #include "usbd_cdc.h"
 
 /* USER CODE BEGIN INCLUDE */
+#include "cmsis_os.h"
+extern osMutexId_t usb_data_mutex;
+extern uint8_t usb_data_buffer[256];
 
 /* USER CODE END INCLUDE */
 

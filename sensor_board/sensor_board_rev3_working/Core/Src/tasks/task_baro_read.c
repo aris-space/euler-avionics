@@ -35,10 +35,18 @@ void vTaskBaroRead(void *argument) {
 		tick_count += tick_update;
 		vReadBaro(&temperature, &pressure);
 
-		UsbPrint("P: %ld; T: %ld; t: %ld\n", pressure,
-				temperature, tick_count);
+//		UsbPrint("P: %ld; T: %ld; t: %ld\n", pressure,
+//				temperature, tick_count);
 
 		//TODO HIE AUE STUFF WO MUES GMACHT WERDE MIT DENE DATE
+
+		/* If the Mutex is acquired we write the data into the right variable */
+		if (osMutexAcquire(baro_mutex, BARO_MUTEX_TIMEOUT) == osOK) {
+			baro_data_to_mb.temperature = temperature;
+			baro_data_to_mb.pressure = pressure;
+			baro_data_to_mb.ts = tick_count;
+			osMutexRelease(baro_mutex);
+		}
 
 		osDelayUntil(tick_count);
 	}

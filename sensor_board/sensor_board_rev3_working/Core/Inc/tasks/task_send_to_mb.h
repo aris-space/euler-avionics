@@ -12,12 +12,12 @@
 #include "cmsis_os.h"
 #include "util.h"
 #include "main.h"
-
+#include <string.h>
 /* Tasks */
 void vTaskSendToMb(void *argument);
 
 /* Constants */
-#define SPI_TIMEOUT 30
+#define SPI_TIMEOUT 5
 #define MB_SAMPLING_RATE 100
 
 /* extern */
@@ -28,5 +28,10 @@ extern osMutexId_t imu_mutex;
 extern SPI_HandleTypeDef hspi2;
 extern baro_data_t SPI_Baro;
 extern sb_data_t fullsb_data;
+
+/* USB Sensor Read In */
+//extern osMessageQueueId_t usb_data_queue;
+extern osMutexId_t usb_data_mutex;
+extern uint8_t usb_data_buffer[64];
 
 #endif /* INC_TASK_SEND_TO_MB_H_ */

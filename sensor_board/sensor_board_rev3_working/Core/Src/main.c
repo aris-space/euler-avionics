@@ -118,6 +118,10 @@ osMutexId_t imu_mutex;
 imu_data_t imu_data_to_mb;
 /* SPI Receive */
 sb_data_t fullsb_data;
+/* Fake USB Data insert */
+//osMessageQueueId_t usb_data_queue;
+osMutexId_t usb_data_mutex;
+uint8_t usb_data_buffer[64] = {[0 ... 63] = 48};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/

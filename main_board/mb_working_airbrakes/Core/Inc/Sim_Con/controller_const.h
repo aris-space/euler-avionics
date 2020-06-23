@@ -10,7 +10,7 @@
 #include "controller.h"
 #include <math.h>
 
-#define LQR_ACTIVE false                                                                         //
+#define LQR_ACTIVE true                                                                         //
 #define CONTROLLER_SAMPLING_FREQ 100                                                            // Hz
 #define POLY_DEG 30                                                                             // -
 #define OPT_TRAJ_CONTROL_INPUT 0.49664876248103507                                              // -
@@ -26,7 +26,7 @@
 #define TARGET_AGOGEE 1450.0                                                                    // m
 #define TEST_CONTROLLER_USE_VELOCITY false                                                       // -
 #define TEST_CONTROLLER_MAX_VELOCITY 3.0f                                                       // m/s
-#define TEST_CONTROLLER_MAX_ALTITUDE 20.0f                                                      // m
+#define TEST_CONTROLLER_MAX_ALTITUDE 2000.0f                                                      // m
 
 /* Types */
 typedef struct {
@@ -44,7 +44,7 @@ typedef struct {
     uint16_t safety_counter;
     bool apogee_approach_phase;
 
-    double gains[NUM_POLYFITS-1];
+    double gains[NUM_GAINS];
     double poly_coeff[NUM_POLYFITS][POLY_DEG+1];
 
 } control_data_t;

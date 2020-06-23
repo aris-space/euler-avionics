@@ -29,10 +29,6 @@ void vTaskImuRead(void *argument) {
 	int16_t acceleration[3] = { 0 }; /* 0 = x, 1 = y, 2 = z */
 	int16_t temperature;
 
-
-	/* initialize counter as we want to average over 4 samples every time */
-	int8_t counter = 0;
-
 	/* initialize queue message */
 	imu_data_t queue_data = { 0 };
 
@@ -48,11 +44,21 @@ void vTaskImuRead(void *argument) {
 
 		/* Debugging */
 
-		UsbPrint("[DBG] RAW Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld, T:%ld; \n",
-				gyroscope_data[0], gyroscope_data[1], gyroscope_data[2],
-				acceleration[0], acceleration[1], acceleration[2], temperature);
+//		UsbPrint("[DBG] RAW Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld, T:%ld; \n",
+//				gyroscope_data[0], gyroscope_data[1], gyroscope_data[2],
+//				acceleration[0], acceleration[1], acceleration[2], temperature);
 
 		//TODO HIE AUE STUFF WO MUES GMACHT WERDE MIT DENE DATE
+
+		queue_data.gyro_x = gyroscope_data[0];
+		queue_data.gyro_y = gyroscope_data[1];
+		queue_data.gyro_z = gyroscope_data[2];
+		queue_data.acc_x = acceleration[0];
+		queue_data.acc_y = acceleration[1];
+		queue_data.acc_z = acceleration[2];
+
+		/* Send Data to Queue */
+		osMessageQueuePut(preprocess_queue, &queue_data, 0U, 0U);
 
 		osDelayUntil(tick_count);
 	}

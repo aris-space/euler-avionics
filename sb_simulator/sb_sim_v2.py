@@ -1,7 +1,7 @@
 from time import sleep
+from timeit import default_timer as timer
 import serial
 import argparse
-import time
 
 
 class baro_data_t:
@@ -66,14 +66,15 @@ boards = [sb_data_t(1, baro_data, imu_data),
           sb_data_t(3, baro_data, imu_data)]
 
 
-def send_readings(ser, latest_readings):
-    # TODO: this needs to be modified if there are more reading types incoming
+def save_readings(all_readings, latest_readings, sending_delay):
+    #TODO: this needs to be modified if there are more reading types incoming
     if 'acceleration_x' in latest_readings:
         for board_id, board_values in latest_readings['acceleration_x'].items():
             if board_id != 'sb_id_cnt':
                 board_idx = board_values['sb_id']
-                boards[board_idx].imu_data.acc_z = format(round(board_values['value'] * 1024 / 9.81), '05d')
+                boards[board_idx].imu_data.acc_x = format(round(board_values['value'] * 1024 / 9.81), '05d')
                 boards[board_idx].imu_data.ts = format(round(board_values['ts'] * ticks_per_second_mb), '05d')
+
     if 'pressure' in latest_readings:
         for board_id, board_values in latest_readings['pressure'].items():
             if board_id != 'sb_id_cnt':
@@ -87,50 +88,67 @@ def send_readings(ser, latest_readings):
                 boards[board_idx].baro_data.temperature = format(round(board_values['value'] * 100), '05d')
                 boards[board_idx].baro_data.ts = format(round(board_values['ts'] * ticks_per_second_mb), '05d')
     out_str = f"{'|'.join(list(map(str, boards)))}\n".ljust(250)[:250]
-    ser.write(out_str.encode())
+    all_readings.append((out_str.encode(), sending_delay))
     #print(out_str)
 
+def get_all_readings(filename):
+    all_readings = []
+    with open(filename, 'r') as f:
+        #ignore header
+        f.readline()
+        last_readings = {}
+        
+        prev_sensor_id, prev_reading_type, prev_ts, prev_value = split_line(f.readline())
+        update_values(last_readings, prev_sensor_id, prev_reading_type, prev_ts, prev_value)
+        for line in f:
+            sensor_id, reading_type, ts, value = split_line(line)
+            while prev_ts == ts:
+                update_values(last_readings, sensor_id, reading_type, ts, value)
+                prev_sensor_id, prev_reading_type, prev_ts, prev_value = sensor_id, reading_type, ts, value
+                try:
+                    next_line = next(f)
+                except StopIteration:
+                    print('LAST ROW READ - That one probably not sent :(')
+                    break
+                sensor_id, reading_type, ts, value = split_line(next_line)
+            else:
+                #sending delay is the delay between the current and previous timestamp
+                #save_readings(all_readings, last_readings, ts-prev_ts)
+                save_readings(all_readings, last_readings, 0.01)
+                update_values(last_readings, sensor_id, reading_type, ts, value)
+
+            prev_sensor_id, prev_reading_type, prev_ts, prev_value = sensor_id, reading_type, ts, value
+    return all_readings
+    
 
 def run(ser_port, baud_rate, ticks_per_second_mb, filename):
+    all_readings = get_all_readings(filename)
+    max_diff = 0
+    sum_diff = 0
+    #cnt = 0
     with serial.Serial(ser_port, baud_rate, timeout = 4) as ser:
-        with open('Sensor_data_100Hz.csv', 'r') as f:
-            #ignore header
-            f.readline()
-
-            last_readings = {}
-
-            prev_sensor_id, prev_reading_type, prev_ts, prev_value = split_line(f.readline())
-            update_values(last_readings, prev_sensor_id, prev_reading_type, prev_ts, prev_value)
-
-            for line in f:
-                start = time.time()
-                sensor_id, reading_type, ts, value = split_line(line)
-                while prev_ts == ts:
-                    update_values(last_readings, sensor_id, reading_type, ts, value)
-                    prev_sensor_id, prev_reading_type, prev_ts, prev_value = sensor_id, reading_type, ts, value
-
-                    next_line = next(f)
-                    sensor_id, reading_type, ts, value = split_line(next_line)
-                else:
-                    #print("SENDING:")
-                    #print(last_readings)
-                    send_readings(ser, last_readings)
-                    #print('\n')
-                    update_values(last_readings, sensor_id, reading_type, ts, value)
-
-                prev_sensor_id, prev_reading_type, prev_ts, prev_value = sensor_id, reading_type, ts, value
-
-                #maybe change this
-                
-                sleep(0.0088)
-                #sleep(0.01)
-                print(time.time() - start)
+        for reading, sending_delay in all_readings:
+            start = timer()
+            ser.write(reading)
+            end = timer()
+            transmission_time = end - start
+            if transmission_time < sending_delay:
+                sleep((sending_delay - transmission_time))
+            end0 = timer()
+            delay_diff = (end0 - start) - sending_delay
+            max_diff = max(max_diff, delay_diff)
+            sum_diff += delay_diff
+            #cnt += 1
+            #if cnt % 1000 == 0:
+            #    print(f'Sent {cnt}. Current Max: {max_diff}, Current Avg. {sum_diff / cnt}')
+    print('Simulation ended.')		
+    print(f'Max delay: {max_diff}, Avg delay: {sum_diff / len(all_readings)}')
 
 #args
 ser_port = 'COM4'
-baud_rate = 9600
+baud_rate = 256000
 ticks_per_second_mb = 1000
-filename = 'Sensor_data_100Hz'
+filename = 'Sensor_data_100Hz.csv'
 
 
 parser = argparse.ArgumentParser()

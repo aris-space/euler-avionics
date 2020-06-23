@@ -18,8 +18,9 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include <Util/math_utils.h>
-#include <Util/util.h>
+#include "Util/math_utils.h"
+#include "Util/util.h"
+#include "Util/mutex.h"
 /* Constants */
 /* -> Are in state_est_settings */
 
@@ -28,29 +29,33 @@
 
 /* Extern */
 /* Sensor Board 1 */
-extern osMutexId_t sb1_mutex;
+extern custom_mutex_t sb1_mutex;
 extern imu_data_t sb1_imu;
 extern baro_data_t sb1_baro;
 
 /* Sensor Board 2 */
-extern osMutexId_t sb2_mutex;
+extern custom_mutex_t sb2_mutex;
 extern imu_data_t sb2_imu;
 extern baro_data_t sb2_baro;
 
 /* Sensor Board 3 */
-extern osMutexId_t sb3_mutex;
+extern custom_mutex_t sb3_mutex;
 extern imu_data_t sb3_imu;
 extern baro_data_t sb3_baro;
 
 /* State Estimation Mutex */
-extern osMutexId_t state_est_mutex;
+extern custom_mutex_t state_est_mutex;
 extern state_est_data_t state_est_data_global;
 
 /* fsm Mutex */
-extern osMutexId_t fsm_mutex;
-extern osMutexId_t environment_mutex;
+extern custom_mutex_t fsm_mutex;
+extern custom_mutex_t environment_mutex;
 extern flight_phase_detection_t global_flight_phase_detection;
 extern env_t global_env;
+
+/* Command Mutex */
+extern custom_mutex_t command_mutex;
+extern command_e global_telemetry_command;
 
 
 
