@@ -62,18 +62,18 @@ osStatus_t logSensor(timestamp_t ts, board_id_t sensor_board_id,
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
 }
 
-osStatus_t logRocketState(timestamp_t ts, flight_phase_e flight_phase) {
+osStatus_t logRocketState(timestamp_t ts, flight_phase_detection_t flight_phase_detection) {
 	log_entry_t log_entry = { 0 };
 
 	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%d\n", ts, STATE,
-			flight_phase);
+			flight_phase_detection.flight_phase);
 
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
 }
 
 osStatus_t logEstimatorVar(timestamp_t ts, state_est_data_t estimator_data) {
 	log_entry_t log_entry = { 0 };
-	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld;%ld\n", ts, ESTIMATOR_VAR,
+	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld,%ld\n", ts, ESTIMATOR_VAR,
 			estimator_data.position_world[2], estimator_data.velocity_rocket[0]);
 
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
@@ -82,7 +82,7 @@ osStatus_t logEstimatorVar(timestamp_t ts, state_est_data_t estimator_data) {
 osStatus_t logControllerOutput(timestamp_t ts, int32_t controller_output, int32_t reference_error,
 		int32_t integrated_error) {
 	log_entry_t log_entry = { 0 };
-	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld;%ld;%ld\n", ts, CONTROLLER_OUTPUT,
+	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld,%ld,%ld\n", ts, CONTROLLER_OUTPUT,
 			controller_output, reference_error, integrated_error);
 
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
@@ -90,7 +90,7 @@ osStatus_t logControllerOutput(timestamp_t ts, int32_t controller_output, int32_
 
 osStatus_t logMotor(timestamp_t ts, int32_t desired_position, int32_t actual_position) {
 	log_entry_t log_entry = { 0 };
-	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld;%ld\n", ts, MOTOR_POSITION,
+	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld,%ld\n", ts, MOTOR_POSITION,
 			desired_position, actual_position);
 
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
@@ -103,6 +103,7 @@ osStatus_t logMsg(timestamp_t ts, char *msg) {
 
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
 }
+
 
 /** USB DEBUGGING SECTION **/
 

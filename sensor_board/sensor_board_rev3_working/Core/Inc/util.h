@@ -45,6 +45,8 @@ typedef struct {
 static const imu_data_t EMPTY_IMU = { 0 };
 
 /** DEBUGGING **/
+/* Read In Fake Sensor Data */
+#define USB_DATA_ENABLE 1
 
 /* Debug flag */
 #ifdef DEBUG

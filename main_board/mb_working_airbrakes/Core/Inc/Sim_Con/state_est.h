@@ -19,6 +19,8 @@ typedef struct {
     double polyfit_coeffs[EXTRAPOLATION_POLYFIT_DEGREE+1]; /* array size needs to be the degree of the polyfit plus 1 */
 } extrapolation_rolling_memory_t;
 
+static const extrapolation_rolling_memory_t EMPTY_MEMORY = { 0 };
+
 void update_state_est_data(state_est_data_t *state_est_data, kf_state_t *kf_state);
 
 void process_measurements(timestamp_t t, kf_state_t *kf_state, state_est_meas_t *state_est_meas, state_est_meas_t *state_est_meas_prior,

@@ -1,6 +1,7 @@
 from time import sleep
 import serial
 import argparse
+import time
 
 
 class baro_data_t:
@@ -57,8 +58,8 @@ def split_line(line_str):
     return split_line[1][:4], split_line[2], float(split_line[3]), float(split_line[4][1:-2])
 
 
-imu_data = imu_data_t(0, 0, 0, 0, 0, 0, 0)
-baro_data = baro_data_t(0, 0, 0)
+imu_data = imu_data_t(0, 0, 0, 0, 0, format(0, '05d'), format(0, '05d'))
+baro_data = baro_data_t(format(0, '05d'), format(0, '05d'), format(0, '05d'))
 
 boards = [sb_data_t(1, baro_data, imu_data),
           sb_data_t(2, baro_data, imu_data),
@@ -71,28 +72,28 @@ def send_readings(ser, latest_readings):
         for board_id, board_values in latest_readings['acceleration_x'].items():
             if board_id != 'sb_id_cnt':
                 board_idx = board_values['sb_id']
-                boards[board_idx].imu_data.acc_x = round(board_values['value'] * 1000 / 9.81)
-                boards[board_idx].imu_data.ts = round(board_values['ts'] * ticks_per_second_mb)
+                boards[board_idx].imu_data.acc_z = format(round(board_values['value'] * 1024 / 9.81), '05d')
+                boards[board_idx].imu_data.ts = format(round(board_values['ts'] * ticks_per_second_mb), '05d')
     if 'pressure' in latest_readings:
         for board_id, board_values in latest_readings['pressure'].items():
             if board_id != 'sb_id_cnt':
                 board_idx = board_values['sb_id']
-                boards[board_idx].baro_data.pressure = round(board_values['value'])
-                boards[board_idx].baro_data.ts = round(board_values['ts'] * ticks_per_second_mb)
+                boards[board_idx].baro_data.pressure = format(round(board_values['value']), '05d')
+                boards[board_idx].baro_data.ts = format(round(board_values['ts'] * ticks_per_second_mb), '05d')
     if 'temperature' in latest_readings:
         for board_id, board_values in latest_readings['temperature'].items():
             if board_id != 'sb_id_cnt':
                 board_idx = board_values['sb_id']
-                boards[board_idx].baro_data.temperature = round(board_values['value'])
-                boards[board_idx].baro_data.ts = round(board_values['ts'] * ticks_per_second_mb)
+                boards[board_idx].baro_data.temperature = format(round(board_values['value'] * 100), '05d')
+                boards[board_idx].baro_data.ts = format(round(board_values['ts'] * ticks_per_second_mb), '05d')
     out_str = f"{'|'.join(list(map(str, boards)))}\n".ljust(250)[:250]
     ser.write(out_str.encode())
-    print(out_str)
+    #print(out_str)
 
 
 def run(ser_port, baud_rate, ticks_per_second_mb, filename):
     with serial.Serial(ser_port, baud_rate, timeout = 4) as ser:
-        with open('sensor_measurements.csv', 'r') as f:
+        with open('Sensor_data_100Hz.csv', 'r') as f:
             #ignore header
             f.readline()
 
@@ -102,6 +103,7 @@ def run(ser_port, baud_rate, ticks_per_second_mb, filename):
             update_values(last_readings, prev_sensor_id, prev_reading_type, prev_ts, prev_value)
 
             for line in f:
+                start = time.time()
                 sensor_id, reading_type, ts, value = split_line(line)
                 while prev_ts == ts:
                     update_values(last_readings, sensor_id, reading_type, ts, value)
@@ -119,14 +121,16 @@ def run(ser_port, baud_rate, ticks_per_second_mb, filename):
                 prev_sensor_id, prev_reading_type, prev_ts, prev_value = sensor_id, reading_type, ts, value
 
                 #maybe change this
-                sleep(0.0009)
-
+                
+                sleep(0.0088)
+                #sleep(0.01)
+                print(time.time() - start)
 
 #args
-ser_port = 'COM3'
+ser_port = 'COM4'
 baud_rate = 9600
 ticks_per_second_mb = 1000
-filename = 'sensor_measurements'
+filename = 'Sensor_data_100Hz'
 
 
 parser = argparse.ArgumentParser()

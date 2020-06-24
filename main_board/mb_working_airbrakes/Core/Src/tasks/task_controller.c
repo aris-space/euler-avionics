@@ -14,8 +14,7 @@ void vTaskController(void *argument) {
 	/* For periodic update */
 	uint32_t tick_count, tick_update;
 
-	state_est_data_t state_placeholder;
-    flight_phase_detection_t flight_phase_detection_placeholder = { 0 };
+	state_est_data_t state_est_data_local;
     flight_phase_detection_t current_flight_phase_detection = { 0 };
 
     /* Initialize the control_data struct */
@@ -26,31 +25,19 @@ void vTaskController(void *argument) {
 	tick_count = osKernelGetTickCount();
 	tick_update = osKernelGetTickFreq() / CONTROLLER_SAMPLING_FREQ;
 
+
 	while (1) {
 		/* Tick Update */
 		tick_count += tick_update;
 
 		/* Update Sensor Fusion Variables */
-		if (osMutexGetOwner(state_est_mutex) == NULL) {
-			state_placeholder.position_world[2] = state_est_data_global.position_world[2];
-			state_placeholder.velocity_world[2] = state_est_data_global.velocity_world[2];
-			if (osMutexGetOwner(state_est_mutex) == NULL) {
-				control_data.sf_ref_altitude_AGL = ((float)state_placeholder.position_world[2]) / 1000;
-				control_data.sf_velocity = ((float)state_placeholder.velocity_world[2]) / 1000;
-			}
-		}
+		ReadMutex(&state_est_mutex, &state_est_data_global, &state_est_data_local, sizeof(state_est_data_local));
 
-		/* update flight Phase */
-		if (osMutexGetOwner(fsm_mutex) == NULL) {
-			flight_phase_detection_placeholder.flight_phase = global_flight_phase_detection.flight_phase;
-			flight_phase_detection_placeholder.mach_regime = global_flight_phase_detection.mach_regime;
-			flight_phase_detection_placeholder.mach_number = global_flight_phase_detection.mach_number;
-			if (osMutexGetOwner(fsm_mutex) == NULL) {
-				current_flight_phase_detection.flight_phase = flight_phase_detection_placeholder.flight_phase;
-				current_flight_phase_detection.mach_regime = flight_phase_detection_placeholder.mach_regime;
-				current_flight_phase_detection.mach_number = flight_phase_detection_placeholder.mach_number;
-			}
-		}
+		control_data.sf_ref_altitude_AGL = ((float)state_est_data_global.position_world[2]) / 1000;
+		control_data.sf_velocity = ((float)state_est_data_global.velocity_world[2]) / 1000;
+
+		/* Update flight Phase */
+		ReadMutex(&fsm_mutex, &global_flight_phase_detection, &current_flight_phase_detection, sizeof(state_est_data_local));
 
 		/** MAKE SURE THE RIGHT CONTROLLER IS ACTIVE IS ACTIVE!!!!! **/
         if(LQR_ACTIVE) {
@@ -59,15 +46,19 @@ void vTaskController(void *argument) {
         else {
             compute_test_control_input(&control_data);
         }
+
 		/* Write Control Input into Global Variable */
-		if (osMutexAcquire(controller_mutex, 10) == osOK) {
+		if(AcquireMutex(&controller_mutex) == osOK){
 			controller_output_global = (int32_t)(control_data.control_input * 1000);
-			osMutexRelease(controller_mutex);
+			ReleaseMutex(&controller_mutex);
 		}
 
-		/* Log to SD Card */
 
-		logControllerOutput(osKernelGetTickCount(), (int32_t)(control_data.control_input * 1000), (int32_t)((float)control_data.reference_error)/1000, (int32_t)((float)control_data.integrated_error)/1000);
+		/* Log to SD Card */
+		logControllerOutput(osKernelGetTickCount(),
+				(int32_t)(control_data.control_input * 1000),
+				(int32_t)(control_data.reference_error * 1000),
+				(int32_t)(control_data.integrated_error * 1000));
 
 
 		/* Sleep */

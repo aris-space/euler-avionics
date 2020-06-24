@@ -58,6 +58,7 @@ void SPI1_IRQHandler(void);
 void SPI2_IRQHandler(void);
 void SDMMC1_IRQHandler(void);
 void SPI3_IRQHandler(void);
+void UART4_IRQHandler(void);
 void DMA2_Stream3_IRQHandler(void);
 void OTG_FS_IRQHandler(void);
 void DMA2_Stream6_IRQHandler(void);

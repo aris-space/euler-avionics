@@ -7,6 +7,9 @@
 
 #include "tasks/task_state_est.h"
 
+void resetStateEstimation(kf_state_t *kf_state, flight_phase_detection_t *flight_phase_detection,
+		env_t *environment, extrapolation_rolling_memory_t *extrapolation_rolling_memory);
+
 
 void vTaskStateEst(void *argument) {
 
@@ -20,19 +23,17 @@ void vTaskStateEst(void *argument) {
 
 	state_est_meas_t state_est_meas = { 0 };
 	state_est_meas_t state_est_meas_prior = { 0 };
-	uint32_t Placeholder_timestamps[2] = { 0 };
-	float Placeholder_measurement[3] = { 0 };
 
 	kf_state_t kf_state;
 	reset_kf_state(&kf_state);
 
-	extrapolation_rolling_memory_t extrapolation_rolling_memory = {0};
+	extrapolation_rolling_memory_t extrapolation_rolling_memory = { 0 };
 	extrapolation_rolling_memory.memory_length = 0;
 
-	flight_phase_detection_t dummy_flight_phase_detection = { 0 };
 	flight_phase_detection_t flight_phase_detection = { 0 };
 	reset_flight_phase_detection(&flight_phase_detection);
-	reset_flight_phase_detection(&dummy_flight_phase_detection);
+
+	command_e telemetry_command = IDLE_COMMAND;
 
 	select_noise_models(&kf_state, &flight_phase_detection, &env, &extrapolation_rolling_memory);
 
@@ -41,72 +42,35 @@ void vTaskStateEst(void *argument) {
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();
 	tick_update = osKernelGetTickFreq() / STATE_ESTIMATION_FREQUENCY;
-	osDelay(500);
+
 	for (;;) {
 		tick_count += tick_update;
 
-		/* Acquire the Sensor data */
-		/* Sensor Board 1 */
-		if (osMutexGetOwner(sb1_mutex) == NULL) {
-			Placeholder_measurement[0] = (float) (sb1_baro.pressure);
-			Placeholder_timestamps[0] = sb1_baro.ts;
-			Placeholder_measurement[1] = ((float) (sb1_imu.acc_z + 100)) / 1024;
-			Placeholder_timestamps[1] = sb1_imu.ts;
-			Placeholder_measurement[2] = ((float) (sb1_baro.temperature)) / 100;
+		/* Acquire New Command */
+		ReadMutex(&command_mutex, &global_telemetry_command, &telemetry_command, sizeof(global_telemetry_command));
 
-			if (osMutexGetOwner(sb1_mutex) == NULL) {
-				state_est_meas.baro_data[0].pressure = Placeholder_measurement[0];
-				state_est_meas.baro_data[0].temperature = Placeholder_measurement[2];
-				state_est_meas.baro_data[0].ts = Placeholder_timestamps[0];
-
-				state_est_meas.imu_data[0].acc_x = Placeholder_measurement[1] * GRAVITATION;
-				state_est_meas.imu_data[0].ts = Placeholder_timestamps[1];
-			}
+		/*
+		 * Check if we need to reset the state estimation
+		 * and if we are in idle state to be able
+		 * to do so
+		 */
+		if(flight_phase_detection.flight_phase == IDLE && global_telemetry_command == CALIBRATE_SENSORS){
+			resetStateEstimation(&kf_state, &flight_phase_detection, &env, &extrapolation_rolling_memory);
 		}
+
+		/* Acquire the Sensor data */
+
+		/* Sensor Board 1 */
+		ReadMutexStateEst(&sb1_mutex, &sb1_baro, &sb1_imu, &state_est_meas, 1);
 
 		/* Sensor Board 2 */
-		if (osMutexGetOwner(sb2_mutex) == NULL) {
-			Placeholder_measurement[0] = (float) (sb2_baro.pressure);
-			Placeholder_timestamps[0] = sb2_baro.ts;
-			Placeholder_measurement[1] = ((float) (sb2_imu.acc_z + 100)) / 1024;
-			Placeholder_timestamps[1] = sb2_imu.ts;
-			Placeholder_measurement[2] = ((float) (sb2_baro.temperature)) / 100;
-
-			if (osMutexGetOwner(sb2_mutex) == NULL) {
-				state_est_meas.baro_data[1].pressure = Placeholder_measurement[0];
-				state_est_meas.baro_data[1].temperature = Placeholder_measurement[2];
-				state_est_meas.baro_data[1].ts = Placeholder_timestamps[0];
-
-				state_est_meas.imu_data[1].acc_x = Placeholder_measurement[1] * GRAVITATION;
-				state_est_meas.imu_data[1].ts = Placeholder_timestamps[1];
-			}
-		}
+		ReadMutexStateEst(&sb2_mutex, &sb2_baro, &sb2_imu, &state_est_meas, 2);
 
 		/* Sensor Board 3 */
-		if (osMutexGetOwner(sb3_mutex) == NULL) {
-			Placeholder_measurement[0] = (float)(sb3_baro.pressure);
-			Placeholder_timestamps[0] = sb3_baro.ts;
-			Placeholder_measurement[1] = ((float)(sb3_imu.acc_z + 100)) / 1024;
-			Placeholder_timestamps[1] = sb3_imu.ts;
-			Placeholder_measurement[2] = ((float)(sb3_baro.temperature)) / 100;
-
-			if (osMutexGetOwner(sb3_mutex) == NULL) {
-				state_est_meas.baro_data[2].pressure = Placeholder_measurement[0];
-				state_est_meas.baro_data[2].temperature = Placeholder_measurement[2];
-				state_est_meas.baro_data[2].ts = Placeholder_timestamps[0];
-
-				state_est_meas.imu_data[2].acc_x = Placeholder_measurement[1] * GRAVITATION;
-				state_est_meas.imu_data[2].ts = Placeholder_timestamps[1];
-			}
-		}
+		ReadMutexStateEst(&sb3_mutex, &sb3_baro, &sb3_imu, &state_est_meas, 3);
 
 		/* get new Phase Detection*/
-		if(osMutexGetOwner(fsm_mutex) == NULL){
-			dummy_flight_phase_detection = global_flight_phase_detection;
-			if(osMutexGetOwner(fsm_mutex) == NULL){
-				flight_phase_detection = dummy_flight_phase_detection;
-			}
-		}
+		ReadMutex(&fsm_mutex, &global_flight_phase_detection, &flight_phase_detection, sizeof(flight_phase_detection));
 
 		/* process measurements */
 		process_measurements(tick_count, &kf_state, &state_est_meas, &state_est_meas_prior, &env, &extrapolation_rolling_memory);
@@ -132,23 +96,18 @@ void vTaskStateEst(void *argument) {
 		/* set measurement prior to measurements from completed state estimation step */
 		memcpy(&state_est_meas_prior, &state_est_meas, sizeof(state_est_meas));
 
+		/* Kalman Update Finished */
 
-		/* KALMAN UPDATE FINISHED */
-		/* OUTPUT IS x_est */
-		if(osMutexAcquire(state_est_mutex, 10) == osOK){
-			/* Write into global variable */
-			/* TODO: Check correct indexing */
-			/* the value is multiplied by 1000 for conversion to int datatype for easy transport
-			 * careful in other tasks!
-			 */
+		/* Update global State Estimation Data */
+		if(AcquireMutex(&state_est_mutex) == osOK){
 			update_state_est_data(&state_est_data_global, &kf_state);
-			osMutexRelease(state_est_mutex);
+			ReleaseMutex(&state_est_mutex);
 		}
 
 		/* Update env for FSM */
-		if(osMutexAcquire(environment_mutex, 10) == osOK){
+		if(AcquireMutex(&fsm_mutex) == osOK){
 			global_env = env;
-			osMutexRelease(environment_mutex);
+			ReleaseMutex(&fsm_mutex);
 		}
 
 		/* Write to logging system */
@@ -158,4 +117,14 @@ void vTaskStateEst(void *argument) {
 
 		osDelayUntil(tick_count);
 	}
+}
+
+
+void resetStateEstimation(kf_state_t *kf_state, flight_phase_detection_t *flight_phase_detection,
+		env_t *environment, extrapolation_rolling_memory_t *extrapolation_rolling_memory){
+	reset_flight_phase_detection(flight_phase_detection);
+	reset_kf_state(kf_state);
+	init_env(environment);
+	*extrapolation_rolling_memory = EMPTY_MEMORY;
+	select_noise_models(kf_state, flight_phase_detection, environment, extrapolation_rolling_memory);
 }
