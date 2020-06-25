@@ -16,6 +16,7 @@ from matplotlib import style
 style.use('ggplot')
 import logging
 from Logs.LoggingHandler import LoggingHandler
+from View.PlotControl import PlotControl
 
 sb_measurement_names = ["pressure",
                         "temp",
@@ -157,21 +158,28 @@ class MainWindow(Frame):
         # self.sub = self.fig1.add_subplot(111)
         # self.sub.plot(self.velocity_list)
 
-        canvas_left = FigureCanvasTkAgg(fig_speed, self.frame_upper_middle)
-        canvas_left.draw()
-        canvas_left.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+        # canvas_left = FigureCanvasTkAgg(fig_speed, self.frame_upper_middle)
+        # canvas_left.draw()
+        # canvas_left.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+        #
+        # toolbar_left = NavigationToolbar2Tk(canvas_left, self.frame_upper_middle)
+        # toolbar_left.update()
+        # canvas_left._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        #
+        # canvas_right = FigureCanvasTkAgg(fig_height, self.frame_upper_right)
+        # canvas_right.draw()
+        # canvas_right.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+        #
+        # toolbar_right = NavigationToolbar2Tk(canvas_right, self.frame_upper_right)
+        # toolbar_right.update()
+        # canvas_right._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-        toolbar_left = NavigationToolbar2Tk(canvas_left, self.frame_upper_middle)
-        toolbar_left.update()
-        canvas_left._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.plot_velocity = PlotControl(self.frame_upper_middle, add_toolbar=True, figsize=(5, 5), polling_time=.5)
+        # self.plot_velocity.title = 'Velocity'
+        self.plot_velocity.grid(row=0, column=0, sticky='nswe')
 
-        canvas_right = FigureCanvasTkAgg(fig_height, self.frame_upper_right)
-        canvas_right.draw()
-        canvas_right.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
-
-        toolbar_right = NavigationToolbar2Tk(canvas_right, self.frame_upper_right)
-        toolbar_right.update()
-        canvas_right._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.plot_height = PlotControl(self.frame_upper_right, add_toolbar=True, figsize=(5, 5), polling_time=.5)
+        self.plot_height.grid(row=0, column=0, sticky='nswe')
 
         # ==============================================================================================================
         # add separator lines

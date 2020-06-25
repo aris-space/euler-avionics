@@ -28,7 +28,6 @@ if __name__ == '__main__':
     gs = GroundStation(root)
     gs.main_window.mainloop()
 
-
     logger.info('==========================================================================')
     logger.info('                        ARIS Groundstation closed                         ')
     logger.info('==========================================================================')
