@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import tkinter as tk
 from tkinter import ttk, messagebox, Tk, Frame, scrolledtext
 from SerialConnection import SerialConnection, get_measurement_names, available_ports

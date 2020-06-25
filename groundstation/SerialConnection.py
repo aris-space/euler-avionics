@@ -7,6 +7,7 @@ from tkinter import messagebox
 import sys
 import glob
 import logging
+from DataTypes import data_struct
 
 
 def available_ports():
@@ -49,38 +50,7 @@ def flatten(d, parent_key='', sep='_'):
     return dict(items)
 
 
-imu_data_t = {'gyro_x': 'h',
-              'gyro_y': 'h',
-              'gyro_z': 'h',
-              'acc_x': 'h',
-              'acc_y': 'h',
-              'acc_z': 'h',
-              'ts': 'l'}
-
-baro_data_t = {'pressure': 'l',
-               'temperature': 'l',
-               'ts': 'l'}
-
-sb_data_t = {'baro': baro_data_t,
-             'imu': imu_data_t,
-             'checksum': 'B'}
-
-
-flight_phase_detection_t = {
-    'flight_phase': 'B',
-    'mach_regime': 'B',
-    'mach_number': 'f',
-    'num_samples_positive': 'b'
-}
-
-telemetry_t = {'sb1': sb_data_t,
-               'sb2': sb_data_t,
-               'sb3': sb_data_t,
-               'height': 'l',
-               'velocity': 'l',
-               'ts': 'l',
-               'flight_phase': 'B',
-               'mach_regime': 'B'}
+telemetry_t = data_struct()
 
 data_types_order = flatten(telemetry_t)
 fmt = ''.join(data_types_order.values())
@@ -152,16 +122,19 @@ class SerialConnection:
                 break
             if numbytes:
                 try:
-                    self.serialConnection.readinto(self.rawData)
                     self.serialConnection.reset_input_buffer()
+                    self.serialConnection.readinto(self.rawData)
+                    # self.serialConnection.reset_input_buffer()
                     self.isReceiving = True
                 except (OSError, serial.SerialException):
                     print('Lost serial connection to'+str(self.port))
                     messagebox.showerror('Error', 'Lost serial connection to '+str(self.port))
                     break
+
                 print(self.rawData.hex())
                 # print('length', len(self.rawData))
                 self.data = struct.unpack(fmt+'b'+'b', self.rawData)
+
                 data_dict = dict(zip(measurements, self.data))
                 print(data_dict)
                 # print(self.serialConnection.inWaiting())

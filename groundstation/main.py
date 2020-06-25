@@ -1,3 +1,5 @@
+#!/home/imre/anaconda3/bin/python
+
 from tkinter import Tk
 from GroundStation import GroundStation
 import logging
