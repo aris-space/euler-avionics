@@ -1,8 +1,11 @@
+#!/usr/bin/env python
+
 import tkinter as tk
 from tkinter import ttk, messagebox, Tk, Frame, scrolledtext
 from SerialConnection import SerialConnection, get_measurement_names, available_ports
 import threading
 import time
+import sys
 import csv
 import os.path
 import matplotlib
@@ -102,8 +105,9 @@ class MainWindow(Frame):
 
         self._root = parent
         self._root.title("ARIS Groundstation")
-        self._root.state("zoomed")
-        self._root.wm_iconbitmap('aris.ico')
+        # self._root.state("zoomed")
+        self._root.state('normal')
+        # self._root.wm_iconbitmap("aris.ico")
 
         self._root.grid_rowconfigure(1, weight=1)
         self._root.grid_columnconfigure(1, weight=1)
@@ -375,9 +379,12 @@ class MainWindow(Frame):
         self.button_connect.grid(row=3, column=0, columnspan=2, pady=10)
 
         self.entry1.delete(0, 'end')
-        self.entry1.insert(0, 'COM6')
+        if sys.platform.startswith('win'):
+            self.entry1.insert(0, 'COM6')
+        else:
+            self.entry1.insert(0, '/dev/ttyUSB0')
         self.entry2.delete(0, 'end')
-        self.entry2.insert(0, 460800)
+        self.entry2.insert(0, 230400)
         self.entry3.delete(0, 'end')
         self.entry3.insert(0, 112)
 
