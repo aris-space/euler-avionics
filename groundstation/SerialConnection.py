@@ -112,7 +112,11 @@ class SerialConnection:
         print('Trying to connect to: ' + str(self.port) + ' at ' + str(self.baud) + ' BAUD.')
         self.logger.info('Trying to connect to: ' + str(self.port) + ' at ' + str(self.baud) + ' BAUD.')
         try:
-            self.serialConnection = serial.Serial(self.port, self.baud, timeout=None)
+            self.serialConnection = serial.Serial(self.port,
+                                                  self.baud,
+                                                  parity=serial.PARITY_NONE,
+                                                  stopbits=serial.STOPBITS_ONE,
+                                                  timeout=None)
             print('Connected to ' + str(self.port) + ' at ' + str(self.baud) + ' BAUD.')
             self.logger.info('Connected to ' + str(self.port) + ' at ' + str(self.baud) + ' BAUD.')
             # self.read_serial_start()
