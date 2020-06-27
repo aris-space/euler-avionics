@@ -46,14 +46,14 @@ static const imu_data_t EMPTY_IMU = { 0 };
 
 /** DEBUGGING **/
 /* Read In Fake Sensor Data */
-#define USB_DATA_ENABLE 1
+#define USB_DATA_ENABLE 0
 
 /* Debug flag */
 #ifdef DEBUG
 #undef DEBUG
 #endif
 /* Comment the next line in order to disable debug mode */
-#define DEBUG
+//#define DEBUG
 
 #ifdef DEBUG
 osMutexId_t print_mutex;
