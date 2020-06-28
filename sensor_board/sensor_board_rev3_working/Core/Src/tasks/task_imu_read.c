@@ -56,6 +56,7 @@ void vTaskImuRead(void *argument) {
 		queue_data.acc_x = acceleration[0];
 		queue_data.acc_y = acceleration[1];
 		queue_data.acc_z = acceleration[2];
+		queue_data.ts = osKernelGetTickCount();
 
 		/* Send Data to Queue */
 		osMessageQueuePut(preprocess_queue, &queue_data, 0U, 0U);
