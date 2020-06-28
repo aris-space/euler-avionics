@@ -31,7 +31,11 @@
 #include "usbd_cdc.h"
 
 /* USER CODE BEGIN INCLUDE */
-
+#include "cmsis_os.h"
+#include <string.h>
+//#include "main.h"
+extern osMutexId_t usb_data_mutex;
+extern uint8_t usb_data_buffer[64];
 /* USER CODE END INCLUDE */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
