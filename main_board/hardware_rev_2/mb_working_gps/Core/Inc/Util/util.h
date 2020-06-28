@@ -21,7 +21,8 @@ typedef uint8_t board_id_t;
 /** ENUMS **/
 
 typedef enum {
-	IDLE_COMMAND = 155, CALIBRATE_SENSORS, AIRBRAKE_TEST_COMMAND
+	IDLE_COMMAND = 155, CALIBRATE_SENSORS = 73, AIRBRAKE_TEST_COMMAND = 217, TELEMETRY_HIGH_SAMPLING = 13,
+	TELEMETRY_LOW_SAMPLING = 197, ENABLE_BUZZER = 113
 } command_e;
 
 typedef struct {
@@ -117,14 +118,41 @@ typedef struct {
 /** XBEE SUPER STRUCT **/
 
 typedef struct {
-	sb_data_t sb1;
-	sb_data_t sb2;
-	sb_data_t sb3;
+	uint32_t hour;
+	uint32_t minute;
+	uint32_t second;
+	uint8_t lat_deg;
+	uint32_t lat_decimal;
+	uint8_t lon_deg;
+	uint32_t lon_decimal;
+	uint8_t satellite;
+} gps_telemetry_t;
+
+/* Battery Data */
+typedef struct  {
+	uint16_t battery;
+	uint16_t current;
+	uint16_t consumption;
+} telemetry_battery_data_t;
+
+/* SB Data */
+typedef struct {
+	int32_t pressure;
+	int32_t temperature;
+	int16_t gyro_x,gyro_y,gyro_z;
+	int16_t acc_x,acc_y,acc_z;
+} telemetry_sb_data_t;
+
+typedef struct {
+	telemetry_sb_data_t sb_data;
+	telemetry_battery_data_t battery;
+	gps_telemetry_t gps;
 	int32_t height;
 	int32_t velocity;
-	timestamp_t ts;
+	int32_t airbrake_extension;
 	flight_phase_e flight_phase;
-	mach_regime_e mach_regime;
+	timestamp_t ts;
+	uint8_t checksum;
 } telemetry_t;
 
 /* Sensor Board Mutexes */

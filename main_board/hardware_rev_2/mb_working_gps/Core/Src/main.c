@@ -177,11 +177,11 @@ const osThreadAttr_t task_battery_attributes = {
   .stack_size = sizeof(task_batteryBuffer),
   .cb_mem = &task_batteryControlBlock,
   .cb_size = sizeof(task_batteryControlBlock),
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityBelowNormal7,
 };
 /* Definitions for task_xbee */
 osThreadId_t task_xbeeHandle;
-uint32_t task_xbeeBuffer[ 128 ];
+uint32_t task_xbeeBuffer[ 2048 ];
 osStaticThreadDef_t task_xbeeControlBlock;
 const osThreadAttr_t task_xbee_attributes = {
   .name = "task_xbee",
@@ -189,7 +189,7 @@ const osThreadAttr_t task_xbee_attributes = {
   .stack_size = sizeof(task_xbeeBuffer),
   .cb_mem = &task_xbeeControlBlock,
   .cb_size = sizeof(task_xbeeControlBlock),
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
 /** SENSOR BOARD VARIABLES **/
@@ -234,15 +234,14 @@ osMutexId_t fsm_mutex_only;
 custom_mutex_t fsm_mutex;
 
 /* GPS */
-gps_data_t globalGPS1;
-gps_data_t globalGPS2;
-gps_data_t globalGPS3;
+gps_telemetry_t globalGPS;
+
 osMutexId_t gps_mutex_only;
 custom_mutex_t gps_mutex;
 
 /* Battery */
 osMutexId_t battery_mutex_only;
-battery_data_t global_battery_data;
+telemetry_battery_data_t global_battery_data;
 custom_mutex_t battery_mutex;
 
 /* Telemetry Command */
@@ -896,9 +895,7 @@ static void MX_UART7_Init(void)
   huart7.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart7.Init.OverSampling = UART_OVERSAMPLING_16;
   huart7.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-  huart7.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_RXOVERRUNDISABLE_INIT|UART_ADVFEATURE_DMADISABLEONERROR_INIT;
-  huart7.AdvancedInit.OverrunDisable = UART_ADVFEATURE_OVERRUN_DISABLE;
-  huart7.AdvancedInit.DMADisableonRxError = UART_ADVFEATURE_DMA_DISABLEONRXERROR;
+  huart7.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
   if (HAL_UART_Init(&huart7) != HAL_OK)
   {
     Error_Handler();
@@ -1073,7 +1070,8 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, LED3_Pin|LED4_Pin|LED1_Pin|LED2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, LED3_Pin|LED4_Pin|BUZZER_Pin|LED1_Pin 
+                          |LED2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PC13 */
   GPIO_InitStruct.Pin = GPIO_PIN_13;
@@ -1081,8 +1079,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LED3_Pin LED4_Pin LED1_Pin LED2_Pin */
-  GPIO_InitStruct.Pin = LED3_Pin|LED4_Pin|LED1_Pin|LED2_Pin;
+  /*Configure GPIO pins : LED3_Pin LED4_Pin BUZZER_Pin LED1_Pin 
+                           LED2_Pin */
+  GPIO_InitStruct.Pin = LED3_Pin|LED4_Pin|BUZZER_Pin|LED1_Pin 
+                          |LED2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

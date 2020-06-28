@@ -326,7 +326,7 @@ osStatus_t ReadCommand(uint8_t *command, uint8_t *rx_buffer){
 	byte_stream_read[9] = (crc_calc >> 8) & 0xFF;;		// CRC high byte
 
 	HAL_UART_Transmit(&huart4, byte_stream_read, 10, 20);
-	HAL_UART_Receive_DMA(&huart4, rx_buffer, 20, 20);
+	HAL_UART_Receive(&huart4, rx_buffer, 20, 20);
 
 	/* check if we have an error code */
 	if((rx_buffer[7] | rx_buffer[6] | rx_buffer[5] | rx_buffer[4]) == 0){

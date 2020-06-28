@@ -8,7 +8,8 @@
 #include "tasks/task_state_est.h"
 
 void resetStateEstimation(kf_state_t *kf_state, flight_phase_detection_t *flight_phase_detection,
-		env_t *environment, extrapolation_rolling_memory_t *extrapolation_rolling_memory);
+		env_t *environment, extrapolation_rolling_memory_t *extrapolation_rolling_memory,
+		float pressure, float temperature);
 
 
 void vTaskStateEst(void *argument) {
@@ -37,6 +38,13 @@ void vTaskStateEst(void *argument) {
 
 	select_noise_models(&kf_state, &flight_phase_detection, &env, &extrapolation_rolling_memory);
 
+	/* average Temperature */
+	float average_temp = 0;
+	float sum_temp = 0;
+	/* average Pressure */
+	float average_press = 0;
+	float sum_press = 0;
+	uint16_t calibrate_count = 0;
 
 
 	/* Infinite loop */
@@ -55,7 +63,7 @@ void vTaskStateEst(void *argument) {
 		 * to do so
 		 */
 		if(flight_phase_detection.flight_phase == IDLE && global_telemetry_command == CALIBRATE_SENSORS){
-			resetStateEstimation(&kf_state, &flight_phase_detection, &env, &extrapolation_rolling_memory);
+			resetStateEstimation(&kf_state, &flight_phase_detection, &env, &extrapolation_rolling_memory, average_press, average_temp);
 		}
 
 		/* Acquire the Sensor data */
@@ -68,6 +76,20 @@ void vTaskStateEst(void *argument) {
 
 		/* Sensor Board 3 */
 		ReadMutexStateEst(&sb3_mutex, &sb3_baro, &sb3_imu, &state_est_meas, 3);
+
+		/* calculate averaging */
+		if(flight_phase_detection.flight_phase == IDLE){
+			sum_press += (float)(sb1_baro.pressure + sb2_baro.pressure + sb3_baro.pressure);
+			sum_temp += ((float)(sb1_baro.temperature + sb2_baro.temperature + sb3_baro.temperature))/100;
+			calibrate_count += 3;
+			if(calibrate_count > 150){
+				average_press = sum_press / (float)calibrate_count;
+				average_temp = sum_temp / (float)calibrate_count;
+				sum_press = 0;
+				sum_temp = 0;
+				calibrate_count = 0;
+			}
+		}
 
 		/* get new Phase Detection*/
 		ReadMutex(&fsm_mutex, &global_flight_phase_detection, &flight_phase_detection, sizeof(flight_phase_detection));
@@ -121,10 +143,11 @@ void vTaskStateEst(void *argument) {
 
 
 void resetStateEstimation(kf_state_t *kf_state, flight_phase_detection_t *flight_phase_detection,
-		env_t *environment, extrapolation_rolling_memory_t *extrapolation_rolling_memory){
+		env_t *environment, extrapolation_rolling_memory_t *extrapolation_rolling_memory, float pressure, float temperature){
 	reset_flight_phase_detection(flight_phase_detection);
+	calibrate_env(environment, pressure, temperature);
+	update_env(environment, temperature);
 	reset_kf_state(kf_state);
-	init_env(environment);
 	*extrapolation_rolling_memory = EMPTY_MEMORY;
 	select_noise_models(kf_state, flight_phase_detection, environment, extrapolation_rolling_memory);
 }

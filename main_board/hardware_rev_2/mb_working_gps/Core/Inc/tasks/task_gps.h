@@ -28,9 +28,7 @@ extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart3;
 
-extern gps_data_t globalGPS1;
-extern gps_data_t globalGPS2;
-extern gps_data_t globalGPS3;
+extern gps_telemetry_t globalGPS;
 
 extern custom_mutex_t gps_mutex;
 
