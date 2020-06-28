@@ -105,9 +105,12 @@ class MainWindow(Frame):
 
         self._root = parent
         self._root.title("ARIS Groundstation")
-        # self._root.state("zoomed")
-        self._root.state('normal')
-        # self._root.wm_iconbitmap("aris.ico")
+        if sys.platform.startswith('win'):
+            self._root.state("zoomed")
+            self._root.wm_iconbitmap("aris.ico")
+        else:
+            self._root.state('normal')
+
 
         self._root.grid_rowconfigure(1, weight=1)
         self._root.grid_columnconfigure(1, weight=1)
@@ -152,7 +155,7 @@ class MainWindow(Frame):
         self.frame_lower = tk.Frame(self._root, width=150, height=100)
         self.frame_upper_left = tk.LabelFrame(self.frame_upper, text='Commands', font=6, width=10, height=100)
         self.frame_upper_middle = tk.LabelFrame(self.frame_upper, text='Velocity', font=6, width=500, height=100)
-        self.frame_upper_right = tk.LabelFrame(self.frame_upper, text='Height', font=6, width=500, height=100)
+        self.frame_upper_right = tk.LabelFrame(self.frame_upper, text='Altitude', font=6, width=500, height=100)
         self.frame_log = tk.LabelFrame(self.frame_upper_left, text='Log', width=10, height=20)
 
         # ==============================================================================================================
@@ -205,7 +208,7 @@ class MainWindow(Frame):
         # ==============================================================================================================
         self.frame_test = tk.LabelFrame(self.frame_upper_left, text='Tests', width=40, height=10)
         self.button_test1 = tk.Button(self.frame_test, text='Sensor calibration', command=self.donothing)
-        self.button_test2 = tk.Button(self.frame_test, text='Airbrake', command=self.donothing)
+        self.button_test2 = tk.Button(self.frame_test, text='Airbrake', command=self.airbrake_test)
         self.button_test3 = tk.Button(self.frame_test, text='Test3', command=self.donothing)
 
         # ==============================================================================================================
@@ -301,6 +304,18 @@ class MainWindow(Frame):
 
         self._root.config(menu=self.menubar)
 
+    def airbrake_test(self):
+        if self.s is not None:
+            self.s.send('airbrake')
+        else:
+            messagebox.showinfo('Info', 'Serial connection is not established.')
+
+    def sensor_callibration(self):
+        if self.s is not None:
+            self.s.send('sensor')
+        else:
+            messagebox.showinfo('Info', 'Serial connection is not established.')
+
     def __on_close__(self):
         if self.s is not None:
             self.s.close()
@@ -357,11 +372,11 @@ class MainWindow(Frame):
 
         self.label_port = tk.Label(self.frame1, text='Port')
         self.label_baud = tk.Label(self.frame1, text='Baud rate')
-        self.label_numbyte = tk.Label(self.frame1, text='Number of Bytes')
+        # self.label_numbyte = tk.Label(self.frame1, text='Number of Bytes')
 
         self.entry1 = tk.Entry(self.frame1)
         self.entry2 = tk.Entry(self.frame1)
-        self.entry3 = tk.Entry(self.frame1)
+        # self.entry3 = tk.Entry(self.frame1)
 
         self.button_connect = tk.Button(self.frame1, text='Connect', command=self.connect_xbee)
 
@@ -372,10 +387,10 @@ class MainWindow(Frame):
 
         self.label_port.grid(row=0, column=0, padx=(10, 0))
         self.label_baud.grid(row=1, column=0, padx=(10, 0))
-        self.label_numbyte.grid(row=2, column=0, padx=(10, 0))
+        # self.label_numbyte.grid(row=2, column=0, padx=(10, 0))
         self.entry1.grid(row=0, column=1)
         self.entry2.grid(row=1, column=1)
-        self.entry3.grid(row=2, column=1)
+        # self.entry3.grid(row=2, column=1)
         self.button_connect.grid(row=3, column=0, columnspan=2, pady=10)
 
         self.entry1.delete(0, 'end')
@@ -384,15 +399,15 @@ class MainWindow(Frame):
         else:
             self.entry1.insert(0, '/dev/ttyUSB0')
         self.entry2.delete(0, 'end')
-        self.entry2.insert(0, 230400)
-        self.entry3.delete(0, 'end')
-        self.entry3.insert(0, 112)
+        self.entry2.insert(0, 115200)
+        # self.entry3.delete(0, 'end')
+        # self.entry3.insert(0, 112)
 
     def connect_xbee(self):
         port_name = self.entry1.get()
         baud_rate = int(self.entry2.get())
-        data_num_bytes = int(self.entry3.get())
-        self.s = SerialConnection(self, port_name, baud_rate, data_num_bytes)
+        # data_num_bytes = int(self.entry3.get())
+        self.s = SerialConnection(self, port_name, baud_rate)
         if not self.s.start_connection():
             messagebox.showerror('Error', "Could not establish serial connection.")
         else:

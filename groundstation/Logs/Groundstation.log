@@ -479,3 +479,908 @@
 2020-06-24 17:57:32,061 - root - INFO - ==========================================================================
 2020-06-24 17:57:32,062 - root - INFO -                         ARIS Groundstation closed                         
 2020-06-24 17:57:32,062 - root - INFO - ==========================================================================
+2020-06-25 12:57:38,102 - root - INFO - ==========================================================================
+2020-06-25 12:57:38,102 - root - INFO -                         ARIS Groundstation started                        
+2020-06-25 12:57:38,102 - root - INFO - ==========================================================================
+2020-06-25 12:57:38,302 - root - INFO - Initialised Groundstation
+2020-06-25 12:57:51,411 - root - INFO - ==========================================================================
+2020-06-25 12:57:51,411 - root - INFO -                         ARIS Groundstation closed                         
+2020-06-25 12:57:51,411 - root - INFO - ==========================================================================
+2020-06-25 13:00:51,528 - root - INFO - ==========================================================================
+2020-06-25 13:00:51,528 - root - INFO -                         ARIS Groundstation started                        
+2020-06-25 13:00:51,528 - root - INFO - ==========================================================================
+2020-06-25 13:00:51,714 - root - INFO - Initialised Groundstation
+2020-06-25 13:00:54,736 - root - INFO - Trying to connect to: COM6 at 230400 BAUD.
+2020-06-25 13:00:54,740 - root - INFO - Connected to COM6 at 230400 BAUD.
+2020-06-25 13:00:58,962 - root - INFO - Ready to receive data
+2020-06-25 13:01:31,423 - root - INFO - Stopped receiving data
+2020-06-25 13:01:33,403 - root - INFO - Serial connection closed
+2020-06-25 13:01:33,496 - root - INFO - ==========================================================================
+2020-06-25 13:01:33,497 - root - INFO -                         ARIS Groundstation closed                         
+2020-06-25 13:01:33,497 - root - INFO - ==========================================================================
+2020-06-28 10:33:12,088 - root - INFO - ==========================================================================
+2020-06-28 10:33:12,089 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 10:33:12,089 - root - INFO - ==========================================================================
+2020-06-28 10:33:12,582 - root - INFO - Initialised Groundstation
+2020-06-28 10:33:28,514 - root - INFO - ==========================================================================
+2020-06-28 10:33:28,514 - root - INFO -                         ARIS Groundstation closed                         
+2020-06-28 10:33:28,514 - root - INFO - ==========================================================================
+2020-06-28 10:33:47,505 - root - INFO - ==========================================================================
+2020-06-28 10:33:47,505 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 10:33:47,505 - root - INFO - ==========================================================================
+2020-06-28 10:33:47,755 - root - INFO - Initialised Groundstation
+2020-06-28 10:35:16,623 - root - INFO - ==========================================================================
+2020-06-28 10:35:16,623 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 10:35:16,623 - root - INFO - ==========================================================================
+2020-06-28 10:35:16,854 - root - INFO - Initialised Groundstation
+2020-06-28 10:35:23,514 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 10:35:23,519 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 10:35:29,337 - root - INFO - Ready to receive data
+2020-06-28 10:41:16,974 - root - INFO - ==========================================================================
+2020-06-28 10:41:16,974 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 10:41:16,974 - root - INFO - ==========================================================================
+2020-06-28 10:41:17,231 - root - INFO - Initialised Groundstation
+2020-06-28 10:41:26,572 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 10:41:26,576 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 10:41:28,181 - root - INFO - Ready to receive data
+2020-06-28 11:06:12,838 - root - INFO - ==========================================================================
+2020-06-28 11:06:12,838 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 11:06:12,838 - root - INFO - ==========================================================================
+2020-06-28 11:06:13,065 - root - INFO - Initialised Groundstation
+2020-06-28 11:06:26,732 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 11:06:26,737 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 11:06:29,862 - root - INFO - Ready to receive data
+2020-06-28 11:09:59,850 - root - INFO - ==========================================================================
+2020-06-28 11:09:59,850 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 11:09:59,850 - root - INFO - ==========================================================================
+2020-06-28 11:10:00,112 - root - INFO - Initialised Groundstation
+2020-06-28 11:10:07,197 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 11:10:07,201 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 11:10:10,427 - root - INFO - Ready to receive data
+2020-06-28 11:23:23,035 - root - INFO - ==========================================================================
+2020-06-28 11:23:23,035 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 11:23:23,035 - root - INFO - ==========================================================================
+2020-06-28 11:23:23,278 - root - INFO - Initialised Groundstation
+2020-06-28 11:23:26,129 - root - INFO - ==========================================================================
+2020-06-28 11:23:26,129 - root - INFO -                         ARIS Groundstation closed                         
+2020-06-28 11:23:26,129 - root - INFO - ==========================================================================
+2020-06-28 11:23:34,422 - root - INFO - ==========================================================================
+2020-06-28 11:23:34,422 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 11:23:34,422 - root - INFO - ==========================================================================
+2020-06-28 11:23:34,694 - root - INFO - Initialised Groundstation
+2020-06-28 11:23:40,790 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 11:23:40,796 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 11:23:43,322 - root - INFO - Ready to receive data
+2020-06-28 11:24:40,230 - root - INFO - ==========================================================================
+2020-06-28 11:24:40,230 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 11:24:40,230 - root - INFO - ==========================================================================
+2020-06-28 11:24:40,463 - root - INFO - Initialised Groundstation
+2020-06-28 11:24:47,310 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 11:24:47,314 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 11:24:49,570 - root - INFO - Ready to receive data
+2020-06-28 11:25:21,212 - root - INFO - ==========================================================================
+2020-06-28 11:25:21,212 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 11:25:21,212 - root - INFO - ==========================================================================
+2020-06-28 11:25:21,467 - root - INFO - Initialised Groundstation
+2020-06-28 11:25:28,761 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 11:25:28,767 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 11:25:30,964 - root - INFO - Ready to receive data
+2020-06-28 11:25:48,590 - root - INFO - ==========================================================================
+2020-06-28 11:25:48,591 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 11:25:48,592 - root - INFO - ==========================================================================
+2020-06-28 11:25:48,843 - root - INFO - Initialised Groundstation
+2020-06-28 11:25:53,962 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 11:25:53,967 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 11:25:55,458 - root - INFO - Ready to receive data
+2020-06-28 11:32:43,209 - root - INFO - ==========================================================================
+2020-06-28 11:32:43,209 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 11:32:43,210 - root - INFO - ==========================================================================
+2020-06-28 11:32:43,545 - root - INFO - Initialised Groundstation
+2020-06-28 11:32:51,197 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 11:32:51,203 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 11:32:53,422 - root - INFO - Ready to receive data
+2020-06-28 11:42:25,384 - root - INFO - ==========================================================================
+2020-06-28 11:42:25,384 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 11:42:25,384 - root - INFO - ==========================================================================
+2020-06-28 11:42:25,685 - root - INFO - Initialised Groundstation
+2020-06-28 11:42:38,863 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 11:42:38,867 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 11:42:49,571 - root - INFO - Serial connection closed
+2020-06-28 11:42:49,752 - root - INFO - ==========================================================================
+2020-06-28 11:42:49,752 - root - INFO -                         ARIS Groundstation closed                         
+2020-06-28 11:42:49,752 - root - INFO - ==========================================================================
+2020-06-28 11:46:02,361 - root - INFO - ==========================================================================
+2020-06-28 11:46:02,361 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 11:46:02,361 - root - INFO - ==========================================================================
+2020-06-28 11:46:02,608 - root - INFO - Initialised Groundstation
+2020-06-28 11:46:33,886 - root - INFO - ==========================================================================
+2020-06-28 11:46:33,886 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 11:46:33,886 - root - INFO - ==========================================================================
+2020-06-28 11:46:34,180 - root - INFO - Initialised Groundstation
+2020-06-28 11:46:37,430 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 11:46:37,434 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 11:46:39,706 - root - INFO - Ready to receive data
+2020-06-28 11:48:06,820 - root - INFO - ==========================================================================
+2020-06-28 11:48:06,825 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 11:48:06,825 - root - INFO - ==========================================================================
+2020-06-28 11:48:07,065 - root - INFO - Initialised Groundstation
+2020-06-28 11:48:10,996 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 11:48:11,002 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 11:48:12,606 - root - INFO - Ready to receive data
+2020-06-28 11:50:50,172 - root - INFO - ==========================================================================
+2020-06-28 11:50:50,172 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 11:50:50,172 - root - INFO - ==========================================================================
+2020-06-28 11:50:50,411 - root - INFO - Initialised Groundstation
+2020-06-28 11:50:56,141 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 11:50:56,146 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 11:50:58,456 - root - INFO - Ready to receive data
+2020-06-28 11:51:13,778 - root - INFO - Stopped receiving data
+2020-06-28 11:53:27,638 - root - INFO - ==========================================================================
+2020-06-28 11:53:27,638 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 11:53:27,638 - root - INFO - ==========================================================================
+2020-06-28 11:53:27,996 - root - INFO - Initialised Groundstation
+2020-06-28 11:53:31,637 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 11:53:31,643 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 11:53:33,764 - root - INFO - Ready to receive data
+2020-06-28 12:04:41,406 - root - INFO - ==========================================================================
+2020-06-28 12:04:41,406 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 12:04:41,406 - root - INFO - ==========================================================================
+2020-06-28 12:04:41,717 - root - INFO - Initialised Groundstation
+2020-06-28 12:04:45,659 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 12:04:45,662 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 12:04:47,343 - root - INFO - Ready to receive data
+2020-06-28 12:05:46,218 - root - INFO - ==========================================================================
+2020-06-28 12:05:46,218 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 12:05:46,218 - root - INFO - ==========================================================================
+2020-06-28 12:05:46,532 - root - INFO - Initialised Groundstation
+2020-06-28 12:05:52,148 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 12:05:52,153 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 12:05:54,289 - root - INFO - Ready to receive data
+2020-06-28 12:13:32,018 - root - INFO - ==========================================================================
+2020-06-28 12:13:32,018 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 12:13:32,018 - root - INFO - ==========================================================================
+2020-06-28 12:13:32,374 - root - INFO - Initialised Groundstation
+2020-06-28 12:13:36,561 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 12:13:36,565 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 12:13:39,176 - root - INFO - Ready to receive data
+2020-06-28 12:17:16,684 - root - INFO - ==========================================================================
+2020-06-28 12:17:16,684 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 12:17:16,684 - root - INFO - ==========================================================================
+2020-06-28 12:17:17,008 - root - INFO - Initialised Groundstation
+2020-06-28 12:17:20,086 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 12:17:20,090 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 12:17:26,920 - root - INFO - Serial connection closed
+2020-06-28 12:17:27,048 - root - INFO - ==========================================================================
+2020-06-28 12:17:27,049 - root - INFO -                         ARIS Groundstation closed                         
+2020-06-28 12:17:27,049 - root - INFO - ==========================================================================
+2020-06-28 12:17:53,151 - root - INFO - ==========================================================================
+2020-06-28 12:17:53,151 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 12:17:53,151 - root - INFO - ==========================================================================
+2020-06-28 12:17:53,410 - root - INFO - Initialised Groundstation
+2020-06-28 12:17:57,233 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 12:17:57,239 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 12:18:01,703 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:04,891 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:05,649 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:40,599 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:41,694 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:42,617 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:44,844 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:45,925 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:47,402 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:47,942 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:48,392 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:48,812 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:49,299 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:49,781 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:50,380 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:51,167 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:51,947 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:53,298 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:18:53,874 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:19:11,677 - root - INFO - Ready to receive data
+2020-06-28 12:20:38,718 - root - INFO - ==========================================================================
+2020-06-28 12:20:38,718 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 12:20:38,718 - root - INFO - ==========================================================================
+2020-06-28 12:20:39,007 - root - INFO - Initialised Groundstation
+2020-06-28 12:20:42,010 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 12:20:42,015 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 12:20:43,429 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:20:44,710 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:20:46,781 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:20:48,288 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:20:49,953 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:20:58,969 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:21:10,079 - root - INFO - Serial connection closed
+2020-06-28 12:21:10,204 - root - INFO - ==========================================================================
+2020-06-28 12:21:10,204 - root - INFO -                         ARIS Groundstation closed                         
+2020-06-28 12:21:10,204 - root - INFO - ==========================================================================
+2020-06-28 12:29:30,533 - root - INFO - ==========================================================================
+2020-06-28 12:29:30,533 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 12:29:30,533 - root - INFO - ==========================================================================
+2020-06-28 12:29:30,795 - root - INFO - Initialised Groundstation
+2020-06-28 12:29:33,243 - root - INFO - ==========================================================================
+2020-06-28 12:29:33,243 - root - INFO -                         ARIS Groundstation closed                         
+2020-06-28 12:29:33,243 - root - INFO - ==========================================================================
+2020-06-28 12:29:59,744 - root - INFO - ==========================================================================
+2020-06-28 12:29:59,744 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 12:29:59,744 - root - INFO - ==========================================================================
+2020-06-28 12:30:00,034 - root - INFO - Initialised Groundstation
+2020-06-28 12:30:05,753 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 12:30:05,758 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 12:32:26,025 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:32:27,533 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:33:00,860 - root - INFO - Ready to receive data
+2020-06-28 12:40:45,156 - root - INFO - ==========================================================================
+2020-06-28 12:40:45,156 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 12:40:45,156 - root - INFO - ==========================================================================
+2020-06-28 12:40:45,427 - root - INFO - Initialised Groundstation
+2020-06-28 12:40:49,841 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 12:40:49,847 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 12:40:51,378 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:40:56,006 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:41:02,574 - root - INFO - Ready to receive data
+2020-06-28 12:41:39,142 - root - INFO - ==========================================================================
+2020-06-28 12:41:39,142 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 12:41:39,142 - root - INFO - ==========================================================================
+2020-06-28 12:41:39,504 - root - INFO - Initialised Groundstation
+2020-06-28 12:41:42,454 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 12:41:42,461 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 12:41:43,707 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:41:45,148 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:41:46,152 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:41:47,352 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:41:48,665 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:41:49,737 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:41:51,072 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:41:52,227 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:41:53,262 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:41:54,746 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:41:55,797 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:41:56,839 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:41:57,799 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:41:59,382 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:00,019 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:00,972 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:01,872 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:03,507 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:04,811 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:07,729 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:09,492 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:10,062 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:10,670 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:11,135 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:22,677 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:23,262 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:23,787 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:24,275 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:24,958 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:25,617 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:26,517 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:27,718 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:28,639 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:42:30,605 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:44:54,349 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:44:55,706 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:44:56,606 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:44:57,341 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:44:58,069 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:44:58,886 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:44:59,809 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:45:01,092 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:45:03,530 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:45:04,691 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:45:06,439 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:45:08,022 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:45:09,147 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:45:09,987 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:45:10,811 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:45:11,411 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:45:12,988 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:46:40,683 - root - INFO - ==========================================================================
+2020-06-28 12:46:40,683 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 12:46:40,683 - root - INFO - ==========================================================================
+2020-06-28 12:46:40,984 - root - INFO - Initialised Groundstation
+2020-06-28 12:46:45,666 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 12:46:45,671 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 12:46:47,368 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:46:48,177 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:46:50,188 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:50:11,490 - root - INFO - ==========================================================================
+2020-06-28 12:50:11,490 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 12:50:11,490 - root - INFO - ==========================================================================
+2020-06-28 12:50:11,803 - root - INFO - Initialised Groundstation
+2020-06-28 12:50:15,398 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 12:50:15,403 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 12:50:18,931 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:50:28,913 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:50:52,749 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:50:53,950 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:50:55,126 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:50:56,229 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:50:57,332 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:50:58,577 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:51:00,069 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:51:03,272 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:51:04,201 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:51:05,379 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:51:07,607 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:51:09,084 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:51:10,233 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:51:13,524 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:51:23,777 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:51:27,221 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:51:29,042 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:56:34,370 - root - INFO - ==========================================================================
+2020-06-28 12:56:34,378 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 12:56:34,378 - root - INFO - ==========================================================================
+2020-06-28 12:56:34,624 - root - INFO - Initialised Groundstation
+2020-06-28 12:56:37,980 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 12:56:37,985 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 12:56:39,165 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:56:40,275 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:56:41,317 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:56:42,120 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:56:43,065 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:56:44,407 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:56:45,165 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:56:46,222 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:56:47,123 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:56:48,195 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:56:49,366 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:04,210 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:06,071 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:08,246 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:09,611 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:10,983 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:12,753 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:14,358 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:15,573 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:16,586 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:18,175 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:19,578 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:20,997 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:22,615 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:24,326 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:25,931 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:35,959 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:37,452 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:39,019 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:40,205 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:41,554 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:42,769 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:45,004 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:46,670 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:48,477 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:50,173 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:51,462 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:52,669 - root - INFO - Airbrake test command was sent.
+2020-06-28 12:58:54,589 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:02:15,974 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:02:19,055 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:02:20,474 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:02:33,636 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:06:07,373 - root - INFO - ==========================================================================
+2020-06-28 13:06:07,373 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 13:06:07,373 - root - INFO - ==========================================================================
+2020-06-28 13:06:07,658 - root - INFO - Initialised Groundstation
+2020-06-28 13:06:14,188 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 13:06:14,193 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 13:06:34,026 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:06:46,955 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:09:45,603 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:10:17,156 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:10:24,417 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:12:42,392 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:12:54,295 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:12:58,076 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:13:00,513 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:13:07,443 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:14:06,899 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:14:09,523 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:14:13,273 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:14:16,326 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:16:19,099 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:16:21,724 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:16:27,267 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:16:31,849 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:16:36,289 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:16:39,208 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:16:42,964 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:16:45,476 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:16:48,388 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:16:51,237 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:16:54,560 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:17:01,768 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:17:10,288 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:17:14,255 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:17:18,164 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:17:20,256 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:27,264 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:38,087 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:40,307 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:42,355 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:44,882 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:46,787 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:48,400 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:49,892 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:51,370 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:51,594 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:51,835 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:54,430 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:54,610 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:54,767 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:54,932 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:55,277 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:55,457 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:55,629 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:55,795 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:55,952 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:56,132 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:56,320 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:56,500 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:56,680 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:56,853 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:57,047 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:57,212 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:57,415 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:57,572 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:57,880 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:59,582 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:21:59,755 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:22:53,007 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:22:54,304 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:22:54,597 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:22:54,852 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:22:55,076 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:22:55,288 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:22:55,481 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:23:29,922 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:23:37,579 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:25,539 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:30,495 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:32,903 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:35,986 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:38,746 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:41,618 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:44,206 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:46,974 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:48,504 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:48,699 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:48,871 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:49,081 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:51,330 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:51,503 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:51,669 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:51,857 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:52,051 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:55,644 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:55,809 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:55,996 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:25:56,176 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:26:00,459 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:26:00,631 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:26:00,811 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:26:00,999 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:26:01,179 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:26:01,374 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:26:03,845 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:26:04,029 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:26:04,209 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:26:04,411 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:11,594 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:14,303 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:15,441 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:16,387 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:17,234 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:17,414 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:17,564 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:18,366 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:18,539 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:18,712 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:18,878 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:24,128 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:26,580 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:30,501 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:33,110 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:33,316 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:35,378 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:35,595 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:37,133 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:37,358 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:38,407 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:38,595 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:38,760 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:39,637 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:39,817 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:39,982 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:40,162 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:40,327 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:40,560 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:42,368 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:42,539 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:42,712 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:42,967 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:43,867 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:45,270 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:45,465 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:45,652 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:45,811 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:45,997 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:46,170 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:47,355 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:47,521 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:47,692 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:47,865 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:48,045 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:48,225 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:48,405 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:48,585 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:48,772 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:48,952 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:49,110 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:49,343 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:49,530 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:49,740 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:49,927 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:50,107 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:50,294 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:50,482 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:50,670 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:52,838 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:53,032 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:53,220 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:53,648 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:54,480 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:54,667 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:54,855 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:55,043 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:55,238 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:55,905 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:56,153 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:56,910 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:57,075 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:57,255 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:57,458 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:57,668 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:57,863 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:58,072 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:58,289 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:59,191 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:59,415 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:59,671 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:28:59,903 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:00,106 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:00,472 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:00,676 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:00,878 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:01,088 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:01,282 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:01,486 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:02,332 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:02,520 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:02,707 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:03,952 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:04,147 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:06,015 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:06,571 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:06,766 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:06,953 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:07,147 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:07,365 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:07,560 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:07,762 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:07,944 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:08,131 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:08,318 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:08,527 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:08,722 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:08,910 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:09,120 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:09,339 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:09,585 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:09,796 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:10,006 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:10,223 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:10,432 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:10,642 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:10,868 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:11,100 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:11,318 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:11,535 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:11,768 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:11,985 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:12,232 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:12,502 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:12,773 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:13,005 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:13,358 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:13,830 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:14,205 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:14,527 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:14,819 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:29:15,271 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:21,445 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:23,726 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:25,016 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:25,241 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:25,459 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:25,923 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:26,133 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:26,321 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:26,501 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:26,681 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:26,861 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:27,049 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:27,227 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:27,410 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:27,587 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:27,775 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:27,970 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:28,144 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:28,330 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:28,496 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:28,697 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:28,871 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:32,028 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:32,215 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:32,402 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:32,583 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:32,794 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:33,011 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:33,192 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:33,378 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:33,558 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:33,747 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:33,918 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:34,106 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:34,293 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:34,639 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:34,841 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:35,028 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:35,222 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:35,418 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:35,605 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:35,801 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:35,996 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:36,183 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:36,364 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:36,559 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:36,753 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:36,941 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:37,121 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:30:37,307 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:32:48,175 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:32:49,299 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:32:50,762 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:32:51,901 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:32:53,011 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:32:53,191 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:32:53,371 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:32:54,353 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:32:55,771 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:32:56,080 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:32:56,260 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:32:58,314 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:00,463 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:01,111 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:01,277 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:01,457 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:01,606 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:02,506 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:02,679 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:03,039 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:03,220 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:03,744 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:03,916 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:04,082 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:04,269 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:04,441 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:04,614 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:04,802 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:04,959 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:05,964 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:06,144 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:06,332 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:07,164 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:07,343 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:07,517 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:07,697 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:08,283 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:08,476 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:08,680 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:08,874 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:09,055 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:09,242 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:09,459 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:09,706 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:09,924 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:10,127 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:10,329 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:10,509 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:10,696 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:10,884 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:11,065 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:12,333 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:12,519 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:13,464 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:13,674 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:13,884 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:14,146 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:14,342 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:14,521 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:14,702 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:14,882 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:15,063 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:15,235 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:15,414 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:15,587 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:15,767 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:15,917 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:16,233 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:16,419 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:16,607 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:16,794 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:17,004 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:17,207 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:17,401 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:17,611 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:17,814 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:18,024 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:18,220 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:18,422 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:18,632 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:18,827 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:35,740 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:35,905 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:36,092 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:36,280 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:36,475 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:36,655 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:36,827 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:36,992 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:37,158 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:37,322 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:37,495 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:37,659 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:37,817 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:37,975 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:38,132 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:38,298 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:38,448 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:38,605 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:38,755 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:39,063 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:39,265 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:39,482 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:39,707 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:39,925 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:40,119 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:40,315 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:40,511 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:40,697 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:40,892 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:41,095 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:41,290 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:41,492 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:41,747 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:42,175 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:42,423 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:42,617 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:42,797 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:42,971 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:43,142 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:33:43,286 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:23,070 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:32,128 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:34,357 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:35,174 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:35,346 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:35,504 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:36,652 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:36,816 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:36,989 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:37,169 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:37,342 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:37,506 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:37,671 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:37,836 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:38,001 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:38,174 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:38,347 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:38,511 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:38,683 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:38,849 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:39,021 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:39,201 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:39,373 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:39,563 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:39,734 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:39,914 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:40,087 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:40,266 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:40,446 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:40,627 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:40,806 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:41,616 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:41,781 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:41,984 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:42,419 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:42,591 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:42,764 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:42,944 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:43,124 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:43,619 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:43,784 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:43,956 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:43:44,136 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:47:32,298 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:47:33,437 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:47:33,707 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:47:33,910 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:47:34,104 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:47:43,105 - root - INFO - Airbrake test command was sent.
+2020-06-28 13:56:26,012 - root - INFO - Serial connection closed
+2020-06-28 13:56:26,205 - root - INFO - ==========================================================================
+2020-06-28 13:56:26,206 - root - INFO -                         ARIS Groundstation closed                         
+2020-06-28 13:56:26,206 - root - INFO - ==========================================================================
+2020-06-28 13:56:43,561 - root - INFO - ==========================================================================
+2020-06-28 13:56:43,561 - root - INFO -                         ARIS Groundstation started                        
+2020-06-28 13:56:43,561 - root - INFO - ==========================================================================
+2020-06-28 13:56:43,838 - root - INFO - Initialised Groundstation
+2020-06-28 14:00:48,271 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-28 14:00:48,278 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-28 14:00:50,280 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:00:51,429 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:00:52,072 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:00:52,311 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:00:52,564 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:00:52,803 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:00:53,054 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:00:53,330 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:00:59,404 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:00:59,895 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:01:00,112 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:01:00,300 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:01:00,502 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:01:00,707 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:01:00,922 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:01:01,153 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:01:01,378 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:01:01,624 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:01:01,884 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:01:02,151 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:01:03,524 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:01:03,800 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:25,608 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:26,523 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:27,474 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:32,635 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:33,490 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:34,203 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:34,810 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:35,432 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:36,100 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:36,903 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:37,570 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:38,192 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:38,799 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:39,070 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:39,363 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:39,722 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:40,120 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:40,779 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:41,852 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:42,497 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:42,782 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:43,105 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:43,413 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:43,706 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:43,982 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:44,245 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:44,500 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:06:44,747 - root - INFO - Airbrake test command was sent.
+2020-06-28 14:15:03,965 - root - INFO - Serial connection closed
+2020-06-28 14:15:04,062 - root - INFO - ==========================================================================
+2020-06-28 14:15:04,062 - root - INFO -                         ARIS Groundstation closed                         
+2020-06-28 14:15:04,062 - root - INFO - ==========================================================================

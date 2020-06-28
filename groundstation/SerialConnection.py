@@ -50,6 +50,10 @@ def flatten(d, parent_key='', sep='_'):
     return dict(items)
 
 
+def verify_checksum(bytes):
+    print(bytes)
+
+
 telemetry_t = data_struct()
 
 data_types_order = flatten(telemetry_t)
@@ -63,13 +67,13 @@ def get_measurement_names():
 
 
 class SerialConnection:
-    def __init__(self, root, serial_port='COM6', serial_baud=115200, data_num_bytes=108):
+    def __init__(self, root, serial_port='COM6', serial_baud=115200):
         self.root = root
         self.logger = logging.getLogger()
         self.port = serial_port
         self.baud = serial_baud
-        self.dataNumBytes = data_num_bytes
-        self.rawData = bytearray(data_num_bytes)
+        self.dataNumBytes = struct.calcsize(fmt)
+        self.rawData = bytearray(self.dataNumBytes)
         self.isRun = True
         self.isReceiving = False
         self.thread = None
@@ -110,6 +114,23 @@ class SerialConnection:
             return self.data
         return 0
 
+    def send(self, command):
+        if command == 'airbrake':
+            packet = bytearray()
+            packet.append(0xD9)
+            # packet.append(0xD9)
+            # packet.append(0xD9)
+            # packet.append(0xD9)
+            self.serialConnection.write(packet)
+            self.logger.info('Airbrake test command was sent.')
+            # time.sleep(1.5)
+            # packet2 = bytearray()
+            # packet2.append(0x9B)
+            # packet2.append(0x9B)
+            # packet2.append(0x9B)
+            # packet2.append(0x9B)
+            # self.serialConnection.write(packet2)
+
     def back_ground_thread(self):  # retrieve data
         time.sleep(1.0)  # give some buffer time for retrieving data
         self.serialConnection.reset_input_buffer()
@@ -133,12 +154,14 @@ class SerialConnection:
 
                 print(self.rawData.hex())
                 # print('length', len(self.rawData))
-                self.data = struct.unpack(fmt+'b'+'b', self.rawData)
+                # all_bytes = struct.unpack(['b']*96, self.rawData)
+                # verify_checksum(all_bytes)
+                self.data = struct.unpack(fmt, self.rawData)
 
                 data_dict = dict(zip(measurements, self.data))
                 print(data_dict)
                 # print(self.serialConnection.inWaiting())
-                self.root.update_values(self.data)
+                # self.root.update_values(self.data)
 
             time.sleep(0.009)
 

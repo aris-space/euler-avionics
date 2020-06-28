@@ -26,14 +26,37 @@ def data_struct():
             'num_samples_positive': 'b'
         }
 
-        telemetry_t = {'sb1': sb_data_t,
-                       'sb2': sb_data_t,
-                       'sb3': sb_data_t,
+        gps_telemetry_t = {'hour': 'l',
+                           'minute': 'l',
+                           'second': 'l',
+                           'lat_deg': 'B',
+                           'lat_decimal': 'l',
+                           'lon_deg': 'B',
+                           'lon_decimal': 'l',
+                           'satellite': 'B'}
+
+        telemetry_battery_data_t = {'battery': 'h',
+                                    'current': 'h',
+                                    'consumption': 'h'}
+
+        telemetry_sb_data_t = {'pressure': 'l',
+                               'temp': 'l',
+                               'gyro_x': 'h',
+                               'gyro_y': 'h',
+                               'gyro_z': 'h',
+                               'acc_x': 'h',
+                               'acc_y': 'h',
+                               'acc_z': 'h'}
+
+        telemetry_t = {'sb_data': telemetry_sb_data_t,
+                       'battery': telemetry_battery_data_t,
+                       'gps': gps_telemetry_t,
                        'height': 'l',
                        'velocity': 'l',
-                       'ts': 'l',
+                       'airbrake_extension': 'l',
                        'flight_phase': 'B',
-                       'mach_regime': 'B'}
+                       'ts': 'l',
+                       'cs': 'B'}
 
     else:
         imu_data_t = {'gyro_x': 'h',
