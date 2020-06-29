@@ -46,6 +46,8 @@ void vTaskStateEst(void *argument) {
 	float sum_press = 0;
 	uint16_t calibrate_count = 0;
 
+	osDelay(500);
+
 
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();

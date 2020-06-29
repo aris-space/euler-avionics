@@ -16,7 +16,7 @@
 #include "EPOS4/epos4.h"
 
 
-#define MOTOR_TASK_FREQUENCY 20
+#define MOTOR_TASK_FREQUENCY 1
 
 /* extern */
 extern custom_mutex_t controller_mutex;

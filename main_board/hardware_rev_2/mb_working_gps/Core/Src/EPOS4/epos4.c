@@ -8,26 +8,26 @@
 
 
 uint16_t calculateCRC(uint8_t *data, uint8_t len) {
-  uint16_t shifter, c;
-  uint16_t carry;
-  uint16_t crc = 0;
+	uint16_t shifter, c;
+	uint16_t carry;
+	uint16_t crc = 0;
 
-  for (int i = 0; i < len + 2; i += 2) {
-    shifter = 0x8000;
-    if (i == len) {
-      c = 0;
-    } else {
-      c = data[i+1] << 8 | data[i];
-    }
-    do {
-      carry = crc & 0x8000;
-      crc <<= 1;
-      if(c & shifter) crc++;
-      if(carry) crc ^= 0x1021;
-      shifter >>= 1;
-    } while(shifter);
-  }
-  return crc;
+	for (int i = 0; i < len + 2; i += 2) {
+		shifter = 0x8000;
+		if (i == len) {
+			c = 0;
+		} else {
+			c = data[i+1] << 8 | data[i];
+		}
+		do {
+			carry = crc & 0x8000;
+			crc <<= 1;
+			if(c & shifter) crc++;
+			if(carry) crc ^= 0x1021;
+			shifter >>= 1;
+		} while(shifter);
+	}
+	return crc;
 }
 
 osStatus_t EnableMotor(){
@@ -251,10 +251,10 @@ osStatus_t GetPosition(int32_t *position){
 
 	status = ReadCommand(command, rx_buffer_read);
 
-	*position = rx_buffer_read[6] +
-			(rx_buffer_read[7] << 8) +
-			(rx_buffer_read[8] << 16) +
-			(rx_buffer_read[9] << 24);
+	*position = rx_buffer_read[8] +
+			(rx_buffer_read[9] << 8) +
+			(rx_buffer_read[10] << 16) +
+			(rx_buffer_read[11] << 24);
 
 	return status;
 
@@ -265,6 +265,8 @@ osStatus_t WriteCommand(uint8_t *command, uint8_t *data, uint8_t *rx_buffer){
 	osStatus_t status = osError;
 
 	uint8_t byte_stream_write[14] = { 0 };
+
+	uint8_t dma_buffer[20] = { 0 };
 
 	byte_stream_write[0] = 0x90;			// DLE
 	byte_stream_write[1] = 0x02;			// STX
@@ -289,9 +291,15 @@ osStatus_t WriteCommand(uint8_t *command, uint8_t *data, uint8_t *rx_buffer){
 	byte_stream_write[12] = crc_calc & 0xFF;;				// CRC low byte
 	byte_stream_write[13] = (crc_calc >> 8) & 0xFF;;		// CRC high byte
 
-
+	//HAL_UART_DMAPause(&huart4);
 	HAL_UART_Transmit(&huart4, byte_stream_write, 14, 20);
-	HAL_UART_Receive(&huart4, rx_buffer, 20, 20);
+//	HAL_UART_DMAResume(&huart4);
+	HAL_UART_Receive(&huart4, dma_buffer, 20, 10);
+//	osDelay(10);
+//	HAL_UART_DMAPause(&huart4);
+	memcpy(rx_buffer, dma_buffer, 20);
+//	HAL_UART_DMAStop(&huart4);
+
 	/* Check if we have an error code */
 	if((rx_buffer[7] | rx_buffer[6] | rx_buffer[5] | rx_buffer[4]) == 0){
 		status = osOK;
@@ -305,6 +313,8 @@ osStatus_t ReadCommand(uint8_t *command, uint8_t *rx_buffer){
 	osStatus_t status = osError;
 
 	uint8_t byte_stream_read[10];
+
+	uint8_t dma_buffer[30] = { 0 };
 
 	byte_stream_read[0] = 0x90;				// DLE
 	byte_stream_read[1] = 0x02;				// STX
@@ -325,9 +335,18 @@ osStatus_t ReadCommand(uint8_t *command, uint8_t *rx_buffer){
 	byte_stream_read[8] = crc_calc & 0xFF;;				// CRC low byte
 	byte_stream_read[9] = (crc_calc >> 8) & 0xFF;;		// CRC high byte
 
-	HAL_UART_Transmit(&huart4, byte_stream_read, 10, 20);
-	HAL_UART_Receive(&huart4, rx_buffer, 20, 20);
+	HAL_UART_DMAPause(&huart4);
+	//HAL_UART_DMAStop(&huart4);
+	HAL_UART_Transmit(&huart4, byte_stream_read, 10, 10);
+	//osDelay(10);
+	HAL_UART_DMAResume(&huart4);
+	HAL_UART_Receive_DMA(&huart4, dma_buffer, 30);
+	osDelay(10);
+	HAL_UART_DMAPause(&huart4);
+	memcpy(rx_buffer, dma_buffer, 20);
+	HAL_UART_DMAStop(&huart4);
 
+	osDelay(1);
 	/* check if we have an error code */
 	if((rx_buffer[7] | rx_buffer[6] | rx_buffer[5] | rx_buffer[4]) == 0){
 		status = osOK;

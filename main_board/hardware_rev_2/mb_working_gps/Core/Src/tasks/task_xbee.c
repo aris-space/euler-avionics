@@ -39,13 +39,15 @@ void vTaskXbee(void *argument) {
 
 	uint8_t buzzercounter = 0;
 
+	osDelay(500);
+
 
 	/* Infinite loop */
-	tick_count = osKernelGetTickCount();
+
 	tick_update_slow = osKernelGetTickFreq() / XBEE_SAMPLING_FREQ;
 	tick_update_fast = osKernelGetTickFreq() / XBEE_SAMPLING_FREQ_HIGH;
 	bool fast_sampling = false;
-
+	tick_count = osKernelGetTickCount();
 
 
 	while (1) {
