@@ -7,7 +7,7 @@ from tkinter import messagebox
 import sys
 import glob
 import logging
-from DataTypes import data_struct
+from utils import data_struct, dict_commands
 
 
 def available_ports():
@@ -50,10 +50,6 @@ def flatten(d, parent_key='', sep='_'):
     return dict(items)
 
 
-def verify_checksum(bytes):
-    print(bytes)
-
-
 telemetry_t = data_struct()
 
 data_types_order = flatten(telemetry_t)
@@ -72,7 +68,7 @@ class SerialConnection:
         self.logger = logging.getLogger()
         self.port = serial_port
         self.baud = serial_baud
-        self.dataNumBytes = struct.calcsize(fmt)
+        self.dataNumBytes = struct.calcsize(fmt)+3
         self.rawData = bytearray(self.dataNumBytes)
         self.isRun = True
         self.isReceiving = False
@@ -81,6 +77,7 @@ class SerialConnection:
         self.previousTimer = 0
         self.data = None
         self.serialConnection = None
+        self.reset_flag = False
 
     def start_connection(self):
         print('Trying to connect to: ' + str(self.port) + ' at ' + str(self.baud) + ' BAUD.')
@@ -90,6 +87,8 @@ class SerialConnection:
                                                   self.baud,
                                                   parity=serial.PARITY_NONE,
                                                   stopbits=serial.STOPBITS_ONE,
+                                                  rtscts=True,
+                                                  xonxoff=False,
                                                   timeout=None)
             print('Connected to ' + str(self.port) + ' at ' + str(self.baud) + ' BAUD.')
             self.logger.info('Connected to ' + str(self.port) + ' at ' + str(self.baud) + ' BAUD.')
@@ -115,21 +114,15 @@ class SerialConnection:
         return 0
 
     def send(self, command):
-        if command == 'airbrake':
-            packet = bytearray()
-            packet.append(0xD9)
-            # packet.append(0xD9)
-            # packet.append(0xD9)
-            # packet.append(0xD9)
-            self.serialConnection.write(packet)
-            self.logger.info('Airbrake test command was sent.')
-            # time.sleep(1.5)
-            # packet2 = bytearray()
-            # packet2.append(0x9B)
-            # packet2.append(0x9B)
-            # packet2.append(0x9B)
-            # packet2.append(0x9B)
-            # self.serialConnection.write(packet2)
+        self.serialConnection.write(dict_commands.get(command))
+        self.logger.info(command+' command was sent.')
+
+    def verify_checksum(self, data):
+        # print(hex(sum(data))[-2:])
+        cs = hex(sum(data))[-2:]
+        print(cs)
+        if cs != 'ff':
+            self.reset_flag = True
 
     def back_ground_thread(self):  # retrieve data
         time.sleep(1.0)  # give some buffer time for retrieving data
@@ -143,7 +136,9 @@ class SerialConnection:
                 break
             if numbytes:
                 try:
-                    self.serialConnection.reset_input_buffer()
+                    if self.reset_flag:
+                        self.serialConnection.reset_input_buffer()
+                        self.reset_flag = False
                     self.serialConnection.readinto(self.rawData)
                     # self.serialConnection.reset_input_buffer()
                     self.isReceiving = True
@@ -154,16 +149,16 @@ class SerialConnection:
 
                 print(self.rawData.hex())
                 # print('length', len(self.rawData))
-                # all_bytes = struct.unpack(['b']*96, self.rawData)
-                # verify_checksum(all_bytes)
-                self.data = struct.unpack(fmt, self.rawData)
+
+                self.verify_checksum(self.rawData)
+                self.data = struct.unpack(fmt+'b'+'b'+'b', self.rawData)
 
                 data_dict = dict(zip(measurements, self.data))
                 print(data_dict)
                 # print(self.serialConnection.inWaiting())
-                # self.root.update_values(self.data)
+                self.root.update_values(self.data)
 
-            time.sleep(0.009)
+            time.sleep(0.00001)
 
     def close(self):
         self.isRun = False

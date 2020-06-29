@@ -21,22 +21,36 @@ import logging
 from Logs.LoggingHandler import LoggingHandler
 from View.PlotControl import PlotControl
 
-sb_measurement_names = ["pressure",
-                        "temp",
-                        "ts_baro",
-                        "gyro_x",
-                        "gyro_y",
-                        "gyro_z",
-                        "acc_x",
-                        "acc_y",
-                        "acc_z",
-                        "ts_imu"]
+sb_names = ["pressure",
+            "temp",
+            "gyro_x",
+            "gyro_y",
+            "gyro_z",
+            "acc_x",
+            "acc_y",
+            "acc_z"]
 
-fsm_names = ['height',
+battery_names = ['battery voltage',
+                 'current draw',
+                 'consumption']
+
+gps_names = ['time',
+             'num satellites',
+             'latitude',
+             'longitude',
+             'degree',
+             'decimal']
+
+fsm_names = ['altitude',
              'velocity',
-             'timestamp',
+             'airbrake extension',
              'flight phase',
-             'mach regime']
+             'timestamp']
+
+len_sb = len(sb_names)
+len_gps = len(gps_names)+2
+len_battery = len(battery_names)
+len_fsm = len(fsm_names)
 
 flight_phase = {0: '---------',
                 1: 'IDLE',
@@ -204,47 +218,115 @@ class MainWindow(Frame):
         self.entry_name = tk.Entry(self.frame_recording)
 
         # ==============================================================================================================
-        # add frame for testing
+        # add frame for commands
         # ==============================================================================================================
-        self.frame_test = tk.LabelFrame(self.frame_upper_left, text='Tests', width=40, height=10)
-        self.button_test1 = tk.Button(self.frame_test, text='Sensor calibration', command=self.donothing)
-        self.button_test2 = tk.Button(self.frame_test, text='Airbrake', command=self.airbrake_test)
-        self.button_test3 = tk.Button(self.frame_test, text='Test3', command=self.donothing)
+        self.frame_command = tk.LabelFrame(self.frame_upper_left, text='Commands', width=40, height=10)
+        self.button_sensor = tk.Button(self.frame_command,
+                                       text='Sensor calibration',
+                                       command=lambda: self.send_command('sensor'))
+        self.button_airbrake = tk.Button(self.frame_command,
+                                         text='Airbrake test',
+                                         command=lambda: self.send_command('airbrake'))
+        self.button_sf = tk.Button(self.frame_command,
+                                   text='Sampling frequency',
+                                   command=lambda: self.send_command('frequency'))
 
         # ==============================================================================================================
-        # add lower left frame
+        # add sensorboard frame
         # ==============================================================================================================
-        self.frame_lower_left = tk.LabelFrame(self.frame_lower, text='Sensorboard data', font=6, width=250, height=100)
-        self.label_sb1 = tk.Label(self.frame_lower_left, text="Sensorboard1:")
-        self.label_sb2 = tk.Label(self.frame_lower_left, text="Sensorboard2:")
-        self.label_sb3 = tk.Label(self.frame_lower_left, text="Sensorboard3:")
+        self.frame_sb = tk.LabelFrame(self.frame_lower, text='Sensorboard data', font=6, width=250, height=75)
 
-        self.label_val = []
-        for i in range(30):
-            self.label_val.append(tk.Label(self.frame_lower_left,
-                                           text="--------",
-                                           borderwidth=2,
-                                           relief="sunken",
-                                           width=10))
+        self.label_sb_val = []
+        for i in range(len(sb_names)):
+            self.label_sb_val.append(tk.Label(self.frame_sb,
+                                              text="--------",
+                                              borderwidth=2,
+                                              relief="sunken",
+                                              width=10))
 
-        label_sb = []
-        for i in range(len(sb_measurement_names)):
-            label_sb.append(tk.Label(self.frame_lower_left, text=sb_measurement_names[i]))
+        self.label_sb_name = []
+        for i in range(len(sb_names)):
+            self.label_sb_name.append(tk.Label(self.frame_sb, text=sb_names[i]))
+
+        self.sep1_sb = ttk.Separator(self.frame_sb, orient='vertical')
+        self.sep2_sb = ttk.Separator(self.frame_sb, orient='vertical')
 
         # ==============================================================================================================
-        # add lower right frame
+        # add GPS frame
         # ==============================================================================================================
-        self.frame_lower_right = tk.LabelFrame(self.frame_lower, text='FSM data', font=6, width=300, height=100)
+        self.frame_gps = tk.LabelFrame(self.frame_lower, text='GPS', font=6, width=200, height=75)
+        self.label_gps_val = []
+        self.label_gps_name = []
+        for i in range(len(gps_names)):
+            self.label_gps_val.append(tk.Label(self.frame_gps,
+                                               text='--------',
+                                               borderwidth=2,
+                                               relief='sunken',
+                                               width=10))
+
+            self.label_gps_name.append(tk.Label(self.frame_gps, text=gps_names[i]))
+
+        self.sep_gps = ttk.Separator(self.frame_gps, orient='vertical')
+
+        self.label_gps_name[0].grid(row=1, column=0, sticky='W')
+        self.label_gps_name[1].grid(row=2, column=0, sticky='W')
+        self.label_gps_name[2].grid(row=1, column=3, sticky='W')
+        self.label_gps_name[3].grid(row=2, column=3, sticky='W')
+        self.label_gps_name[4].grid(row=0, column=4)
+        self.label_gps_name[5].grid(row=0, column=5)
+
+        self.sep_gps.grid(row=0, column=2, rowspan=3, sticky='ns')
+
+        self.label_gps_val[0].grid(row=1, column=1, padx=10)
+        self.label_gps_val[1].grid(row=2, column=1, padx=10)
+        self.label_gps_val[2].grid(row=1, column=4, padx=10)
+        self.label_gps_val[3].grid(row=2, column=4, padx=10)
+        self.label_gps_val[4].grid(row=1, column=5, padx=10)
+        self.label_gps_val[5].grid(row=2, column=5, padx=10)
+
+        # ==============================================================================================================
+        # add battery monitoring frame
+        # ==============================================================================================================
+        self.frame_battery = tk.LabelFrame(self.frame_lower, text='Power', font=6, width=100, height=75)
+        self.label_battery_val = []
+        self.label_battery_names = []
+        for i in range(len(battery_names)):
+            self.label_battery_val.append(tk.Label(self.frame_battery,
+                                                   text='--------',
+                                                   borderwidth=2,
+                                                   relief='sunken',
+                                                   width=15))
+
+            self.label_battery_names.append(tk.Label(self.frame_battery, text=battery_names[i]))
+
+            if i == 0:
+                self.label_battery_names[i].grid(row=i, column=0, padx=(20, 0), pady=(10, 0), sticky='W')
+                self.label_battery_val[i].grid(row=i, column=1, padx=10, pady=(10, 0))
+            else:
+                self.label_battery_names[i].grid(row=i, column=0, padx=(20, 0), sticky='W')
+                self.label_battery_val[i].grid(row=i, column=1, padx=10)
+
+        # ==============================================================================================================
+        # add FSM frame
+        # ==============================================================================================================
+        self.frame_fsm = tk.LabelFrame(self.frame_lower, text='FSM data', font=6, width=200, height=75)
         self.label_fsm_val = []
+        self.label_fsm_names = []
         for i in range(len(fsm_names)):
-            self.label_fsm_val.append(tk.Label(self.frame_lower_right,
+            self.label_fsm_val.append(tk.Label(self.frame_fsm,
                                                text='--------',
                                                borderwidth=2,
                                                relief='sunken',
                                                width=15))
-        self.label_fsm_names = []
-        for i in range(len(fsm_names)):
-            self.label_fsm_names.append(tk.Label(self.frame_lower_right, text=fsm_names[i]))
+
+            self.label_fsm_names.append(tk.Label(self.frame_fsm, text=fsm_names[i]))
+
+            if i == 0:
+                self.label_fsm_names[i].grid(row=i, column=0, padx=(20, 0), pady=(10, 0), sticky='W')
+                self.label_fsm_val[i].grid(row=i, column=1, padx=10, pady=(10, 0))
+            else:
+                self.label_fsm_names[i].grid(row=i, column=0, padx=(20, 0), sticky='W')
+                self.label_fsm_val[i].grid(row=i, column=1, padx=10)
 
         # ==============================================================================================================
         # pack/grid all elements
@@ -258,26 +340,24 @@ class MainWindow(Frame):
         self.frame_upper_right.pack(side='left', fill='both', expand=True, pady=(0, 10))
 
         self.frame_recording.pack(side='top', fill='both', expand=True)
-        self.frame_test.pack(side='top', fill='both', expand=True)
+        self.frame_command.pack(side='top', fill='both', expand=True)
         self.frame_log.pack(side='top', fill='both', expand=True)
 
         st = scrolledtext.ScrolledText(self.frame_log, state='disabled', width=40, height=20)
         st.configure(font='TkFixedFont')
         st.grid(row=0, column=0)
 
-        self.button_test1.grid(row=0, column=0, padx=5)
-        self.button_test2.grid(row=0, column=1, padx=5)
-        self.button_test3.grid(row=0, column=2, padx=5)
+        self.button_airbrake.grid(row=0, column=0, padx=5)
+        self.button_sensor.grid(row=0, column=1, padx=5)
+        self.button_sf.grid(row=0, column=2, padx=5)
 
         self.logger.addHandler(LoggingHandler(st))
 
-        self.frame_lower_left.pack(side="left", fill="both", expand=True, padx=10, pady=10)
-        self.sep2.pack(side="left", fill="both")
-        self.frame_lower_right.pack(side="left", fill="both", expand=True, padx=10, pady=10)
-
-        self.label_sb1.grid(row=1, column=0, padx=(20, 0))
-        self.label_sb2.grid(row=2, column=0, padx=(20, 0))
-        self.label_sb3.grid(row=3, column=0, padx=(20, 0))
+        self.frame_sb.pack(side="left", fill="both", expand=True, padx=5, pady=10)
+        # self.sep2.pack(side="left", fill="both")
+        self.frame_gps.pack(side="left", fill="both", expand=True, padx=5, pady=10)
+        self.frame_battery.pack(side="left", fill="both", expand=True, padx=5, pady=10)
+        self.frame_fsm.pack(side="left", fill="both", expand=True, padx=5, pady=10)
 
         self.label_file_name.grid(row=0, column=0, pady=20, padx=20)
         self.entry_name.grid(row=0, column=1, pady=20)
@@ -287,32 +367,40 @@ class MainWindow(Frame):
         self.entry_name.delete(0, 'end')
         self.entry_name.insert(0, 'recording.csv')
 
-        for i in range(3):
-            for j in range(10):
-                self.label_val[i * 10 + j].grid(row=i + 1, column=j + 1, padx=10)
+        self.label_sb_name[0].grid(row=0, column=0)
+        self.label_sb_name[1].grid(row=1, column=0)
+        self.label_sb_name[2].grid(row=0, column=3)
+        self.label_sb_name[3].grid(row=1, column=3)
+        self.label_sb_name[4].grid(row=2, column=3)
+        self.label_sb_name[5].grid(row=0, column=6)
+        self.label_sb_name[6].grid(row=1, column=6)
+        self.label_sb_name[7].grid(row=2, column=6)
 
-        for i in range(len(label_sb)):
-            label_sb[i].grid(row=0, column=i + 1, pady=(10, 0))
+        self.sep1_sb.grid(row=0, column=2, rowspan=3, sticky='ns')
+        self.sep2_sb.grid(row=0, column=5, rowspan=3, sticky='ns')
 
-        for i in range(len(fsm_names)):
-            if i == 0:
-                self.label_fsm_names[i].grid(row=i, column=0, padx=(20, 0), pady=(10, 0), sticky='W')
-                self.label_fsm_val[i].grid(row=i, column=1, padx=10, pady=(10, 0))
-            else:
-                self.label_fsm_names[i].grid(row=i, column=0, padx=(20, 0), sticky='W')
-                self.label_fsm_val[i].grid(row=i, column=1, padx=10)
+        self.label_sb_val[0].grid(row=0, column=1, padx=10)
+        self.label_sb_val[1].grid(row=1, column=1, padx=10)
+        self.label_sb_val[2].grid(row=0, column=4, padx=10)
+        self.label_sb_val[3].grid(row=1, column=4, padx=10)
+        self.label_sb_val[4].grid(row=2, column=4, padx=10)
+        self.label_sb_val[5].grid(row=0, column=7, padx=10)
+        self.label_sb_val[6].grid(row=1, column=7, padx=10)
+        self.label_sb_val[7].grid(row=2, column=7, padx=10)
 
         self._root.config(menu=self.menubar)
 
-    def airbrake_test(self):
+    def send_command(self, command):
         if self.s is not None:
-            self.s.send('airbrake')
-        else:
-            messagebox.showinfo('Info', 'Serial connection is not established.')
-
-    def sensor_callibration(self):
-        if self.s is not None:
-            self.s.send('sensor')
+            if command == 'airbrake':
+                answer = messagebox.askquestion('Warning', 'Airbrakes will extend. Make sure travel'
+                                                           'range is cleared. Do you want to continue?')
+                if answer == 'yes':
+                    self.s.send(command)
+                else:
+                    self.logger.info('Airbrake test aborted.')
+            else:
+                self.s.send(command)
         else:
             messagebox.showinfo('Info', 'Serial connection is not established.')
 
@@ -372,11 +460,9 @@ class MainWindow(Frame):
 
         self.label_port = tk.Label(self.frame1, text='Port')
         self.label_baud = tk.Label(self.frame1, text='Baud rate')
-        # self.label_numbyte = tk.Label(self.frame1, text='Number of Bytes')
 
         self.entry1 = tk.Entry(self.frame1)
         self.entry2 = tk.Entry(self.frame1)
-        # self.entry3 = tk.Entry(self.frame1)
 
         self.button_connect = tk.Button(self.frame1, text='Connect', command=self.connect_xbee)
 
@@ -387,10 +473,8 @@ class MainWindow(Frame):
 
         self.label_port.grid(row=0, column=0, padx=(10, 0))
         self.label_baud.grid(row=1, column=0, padx=(10, 0))
-        # self.label_numbyte.grid(row=2, column=0, padx=(10, 0))
         self.entry1.grid(row=0, column=1)
         self.entry2.grid(row=1, column=1)
-        # self.entry3.grid(row=2, column=1)
         self.button_connect.grid(row=3, column=0, columnspan=2, pady=10)
 
         self.entry1.delete(0, 'end')
@@ -400,13 +484,10 @@ class MainWindow(Frame):
             self.entry1.insert(0, '/dev/ttyUSB0')
         self.entry2.delete(0, 'end')
         self.entry2.insert(0, 115200)
-        # self.entry3.delete(0, 'end')
-        # self.entry3.insert(0, 112)
 
     def connect_xbee(self):
         port_name = self.entry1.get()
         baud_rate = int(self.entry2.get())
-        # data_num_bytes = int(self.entry3.get())
         self.s = SerialConnection(self, port_name, baud_rate)
         if not self.s.start_connection():
             messagebox.showerror('Error', "Could not establish serial connection.")
@@ -416,21 +497,42 @@ class MainWindow(Frame):
 
     def update_values(self, data):
         # print(len(data))
-        # print(type(data))
         # print(data)
         if data == 0:
-            for i in range(len(self.label_val)):
-                self.label_val[i].config(text='-----')
+            for i in range(len(self.label_sb_val)):
+                self.label_sb_val[i].config(text='-----')
+
+            for i in range(len(self.label_gps_val)):
+                self.label_gps_val[i].config(text='-----')
+
+            for i in range(len(self.label_battery_val)):
+                self.label_battery_val[i].config(text='-----')
 
             for i in range(len(self.label_fsm_val)):
                 self.label_fsm_val[i].config(text='-----')
         else:
-            sb_data = data[:10]+data[11:21]+data[22:32]
-            for i in range(len(self.label_val)):
-                self.label_val[i].config(text=sb_data[i])
-            fsm_data = data[33:40]
+            sb_data = data[:len_sb]
+            battery_data = data[len_sb:len_sb + len_battery]
+            gps_data = data[len_sb + len_battery:len_sb + len_battery + len_gps]
+            fsm_data = data[len_sb+len_gps+len_battery:len_sb+len_gps+len_battery+len_fsm]
+
+            gps_time = str(gps_data[0])+':'+str(gps_data[1])+':'+str(gps_data[2])
+            tmp = [0]*(len_gps-2)
+            tmp[0] = gps_time
+            tmp[1:] = gps_data[3:]
+            gps_data = tmp
+
+            for i in range(len(self.label_sb_val)):
+                self.label_sb_val[i].config(text=sb_data[i])
+
+            for i in range(len(self.label_gps_val)):
+                self.label_gps_val[i].config(text=gps_data[i])
+
+            for i in range(len(self.label_battery_val)):
+                self.label_battery_val[i].config(text=battery_data[i])
+
             for i in range(len(self.label_fsm_val)):
-                if i != 3 or i != 4:
+                if i != 3:
                     self.label_fsm_val[i].config(text=fsm_data[i])
 
             # print(fsm_data)
@@ -438,10 +540,6 @@ class MainWindow(Frame):
                 self.label_fsm_val[3].config(text=flight_phase[fsm_data[3]])
             else:
                 self.label_fsm_val[3].config(text=fsm_data[3])
-            if fsm_data[4] in range(len(mach_regime)):
-                self.label_fsm_val[4].config(text=mach_regime[fsm_data[4]])
-            else:
-                self.label_fsm_val[4].config(text=fsm_data[4])
 
             if self.recording:
                 with open(self.file_name, 'a') as outfile:

@@ -1,6 +1,11 @@
 import sys
 
 
+dict_commands = {'airbrake': bytearray([217]*4),
+                 'sensor': bytearray([210]*4),
+                 'frequency': bytearray([205]*4)}
+
+
 def data_struct():
     if sys.platform.startswith('win'):
         imu_data_t = {'gyro_x': 'h',
@@ -29,11 +34,11 @@ def data_struct():
         gps_telemetry_t = {'hour': 'l',
                            'minute': 'l',
                            'second': 'l',
+                           'satellite': 'B',
                            'lat_deg': 'B',
                            'lat_decimal': 'l',
                            'lon_deg': 'B',
-                           'lon_decimal': 'l',
-                           'satellite': 'B'}
+                           'lon_decimal': 'l'}
 
         telemetry_battery_data_t = {'battery': 'h',
                                     'current': 'h',
@@ -51,7 +56,7 @@ def data_struct():
         telemetry_t = {'sb_data': telemetry_sb_data_t,
                        'battery': telemetry_battery_data_t,
                        'gps': gps_telemetry_t,
-                       'height': 'l',
+                       'altitude': 'l',
                        'velocity': 'l',
                        'airbrake_extension': 'l',
                        'flight_phase': 'B',
