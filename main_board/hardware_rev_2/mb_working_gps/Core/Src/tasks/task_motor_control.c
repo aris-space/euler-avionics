@@ -7,7 +7,7 @@
 
 #include "tasks/task_motor_control.h"
 
-void testairbrakes();
+void testairbrakes(int32_t position);
 
 
 void vTaskMotorCont(void *argument) {
@@ -28,9 +28,14 @@ void vTaskMotorCont(void *argument) {
 	//int8_t position_mode = 0x08;
 	/* Profile Position Mode */
 	int8_t position_mode = 0x01;
-	int32_t PPM_velocity = 2000;
+	int32_t PPM_velocity = 10000;
 	int32_t PPM_acceleration = 100000;
 	int32_t PPM_deceleration = 100000;
+
+	int32_t counter = 0;
+	uint32_t telemetry_counter;
+
+	osDelay(500);
 
 
 	/* Controller Variables */
@@ -40,17 +45,17 @@ void vTaskMotorCont(void *argument) {
 	int32_t desired_motor_position = 0;
 	int32_t measured_motor_position = 0;
 
-//	while(EnableMotor() != osOK){
-//		osDelay(1000);
-//		break;
-//	};
+	//	while(EnableMotor() != osOK){
+	//		osDelay(1000);
+	//		break;
+	//	};
 	EnableMotor();
 
 	SetPositionMode(position_mode);
-//	while(SetPositionMode(position_mode) != osOK){
-//		osDelay(1000);
-//		break;
-//	};
+	//	while(SetPositionMode(position_mode) != osOK){
+	//		osDelay(1000);
+	//		break;
+	//	};
 
 	if (position_mode == 0x01) {
 		motor_status = ConfigurePPM(PPM_velocity, PPM_acceleration, PPM_deceleration);
@@ -69,6 +74,8 @@ void vTaskMotorCont(void *argument) {
 
 		/* Read Telemetry Command */
 		ReadMutex(&command_mutex, &global_telemetry_command, &telemetry_command, sizeof(global_telemetry_command));
+
+		UsbPrint("[MOTOR] Read Position:%d\n", GetPosition);
 
 		/* Read FSM State */
 		ReadMutex(&fsm_mutex, &global_flight_phase_detection, &flight_phase_detection, sizeof(global_flight_phase_detection));
@@ -96,15 +103,15 @@ void vTaskMotorCont(void *argument) {
 			MoveToPositionPPM(desired_motor_position);
 		}
 		else{
-		//	MoveToPositionPPM(0);
+			//	MoveToPositionPPM(0);
 		}
 
 		/* Airbrake Test if telemetry command is given and we are in idle state */
 		if(flight_phase_detection.flight_phase == IDLE && telemetry_command == AIRBRAKE_TEST_COMMAND){
-			testairbrakes();
+			testairbrakes(-130);
+			telemetry_command = IDLE_COMMAND;
 		}
 
-		MoveToPositionPPM(-150);
 
 		/* Log Motor Position and Desired Motor Position */
 		logMotor(osKernelGetTickCount(), desired_motor_position, measured_motor_position);
@@ -114,8 +121,8 @@ void vTaskMotorCont(void *argument) {
 	}
 }
 
-void testairbrakes(){
-	MoveToPositionPPM(-150);
+void testairbrakes(int32_t position){
+	MoveToPositionPPM(position);
 	osDelay(1000);
 	MoveToPositionPPM(0);
 }

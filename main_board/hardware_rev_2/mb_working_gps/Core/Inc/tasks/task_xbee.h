@@ -19,7 +19,8 @@
 
 /* defines */
 #define XBEE_SAMPLING_FREQ 10
-#define UART_TRANSMIT_TIMEOUT 5
+
+#define XBEE_SAMPLING_FREQ_HIGH 50
 
 /* extern */
 
@@ -31,6 +32,8 @@ extern custom_mutex_t sb1_mutex;
 extern custom_mutex_t sb2_mutex;
 extern custom_mutex_t sb3_mutex;
 extern custom_mutex_t command_mutex;
+extern custom_mutex_t battery_mutex;
+extern custom_mutex_t gps_mutex;
 
 /* Global Data */
 extern baro_data_t sb1_baro;
@@ -43,6 +46,9 @@ extern state_est_data_t state_est_data_global;
 extern int32_t controller_output_global;
 extern flight_phase_detection_t global_flight_phase_detection;
 extern command_e global_telemetry_command;
+extern gps_telemetry_t globalGPS;
+extern telemetry_battery_data_t global_battery_data;
+
 
 extern UART_HandleTypeDef huart7;
 

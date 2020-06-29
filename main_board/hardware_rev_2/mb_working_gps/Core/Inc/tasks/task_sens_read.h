@@ -9,6 +9,8 @@
 #define INC_TASKS_TASK_SENS_READ_H_
 
 /* Includes */
+#include <stdio.h>
+
 #include "Util/util.h"
 #include "cmsis_os.h"
 #include "main.h"
@@ -44,7 +46,7 @@ extern sb_data_t sb3_data;
 
 /* USB Sensor Read In */
 extern custom_mutex_t usb_data_mutex;
-extern uint8_t usb_data_buffer[256];
+extern char usb_data_buffer[256];
 
 /* Xbee Command */
 extern custom_mutex_t command_mutex;

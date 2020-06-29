@@ -22,6 +22,7 @@ void vTaskBattery(void *argument) {
 	double supp = 0;
 	double bat = 0;
 
+
 	battery_data_t battery_data = { 0 };
 
 	int counter = 0;
@@ -75,7 +76,9 @@ void vTaskBattery(void *argument) {
 
 			/* Write Data into global Variable */
 			if(AcquireMutex(&battery_mutex) == osOK ){
-				global_battery_data = battery_data;
+				global_battery_data.battery = battery_data.battery;
+				global_battery_data.consumption = battery_data.consumption;
+				global_battery_data.current = battery_data.current;
 				ReleaseMutex(&battery_mutex);
 			}
 		}

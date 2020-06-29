@@ -25,6 +25,8 @@ void vTaskFSM(void *argument) {
 	init_env(&dummy_env);
 	init_env(&environment);
 
+	osDelay(500);
+
 
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();

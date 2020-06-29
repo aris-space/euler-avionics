@@ -21,6 +21,8 @@ void vTaskController(void *argument) {
     control_data_t control_data = { 0 };
     control_data_init(&control_data);
 
+	osDelay(500);
+
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();
 	tick_update = osKernelGetTickFreq() / CONTROLLER_SAMPLING_FREQ;

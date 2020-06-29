@@ -88,15 +88,16 @@ uint8_t transformFRESULT(FRESULT res) {
 }
 
 void vTaskSdCard(void *argument) {
+	osDelay(100);
 	FRESULT res;
 	char EULER_LOG_FILE_NAME[13] = "";
 	UsbPrint("[STORAGE TASK] Starting SD Card Task..\n");
 
-	resetSDCard: UsbPrint("[STORAGE TASK] Mounting SD card\n");
+	resetSDCard: //UsbPrint("[STORAGE TASK] Mounting SD card\n");
 	do {
 		res = f_mount(&EULER_FatFS, "", 1);
 		if (res != FR_OK) {
-			//UsbPrint("[STORAGE TASK] Failed mounting SD card: %d\n", res);
+			UsbPrint("[STORAGE TASK] Failed mounting SD card: %d\n", res);
 			// force sd card to be reinitialized
 			disk.is_initialized[0] = 0;
 			osDelay(100);

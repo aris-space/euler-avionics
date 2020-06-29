@@ -18,7 +18,7 @@
 #include "main.h"
 
 /* Constants */
-#define FSM_SAMPLING_FREQ 100
+#define FSM_SAMPLING_FREQ 10
 
 /* Parameters */
 
