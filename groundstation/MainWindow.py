@@ -511,6 +511,7 @@ class MainWindow(Frame):
             for i in range(len(self.label_fsm_val)):
                 self.label_fsm_val[i].config(text='-----')
         else:
+            data = data[1:]
             sb_data = data[:len_sb]
             battery_data = data[len_sb:len_sb + len_battery]
             gps_data = data[len_sb + len_battery:len_sb + len_battery + len_gps]

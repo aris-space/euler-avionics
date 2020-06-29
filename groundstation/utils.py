@@ -53,7 +53,8 @@ def data_struct():
                                'acc_y': 'h',
                                'acc_z': 'h'}
 
-        telemetry_t = {'sb_data': telemetry_sb_data_t,
+        telemetry_t = {'start': 'B',
+                       'sb_data': telemetry_sb_data_t,
                        'battery': telemetry_battery_data_t,
                        'gps': gps_telemetry_t,
                        'altitude': 'l',

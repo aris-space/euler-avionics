@@ -23897,3 +23897,108 @@ struct.error: unpack requires a buffer of 80 bytes
 2020-06-29 22:38:41,716 - root - INFO - Connected to COM6 at 115200 BAUD.
 2020-06-29 22:38:43,681 - root - INFO - Ready to receive data
 2020-06-29 22:39:21,003 - root - INFO - airbrake command was sent.
+2020-06-29 22:45:32,445 - root - INFO - ==========================================================================
+2020-06-29 22:45:32,445 - root - INFO -                         ARIS Groundstation started                        
+2020-06-29 22:45:32,445 - root - INFO - ==========================================================================
+2020-06-29 22:45:32,644 - root - INFO - Initialised Groundstation
+2020-06-29 22:45:36,165 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-29 22:45:36,169 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-29 22:45:38,203 - root - INFO - Ready to receive data
+2020-06-29 22:46:20,958 - root - INFO - ==========================================================================
+2020-06-29 22:46:20,959 - root - INFO -                         ARIS Groundstation started                        
+2020-06-29 22:46:20,959 - root - INFO - ==========================================================================
+2020-06-29 22:46:21,152 - root - INFO - Initialised Groundstation
+2020-06-29 22:46:24,466 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-29 22:46:24,470 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-29 22:46:26,601 - root - INFO - Ready to receive data
+2020-06-29 22:46:41,329 - root - INFO - ==========================================================================
+2020-06-29 22:46:41,329 - root - INFO -                         ARIS Groundstation started                        
+2020-06-29 22:46:41,330 - root - INFO - ==========================================================================
+2020-06-29 22:46:41,526 - root - INFO - Initialised Groundstation
+2020-06-29 22:46:44,783 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-29 22:46:44,787 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-29 22:46:46,822 - root - INFO - Ready to receive data
+2020-06-29 22:47:05,438 - root - INFO - ==========================================================================
+2020-06-29 22:47:05,438 - root - INFO -                         ARIS Groundstation started                        
+2020-06-29 22:47:05,438 - root - INFO - ==========================================================================
+2020-06-29 22:47:05,641 - root - INFO - Initialised Groundstation
+2020-06-29 22:47:10,126 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-29 22:47:10,132 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-29 22:47:15,456 - root - INFO - Ready to receive data
+2020-06-29 22:47:32,152 - root - INFO - ==========================================================================
+2020-06-29 22:47:32,152 - root - INFO -                         ARIS Groundstation started                        
+2020-06-29 22:47:32,152 - root - INFO - ==========================================================================
+2020-06-29 22:47:32,367 - root - INFO - Initialised Groundstation
+2020-06-29 22:47:36,121 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-29 22:47:36,124 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-29 22:47:37,737 - root - INFO - Ready to receive data
+2020-06-29 22:49:59,149 - root - INFO - ==========================================================================
+2020-06-29 22:49:59,149 - root - INFO -                         ARIS Groundstation started                        
+2020-06-29 22:49:59,149 - root - INFO - ==========================================================================
+2020-06-29 22:49:59,340 - root - INFO - Initialised Groundstation
+2020-06-29 22:50:02,606 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-29 22:50:02,610 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-29 22:50:04,666 - root - INFO - Ready to receive data
+2020-06-29 22:51:42,827 - root - INFO - ==========================================================================
+2020-06-29 22:51:42,827 - root - INFO -                         ARIS Groundstation started                        
+2020-06-29 22:51:42,827 - root - INFO - ==========================================================================
+2020-06-29 22:51:43,025 - root - INFO - Initialised Groundstation
+2020-06-29 22:51:46,551 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-29 22:51:46,555 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-29 22:51:47,965 - root - INFO - Ready to receive data
+2020-06-29 22:53:41,349 - root - INFO - ==========================================================================
+2020-06-29 22:53:41,349 - root - INFO -                         ARIS Groundstation started                        
+2020-06-29 22:53:41,350 - root - INFO - ==========================================================================
+2020-06-29 22:53:41,557 - root - INFO - Initialised Groundstation
+2020-06-29 22:53:44,879 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-29 22:53:44,883 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-29 22:53:47,547 - root - INFO - Ready to receive data
+2020-06-29 22:55:44,343 - root - INFO - ==========================================================================
+2020-06-29 22:55:44,343 - root - INFO -                         ARIS Groundstation started                        
+2020-06-29 22:55:44,343 - root - INFO - ==========================================================================
+2020-06-29 22:55:44,547 - root - INFO - Initialised Groundstation
+2020-06-29 22:55:49,111 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-29 22:55:49,116 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-29 22:55:51,561 - root - INFO - Ready to receive data
+2020-06-29 22:57:30,538 - root - INFO - ==========================================================================
+2020-06-29 22:57:30,538 - root - INFO -                         ARIS Groundstation started                        
+2020-06-29 22:57:30,538 - root - INFO - ==========================================================================
+2020-06-29 22:57:30,744 - root - INFO - Initialised Groundstation
+2020-06-29 22:57:33,378 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-29 22:57:33,382 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-29 22:57:34,777 - root - INFO - Ready to receive data
+2020-06-29 22:58:46,886 - root - INFO - ==========================================================================
+2020-06-29 22:58:46,886 - root - INFO -                         ARIS Groundstation started                        
+2020-06-29 22:58:46,886 - root - INFO - ==========================================================================
+2020-06-29 22:58:47,082 - root - INFO - Initialised Groundstation
+2020-06-29 22:58:51,334 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-29 22:58:51,339 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-29 22:58:56,386 - root - INFO - Ready to receive data
+2020-06-29 23:00:07,650 - root - INFO - ==========================================================================
+2020-06-29 23:00:07,650 - root - INFO -                         ARIS Groundstation started                        
+2020-06-29 23:00:07,650 - root - INFO - ==========================================================================
+2020-06-29 23:00:07,846 - root - INFO - Initialised Groundstation
+2020-06-29 23:00:10,918 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-29 23:00:10,922 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-29 23:00:12,446 - root - INFO - Ready to receive data
+2020-06-29 23:01:08,772 - root - INFO - ==========================================================================
+2020-06-29 23:01:08,772 - root - INFO -                         ARIS Groundstation started                        
+2020-06-29 23:01:08,772 - root - INFO - ==========================================================================
+2020-06-29 23:01:08,968 - root - INFO - Initialised Groundstation
+2020-06-29 23:01:12,577 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-29 23:01:12,581 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-29 23:01:14,743 - root - INFO - Ready to receive data
+2020-06-29 23:09:16,842 - root - INFO - ==========================================================================
+2020-06-29 23:09:16,842 - root - INFO -                         ARIS Groundstation started                        
+2020-06-29 23:09:16,842 - root - INFO - ==========================================================================
+2020-06-29 23:09:17,042 - root - INFO - Initialised Groundstation
+2020-06-29 23:09:20,019 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-29 23:09:20,022 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-29 23:09:21,448 - root - INFO - Ready to receive data
+2020-06-29 23:10:20,564 - root - INFO - ==========================================================================
+2020-06-29 23:10:20,564 - root - INFO -                         ARIS Groundstation started                        
+2020-06-29 23:10:20,566 - root - INFO - ==========================================================================
+2020-06-29 23:10:20,779 - root - INFO - Initialised Groundstation
+2020-06-29 23:10:24,669 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-29 23:10:24,673 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-29 23:10:26,399 - root - INFO - Ready to receive data

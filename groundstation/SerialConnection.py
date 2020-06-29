@@ -90,12 +90,12 @@ class SerialConnection:
                                                   rtscts=True,
                                                   xonxoff=False,
                                                   timeout=None)
-            print('Connected to ' + str(self.port) + ' at ' + str(self.baud) + ' BAUD.')
+
             self.logger.info('Connected to ' + str(self.port) + ' at ' + str(self.baud) + ' BAUD.')
             # self.read_serial_start()
             return True
         except (OSError, serial.SerialException):
-            print("Failed to connect with " + str(self.port) + ' at ' + str(self.baud) + ' BAUD.')
+
             self.logger.info("Failed to connect with " + str(self.port) + ' at ' + str(self.baud) + ' BAUD.')
             return False
 
@@ -120,9 +120,12 @@ class SerialConnection:
     def verify_checksum(self, data):
         # print(hex(sum(data))[-2:])
         cs = hex(sum(data))[-2:]
-        print(cs)
-        if cs != 'ff':
+        # print(data[0])
+        # print(cs)
+        if cs != 'ff' or data[0] != 23:
             self.reset_flag = True
+            return False
+        return True
 
     def back_ground_thread(self):  # retrieve data
         time.sleep(1.0)  # give some buffer time for retrieving data
@@ -150,15 +153,15 @@ class SerialConnection:
                 print(self.rawData.hex())
                 # print('length', len(self.rawData))
 
-                self.verify_checksum(self.rawData)
-                self.data = struct.unpack(fmt+'b'+'b'+'b', self.rawData)
+                if self.verify_checksum(self.rawData):
+                    self.data = struct.unpack(fmt+'b'+'b'+'b', self.rawData)
 
-                data_dict = dict(zip(measurements, self.data))
-                print(data_dict)
-                # print(self.serialConnection.inWaiting())
-                self.root.update_values(self.data)
+                    data_dict = dict(zip(measurements, self.data))
+                    print(data_dict)
+                    # print(self.serialConnection.inWaiting())
+                    self.root.update_values(self.data)
 
-            time.sleep(0.00001)
+            time.sleep(0.001)
 
     def close(self):
         self.isRun = False
