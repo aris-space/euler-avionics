@@ -20,14 +20,14 @@ osStatus_t ReleaseMutex(custom_mutex_t *custom_mutex){
 	return osMutexRelease(custom_mutex->mutex);
 }
 
-osStatus_t ReadMutex(custom_mutex_t *custom_mutex, const void* global_data, const void* local_data, int32_t size){
+osStatus_t ReadMutex(custom_mutex_t *custom_mutex,void const* global_data, void* const local_data, int32_t size){
 	uint8_t buffer[100] = { 0 };
 	uint32_t counter = custom_mutex->counter;
 	osStatus_t status = osError;
 	for(int i = 0; i < 5; i++){
 		memcpy(&buffer[0], global_data, size);
 		if(custom_mutex->counter == counter){
-			memcpy(local_data, &buffer[0], size);
+			memcpy(local_data, buffer, size);
 			status = osOK;
 			break;
 		}

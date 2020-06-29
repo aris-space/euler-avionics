@@ -22,6 +22,7 @@ void vTaskBattery(void *argument) {
 	double supp = 0;
 	double bat = 0;
 
+
 	battery_data_t battery_data = { 0 };
 
 	int counter = 0;

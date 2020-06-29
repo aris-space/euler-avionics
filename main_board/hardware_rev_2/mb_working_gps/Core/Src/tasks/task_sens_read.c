@@ -21,8 +21,6 @@ void vTaskSensRead(void *argument) {
 	/* For periodic update */
 	uint32_t tick_count, tick_update;
 
-	uint8_t checksum = 0;
-
 	osDelay(10000);
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();
@@ -102,7 +100,7 @@ void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3){
 /* Read Data from USB */
 void ReadDataUSB(){
 	if(osMutexAcquire(usb_data_mutex.mutex, 10)){
-		sscanf(usb_data_buffer, "%ld,%ld,%lu;%ld,%ld,%ld,%ld,%ld,%ld,%lu|%ld,%ld,%lu;%ld,%ld,%ld,%ld,%ld,%ld,%lu|%ld,%ld,%lu;%ld,%ld,%ld,%ld,%ld,%ld,%lu\n",
+		sscanf(usb_data_buffer, "%ld,%ld,%ld;%hd,%hd,%hd,%hd,%hd,%hd,%ld|%ld,%ld,%ld;%hd,%hd,%hd,%hd,%hd,%hd,%ld|%ld,%ld,%ld;%hd,%hd,%hd,%hd,%hd,%hd,%ld\n",
 				&sb1_baro.pressure, &sb1_baro.temperature, &sb1_baro.ts, &sb1_imu.gyro_x, &sb1_imu.gyro_y, &sb1_imu.gyro_z, &sb1_imu.acc_x, &sb1_imu.acc_y, &sb1_imu.acc_z, &sb1_imu.ts,
 				&sb2_baro.pressure, &sb2_baro.temperature, &sb2_baro.ts, &sb2_imu.gyro_x, &sb2_imu.gyro_y, &sb2_imu.gyro_z, &sb2_imu.acc_x, &sb2_imu.acc_y, &sb2_imu.acc_z, &sb2_imu.ts,
 				&sb3_baro.pressure, &sb3_baro.temperature, &sb3_baro.ts, &sb3_imu.gyro_x, &sb3_imu.gyro_y, &sb3_imu.gyro_z, &sb3_imu.acc_x, &sb3_imu.acc_y, &sb3_imu.acc_z, &sb3_imu.ts);

@@ -251,7 +251,7 @@ custom_mutex_t command_mutex;
 /* USB debugging */
 osMutexId_t usb_data_mutex_only;
 custom_mutex_t usb_data_mutex;
-uint8_t usb_data_buffer[256] = { 0 };
+char usb_data_buffer[256] = { 0 };
 
 /** Logging Queue **/
 osMessageQueueId_t log_queue;

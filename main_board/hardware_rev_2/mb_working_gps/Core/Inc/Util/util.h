@@ -162,7 +162,7 @@ typedef struct{
 } custom_mutex_t;
 
 
-static const command_xbee_t IDLE_XBEE_DATA = { IDLE_COMMAND, IDLE_COMMAND, IDLE_COMMAND, IDLE_COMMAND };
+static const command_xbee_t IDLE_XBEE_DATA = {{ IDLE_COMMAND, IDLE_COMMAND, IDLE_COMMAND, IDLE_COMMAND }};
 
 static const imu_data_t EMPTY_IMU = { 0 };
 
