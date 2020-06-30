@@ -107,7 +107,6 @@ class SerialConnection:
         """
         Establishes serial connection.
         """
-        print('Trying to connect to: ' + str(self.port) + ' at ' + str(self.baud) + ' BAUD.')
         self.logger.info('Trying to connect to: ' + str(self.port) + ' at ' + str(self.baud) + ' BAUD.')
         try:
             self.serialConnection = serial.Serial(self.port,

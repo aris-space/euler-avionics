@@ -39,7 +39,8 @@ fsm_names = ['altitude [m]',
              'velocity [m/s]',
              'airbrake extension [%]',
              'flight phase',
-             'timestamp [s]']
+             'timestamp [s]',
+             'Buzzer']
 
 
 def data_struct():

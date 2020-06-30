@@ -615,14 +615,23 @@ class MainWindow(Frame):
                 self.label_battery_val[i].config(text=battery_data[i])
 
             for i in range(len(self.label_fsm_val)):
-                if i != 3:
+                if i != 3 and i != 5:
                     self.label_fsm_val[i].config(text=fsm_data[i])
 
             # print(fsm_data)
-            if fsm_data[3] in range(len(flight_phase)):
-                self.label_fsm_val[3].config(text=flight_phase[fsm_data[3]])
+            if fsm_data[3] < 128:
+                if fsm_data[3] in range(len(flight_phase)):
+                    self.label_fsm_val[3].config(text=flight_phase[fsm_data[3]])
+                else:
+                    self.label_fsm_val[3].config(text=fsm_data[3])
+                self.label_fsm_val[5].config(text='off')
             else:
-                self.label_fsm_val[3].config(text=fsm_data[3])
+                fsm_data[3] = 128-fsm_data[3]
+                if fsm_data[3] in range(len(flight_phase)):
+                    self.label_fsm_val[3].config(text=flight_phase[fsm_data[3]])
+                else:
+                    self.label_fsm_val[3].config(text=fsm_data[3])
+                self.label_fsm_val[5].config(text='on')
 
             if self.recording:
                 with open(self.file_name, 'a') as outfile:
