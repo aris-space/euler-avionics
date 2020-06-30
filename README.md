@@ -1,10 +1,10 @@
 # aris-euler-avionics
 ### Groundstation
 * **Installation**<br/>
-The groundstation GUI requires **Python 3.7**. The required Python packages can be installed as follows:
+The groundstation GUI requires **Python 3.7**. The required Python packages can be installed as follows:<br/>
 ``pip install -r requirements.txt``
 * **Run groundstation GUI**<br/>
-To run the groundstation software execute following command in the console:
+To run the groundstation software execute following command in the console:<br/>
 ``python main.py``
 * **Logging**<br/>
 The log is stored in *Logs/Groundstation.log*<br/>
