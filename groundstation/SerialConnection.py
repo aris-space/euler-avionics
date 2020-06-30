@@ -122,9 +122,9 @@ class SerialConnection:
                 break
             if numbytes:
                 try:
-                    self.serialConnection.reset_input_buffer()
-                    self.serialConnection.readinto(self.rawData)
                     # self.serialConnection.reset_input_buffer()
+                    self.serialConnection.readinto(self.rawData)
+                    self.serialConnection.reset_input_buffer()
                     self.isReceiving = True
                 except (OSError, serial.SerialException):
                     print('Lost serial connection to'+str(self.port))
@@ -133,7 +133,7 @@ class SerialConnection:
 
                 print(self.rawData.hex())
                 # print('length', len(self.rawData))
-                self.data = struct.unpack(fmt+'b'+'b', self.rawData)
+                self.data = struct.unpack(fmt+'b'+'b'+'b', self.rawData)
 
                 data_dict = dict(zip(measurements, self.data))
                 print(data_dict)

@@ -29,11 +29,12 @@ def data_struct():
         telemetry_t = {'sb1': sb_data_t,
                        'sb2': sb_data_t,
                        'sb3': sb_data_t,
-                       'height': 'l',
-                       'velocity': 'l',
-                       'ts': 'l',
-                       'flight_phase': 'B',
-                       'mach_regime': 'B'}
+                       # 'height': 'l',
+                       # 'velocity': 'l',
+                       # 'ts': 'l',
+                       # 'flight_phase': 'B',
+                       # 'mach_regime': 'B'
+                       }
 
     else:
         imu_data_t = {'gyro_x': 'h',
@@ -62,10 +63,11 @@ def data_struct():
         telemetry_t = {'sb1': sb_data_t,
                        'sb2': sb_data_t,
                        'sb3': sb_data_t,
-                       'height': 'i',
-                       'velocity': 'i',
-                       'ts': 'i',
-                       'flight_phase': 'B',
-                       'mach_regime': 'B'}
+                       # 'height': 'i',
+                       # 'velocity': 'i',
+                       # 'ts': 'i',
+                       # 'flight_phase': 'B',
+                       # 'mach_regime': 'B'
+                       }
 
     return telemetry_t

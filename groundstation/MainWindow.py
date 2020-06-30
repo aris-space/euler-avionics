@@ -152,7 +152,7 @@ class MainWindow(Frame):
         self.frame_lower = tk.Frame(self._root, width=150, height=100)
         self.frame_upper_left = tk.LabelFrame(self.frame_upper, text='Commands', font=6, width=10, height=100)
         self.frame_upper_middle = tk.LabelFrame(self.frame_upper, text='Velocity', font=6, width=500, height=100)
-        self.frame_upper_right = tk.LabelFrame(self.frame_upper, text='Height', font=6, width=500, height=100)
+        self.frame_upper_right = tk.LabelFrame(self.frame_upper, text='Altitude', font=6, width=500, height=100)
         self.frame_log = tk.LabelFrame(self.frame_upper_left, text='Log', width=10, height=20)
 
         # ==============================================================================================================
@@ -197,7 +197,7 @@ class MainWindow(Frame):
         self.frame_recording = tk.LabelFrame(self.frame_upper_left, text='Recording', width=40, height=10)
         self.label_file_name = tk.Label(self.frame_recording, text='file name')
         self.button_start_rec = tk.Button(self.frame_recording, text='Start', font=4, command=self.start_recording)
-        self.button_stop_rec = tk.Button(self.frame_recording, text='Stop', font=4)
+        self.button_stop_rec = tk.Button(self.frame_recording, text='Stop', font=4, command=self.stop_recording)
         self.entry_name = tk.Entry(self.frame_recording)
 
         # ==============================================================================================================
@@ -331,6 +331,7 @@ class MainWindow(Frame):
                     writer = csv.writer(outfile)
                     writer.writerow(get_measurement_names())
                 self.recording = True
+                self.logger.info('Started recording.')
         else:
             with open(self.file_name, 'a') as outfile:
                 writer = csv.writer(outfile)
@@ -339,6 +340,7 @@ class MainWindow(Frame):
 
     def stop_recording(self):
         self.recording = False
+        self.logger.info('Stopped recording')
 
     def donothing(self):
         filewin = tk.Toplevel(self._root)
@@ -384,7 +386,7 @@ class MainWindow(Frame):
         else:
             self.entry1.insert(0, '/dev/ttyUSB0')
         self.entry2.delete(0, 'end')
-        self.entry2.insert(0, 230400)
+        self.entry2.insert(0, 115200)
         self.entry3.delete(0, 'end')
         self.entry3.insert(0, 112)
 
@@ -413,26 +415,30 @@ class MainWindow(Frame):
             sb_data = data[:10]+data[11:21]+data[22:32]
             for i in range(len(self.label_val)):
                 self.label_val[i].config(text=sb_data[i])
-            fsm_data = data[33:40]
-            for i in range(len(self.label_fsm_val)):
-                if i != 3 or i != 4:
-                    self.label_fsm_val[i].config(text=fsm_data[i])
 
-            # print(fsm_data)
-            if fsm_data[3] in range(len(flight_phase)):
-                self.label_fsm_val[3].config(text=flight_phase[fsm_data[3]])
-            else:
-                self.label_fsm_val[3].config(text=fsm_data[3])
-            if fsm_data[4] in range(len(mach_regime)):
-                self.label_fsm_val[4].config(text=mach_regime[fsm_data[4]])
-            else:
-                self.label_fsm_val[4].config(text=fsm_data[4])
-
-            if self.recording:
-                with open(self.file_name, 'a') as outfile:
-                    writer = csv.writer(outfile)
-                    writer.writerow(data[:40])
-
-            height_data.append(fsm_data[0])
-            velocity_data.append(fsm_data[1])
+            # ==========================================================================================================
+            # FSM data
+            # ==========================================================================================================
+            # fsm_data = data[33:40]
+            # for i in range(len(self.label_fsm_val)):
+            #     if i != 3 or i != 4:
+            #         self.label_fsm_val[i].config(text=fsm_data[i])
+            #
+            # # print(fsm_data)
+            # if fsm_data[3] in range(len(flight_phase)):
+            #     self.label_fsm_val[3].config(text=flight_phase[fsm_data[3]])
+            # else:
+            #     self.label_fsm_val[3].config(text=fsm_data[3])
+            # if fsm_data[4] in range(len(mach_regime)):
+            #     self.label_fsm_val[4].config(text=mach_regime[fsm_data[4]])
+            # else:
+            #     self.label_fsm_val[4].config(text=fsm_data[4])
+            #
+            # if self.recording:
+            #     with open(self.file_name, 'a') as outfile:
+            #         writer = csv.writer(outfile)
+            #         writer.writerow(data[:40])
+            #
+            # height_data.append(fsm_data[0])
+            # velocity_data.append(fsm_data[1])
 
