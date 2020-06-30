@@ -19,9 +19,9 @@ sb_names = ["pressure [Pa]",
             "gyro_x [deg/s]",
             "gyro_y [deg/s]",
             "gyro_z [deg/s]",
-            "acc_x [m/s^2]",
-            "acc_y [m/s^2]",
-            "acc_z [m/s^2]"]
+            "acc_x [m/s\u00b2]",
+            "acc_y [m/s\u00b2]",
+            "acc_z [m/s\u00b2]"]
 
 battery_names = ['battery voltage   [V]',
                  'current draw    [mA]',
@@ -31,8 +31,6 @@ gps_names = ['time',
              'num satellites',
              'latitude',
              'longitude',
-             'degree',
-             'decimal',
              'fix',
              'HDOP',
              'altitude']
