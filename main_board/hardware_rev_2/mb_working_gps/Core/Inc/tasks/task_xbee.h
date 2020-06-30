@@ -20,7 +20,7 @@
 /* defines */
 #define XBEE_SAMPLING_FREQ 10
 
-#define XBEE_SAMPLING_FREQ_HIGH 50
+#define XBEE_SAMPLING_FREQ_HIGH 100
 
 /* extern */
 
@@ -48,6 +48,7 @@ extern flight_phase_detection_t global_flight_phase_detection;
 extern command_e global_telemetry_command;
 extern gps_data_t globalGPS;
 extern telemetry_battery_data_t global_battery_data;
+
 
 
 extern UART_HandleTypeDef huart7;

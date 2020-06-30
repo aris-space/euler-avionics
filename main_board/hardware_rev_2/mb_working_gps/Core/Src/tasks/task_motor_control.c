@@ -42,21 +42,20 @@ void vTaskMotorCont(void *argument) {
 	int32_t desired_motor_position = 0;
 	int32_t measured_motor_position = 0;
 
-	//	while(EnableMotor() != osOK){
-	//		osDelay(1000);
-	//		break;
-	//	};
-	EnableMotor();
+	while(EnableMotor() != osOK){
+		osDelay(1000);
+	};
 
 	SetPositionMode(position_mode);
-	//	while(SetPositionMode(position_mode) != osOK){
-	//		osDelay(1000);
-	//		break;
-	//	};
+	while(SetPositionMode(position_mode) != osOK){
+		osDelay(1000);
+	};
 
 	if (position_mode == 0x01) {
 		motor_status = ConfigurePPM(PPM_velocity, PPM_acceleration, PPM_deceleration);
 	}
+
+
 
 
 	/* Infinite loop */
@@ -81,15 +80,15 @@ void vTaskMotorCont(void *argument) {
 		ReadMutex(&controller_mutex, &controller_output_global, &controller_actuation, sizeof(controller_actuation));
 
 		/* Transform 0-1 Controller output to controller output of motor */
-		desired_motor_position = (int32_t)(((float)controller_actuation)/1000*(-140));
+		desired_motor_position = (int32_t)(((float)controller_actuation)/1000*(-150));
 
 		/* Check Bounds */
 		if(desired_motor_position > -2){
 			desired_motor_position = -2;
 		}
 
-		if(desired_motor_position < -135){
-			desired_motor_position = -135;
+		if(desired_motor_position < -150){
+			desired_motor_position = -150;
 		}
 
 		/* If we are in IDLE, THRUSTING or DESCENDING
@@ -97,21 +96,28 @@ void vTaskMotorCont(void *argument) {
 		 */
 		if(flight_phase_detection.flight_phase == COASTING){
 			/* Move the Motor */
-			MoveToPositionPPM(desired_motor_position);
+			motor_status = MoveToPositionPPM(desired_motor_position);
 		}
 		else{
-			//	MoveToPositionPPM(0);
+			motor_status = MoveToPositionPPM(0);
 		}
 
 		/* Airbrake Test if telemetry command is given and we are in idle state */
-		if(flight_phase_detection.flight_phase == IDLE && telemetry_command == AIRBRAKE_TEST_COMMAND){
-			testairbrakes(-130);
+		if(flight_phase_detection.flight_phase == IDLE && telemetry_command == AIRBRAKE_TEST_COMMAND
+				&& osKernelGetTickCount() < 60000){
+			testairbrakes(-140);
 			telemetry_command = IDLE_COMMAND;
 		}
 
 
 		/* Log Motor Position and Desired Motor Position */
 		logMotor(osKernelGetTickCount(), desired_motor_position, measured_motor_position);
+
+		if(motor_status != osOK && flight_phase_detection.flight_phase == IDLE){
+			DisableMotor();
+			osDelay(1000);
+			EnableMotor();
+		}
 
 
 		osDelayUntil(tick_count);

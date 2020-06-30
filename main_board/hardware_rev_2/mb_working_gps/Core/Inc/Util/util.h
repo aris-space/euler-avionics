@@ -22,7 +22,7 @@ typedef uint8_t board_id_t;
 
 typedef enum {
 	IDLE_COMMAND = 155, CALIBRATE_SENSORS = 73, AIRBRAKE_TEST_COMMAND = 217, TELEMETRY_HIGH_SAMPLING = 13,
-	TELEMETRY_LOW_SAMPLING = 197, ENABLE_BUZZER = 113
+	TELEMETRY_LOW_SAMPLING = 197, ENABLE_BUZZER = 113, DISABLE_SELF_HOLD = 251
 } command_e;
 
 typedef struct {
@@ -77,12 +77,12 @@ typedef struct  {
 	uint32_t hour;
 	uint32_t minute;
 	uint32_t second;
+	uint8_t satellite;
 	uint8_t lat_deg;
 	uint32_t lat_decimal;
 	uint8_t lon_deg;
 	uint32_t lon_decimal;
 	uint8_t fix;
-	uint8_t satellite;
 	uint16_t HDOP;
 	uint16_t altitude;
 } gps_data_t;
@@ -133,6 +133,7 @@ typedef struct {
 } telemetry_sb_data_t;
 
 typedef struct {
+	uint8_t startbyte;
 	telemetry_sb_data_t sb_data;
 	telemetry_battery_data_t battery;
 	gps_data_t gps;

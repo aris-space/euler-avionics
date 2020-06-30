@@ -46,28 +46,28 @@ fsm_names = ['altitude [m]',
 
 def data_struct():
     if sys.platform.startswith('win'):
-        imu_data_t = {'gyro_x': 'h',
-                      'gyro_y': 'h',
-                      'gyro_z': 'h',
-                      'acc_x': 'h',
-                      'acc_y': 'h',
-                      'acc_z': 'h',
-                      'ts': 'l'}
-
-        baro_data_t = {'pressure': 'l',
-                       'temperature': 'l',
-                       'ts': 'l'}
-
-        sb_data_t = {'baro': baro_data_t,
-                     'imu': imu_data_t,
-                     'checksum': 'B'}
-
-        flight_phase_detection_t = {
-            'flight_phase': 'B',
-            'mach_regime': 'B',
-            'mach_number': 'f',
-            'num_samples_positive': 'b'
-        }
+        # imu_data_t = {'gyro_x': 'h',
+        #               'gyro_y': 'h',
+        #               'gyro_z': 'h',
+        #               'acc_x': 'h',
+        #               'acc_y': 'h',
+        #               'acc_z': 'h',
+        #               'ts': 'l'}
+        #
+        # baro_data_t = {'pressure': 'l',
+        #                'temperature': 'l',
+        #                'ts': 'l'}
+        #
+        # sb_data_t = {'baro': baro_data_t,
+        #              'imu': imu_data_t,
+        #              'checksum': 'B'}
+        #
+        # flight_phase_detection_t = {
+        #     'flight_phase': 'B',
+        #     'mach_regime': 'B',
+        #     'mach_number': 'f',
+        #     'num_samples_positive': 'b'
+        # }
 
         gps_telemetry_t = {'hour': 'l',
                            'minute': 'l',
@@ -106,36 +106,60 @@ def data_struct():
                        'cs': 'B'}
 
     else:
-        imu_data_t = {'gyro_x': 'h',
-                      'gyro_y': 'h',
-                      'gyro_z': 'h',
-                      'acc_x': 'h',
-                      'acc_y': 'h',
-                      'acc_z': 'h',
-                      'ts': 'i'}
+        # imu_data_t = {'gyro_x': 'h',
+        #               'gyro_y': 'h',
+        #               'gyro_z': 'h',
+        #               'acc_x': 'h',
+        #               'acc_y': 'h',
+        #               'acc_z': 'h',
+        #               'ts': 'i'}
+        #
+        # baro_data_t = {'pressure': 'i',
+        #                'temperature': 'i',
+        #                'ts': 'i'}
 
-        baro_data_t = {'pressure': 'i',
-                       'temperature': 'i',
-                       'ts': 'i'}
+        # sb_data_t = {'baro': baro_data_t,
+        #              'imu': imu_data_t,
+        #              'checksum': 'B'}
+        #
+        # flight_phase_detection_t = {
+        #     'flight_phase': 'B',
+        #     'mach_regime': 'B',
+        #     'mach_number': 'f',
+        #     'num_samples_positive': 'b'
+        # }
 
-        sb_data_t = {'baro': baro_data_t,
-                     'imu': imu_data_t,
-                     'checksum': 'B'}
+        gps_telemetry_t = {'hour': 'i',
+                           'minute': 'i',
+                           'second': 'i',
+                           'satellite': 'B',
+                           'lat_deg': 'B',
+                           'lat_decimal': 'i',
+                           'lon_deg': 'B',
+                           'lon_decimal': 'i'}
 
-        flight_phase_detection_t = {
-            'flight_phase': 'B',
-            'mach_regime': 'B',
-            'mach_number': 'f',
-            'num_samples_positive': 'b'
-        }
+        telemetry_battery_data_t = {'battery': 'h',
+                                    'current': 'h',
+                                    'consumption': 'h'}
 
-        telemetry_t = {'sb1': sb_data_t,
-                       'sb2': sb_data_t,
-                       'sb3': sb_data_t,
-                       'height': 'i',
+        telemetry_sb_data_t = {'pressure': 'i',
+                               'temp': 'i',
+                               'gyro_x': 'h',
+                               'gyro_y': 'h',
+                               'gyro_z': 'h',
+                               'acc_x': 'h',
+                               'acc_y': 'h',
+                               'acc_z': 'h'}
+
+        telemetry_t = {'start': 'B',
+                       'sb_data': telemetry_sb_data_t,
+                       'battery': telemetry_battery_data_t,
+                       'gps': gps_telemetry_t,
+                       'altitude': 'i',
                        'velocity': 'i',
-                       'ts': 'i',
+                       'airbrake_extension': 'i',
                        'flight_phase': 'B',
-                       'mach_regime': 'B'}
+                       'ts': 'i',
+                       'cs': 'B'}
 
     return telemetry_t

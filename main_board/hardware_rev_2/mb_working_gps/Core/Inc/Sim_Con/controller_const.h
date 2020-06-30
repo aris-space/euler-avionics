@@ -13,10 +13,10 @@
 #define LQR_ACTIVE true                                                                         //
 #define CONTROLLER_SAMPLING_FREQ 100                                                            // Hz
 #define POLY_DEG 30                                                                             // -
-#define OPT_TRAJ_CONTROL_INPUT 0.49664876248103507                                              // -
+#define OPT_TRAJ_CONTROL_INPUT 0.5481435652275759                                               // -
 #define CONTROL_ACTIVATION_MACH_NUMBER 0.55                                                     // -
 #define CONTROL_DEACTIVATION_MACH_NUMBER 0.1                                                    // -
-#define CONTROL_DEACTIVATION_ALTITUDE_AGL 1399.143997549479                                     // m
+#define CONTROL_DEACTIVATION_ALTITUDE_AGL 1400.2319238787113                                     // m
 #define MIN_BOUNDARAY_AW 0.5                                                                    // m
 #define NUM_POLYFITS 4                                                                          // -
 #define NUM_GAINS NUM_POLYFITS - 1                                                              // -
