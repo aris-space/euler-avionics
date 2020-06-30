@@ -74,38 +74,3 @@
 2020-06-30 15:41:24,794 - root - INFO - ==========================================================================
 2020-06-30 15:41:24,794 - root - INFO -                         ARIS Groundstation closed                         
 2020-06-30 15:41:24,794 - root - INFO - ==========================================================================
-2020-06-30 16:20:47,009 - root - INFO - ==========================================================================
-2020-06-30 16:20:47,010 - root - INFO -                         ARIS Groundstation started                        
-2020-06-30 16:20:47,010 - root - INFO - ==========================================================================
-2020-06-30 16:20:48,024 - root - INFO - Initialised Groundstation
-2020-06-30 16:21:00,978 - root - INFO - Trying to connect to: /dev/ttyUSB0 at 115200 BAUD.
-2020-06-30 16:21:00,981 - root - INFO - Connected to /dev/ttyUSB0 at 115200 BAUD.
-2020-06-30 16:21:03,736 - root - INFO - Ready to receive data
-2020-06-30 16:22:02,716 - root - INFO - ==========================================================================
-2020-06-30 16:22:02,717 - root - INFO -                         ARIS Groundstation started                        
-2020-06-30 16:22:02,717 - root - INFO - ==========================================================================
-2020-06-30 16:22:03,258 - root - INFO - Initialised Groundstation
-2020-06-30 16:22:10,206 - root - INFO - Trying to connect to: /dev/ttyUSB0 at 115200 BAUD.
-2020-06-30 16:22:10,209 - root - INFO - Connected to /dev/ttyUSB0 at 115200 BAUD.
-2020-06-30 16:22:12,124 - root - INFO - Ready to receive data
-2020-06-30 16:22:31,280 - root - INFO - Stopped receiving data
-2020-06-30 16:22:33,950 - root - INFO - Serial connection closed
-2020-06-30 16:22:34,234 - root - INFO - ==========================================================================
-2020-06-30 16:22:34,235 - root - INFO -                         ARIS Groundstation closed                         
-2020-06-30 16:22:34,235 - root - INFO - ==========================================================================
-2020-06-30 16:25:55,033 - root - INFO - ==========================================================================
-2020-06-30 16:25:55,033 - root - INFO -                         ARIS Groundstation started                        
-2020-06-30 16:25:55,033 - root - INFO - ==========================================================================
-2020-06-30 16:25:55,576 - root - INFO - Initialised Groundstation
-2020-06-30 16:26:01,643 - root - INFO - Trying to connect to: /dev/ttyUSB0 at 115200 BAUD.
-2020-06-30 16:26:01,646 - root - INFO - Connected to /dev/ttyUSB0 at 115200 BAUD.
-2020-06-30 16:26:03,483 - root - INFO - Ready to receive data
-2020-06-30 16:26:10,523 - root - INFO - Live plot started
-2020-06-30 16:26:25,627 - root - INFO - Live plot stopped.
-2020-06-30 16:26:35,535 - root - INFO - Started recording.
-2020-06-30 16:26:43,213 - root - INFO - Stopped recording.
-2020-06-30 16:26:53,053 - root - INFO - Stopped receiving data
-2020-06-30 16:26:56,094 - root - INFO - Serial connection closed
-2020-06-30 16:26:56,328 - root - INFO - ==========================================================================
-2020-06-30 16:26:56,328 - root - INFO -                         ARIS Groundstation closed                         
-2020-06-30 16:26:56,329 - root - INFO - ==========================================================================

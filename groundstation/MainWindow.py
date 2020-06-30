@@ -17,12 +17,12 @@ from matplotlib import style
 import logging
 from Logs.LoggingHandler import LoggingHandler
 from myutils import sb_names, gps_names, battery_names, fsm_names
+
 matplotlib.use("TkAgg")
 style.use('ggplot')
 
-
 len_sb = len(sb_names)
-len_gps = len(gps_names)+2
+len_gps = len(gps_names) + 2
 len_battery = len(battery_names)
 len_fsm = len(fsm_names)
 
@@ -56,6 +56,7 @@ class MainWindow(Frame):
     """
     MainWindow is the main window of the application.
     """
+
     def __init__(self, parent: Tk, gs_manager, *args, **kwargs):
         """
         Constructor.
@@ -138,8 +139,8 @@ class MainWindow(Frame):
         self.frame_upper = tk.Frame(self._root, width=500, height=100)
         self.frame_lower = tk.Frame(self._root, width=150, height=100)
         self.frame_upper_left = tk.LabelFrame(self.frame_upper, text='Commands', font=6, width=10, height=100)
-        self.frame_upper_middle = tk.LabelFrame(self.frame_upper, text='Velocity', font=6, width=500, height=100)
-        self.frame_upper_right = tk.LabelFrame(self.frame_upper, text='Altitude', font=6, width=500, height=100)
+        self.frame_upper_middle = tk.LabelFrame(self.frame_upper, text='Velocity [m/s]', font=6, width=500, height=100)
+        self.frame_upper_right = tk.LabelFrame(self.frame_upper, text='Altitude [m]', font=6, width=500, height=100)
         self.frame_log = tk.LabelFrame(self.frame_upper_left, text='Log', width=10, height=20)
 
         # ==============================================================================================================
@@ -178,15 +179,27 @@ class MainWindow(Frame):
         # add frame for commands
         # ==============================================================================================================
         self.frame_command = tk.LabelFrame(self.frame_upper_left, text='Commands', width=40, height=10)
+
         self.button_sensor = tk.Button(self.frame_command,
-                                       text='Sensor calibration',
+                                       text='EST Reset',
+                                       width=10,
                                        command=lambda: self.send_command('sensor'))
         self.button_airbrake = tk.Button(self.frame_command,
-                                         text='Airbrake test',
+                                         text='Airbrake Test',
+                                         width=10,
                                          command=lambda: self.send_command('airbrake'))
         self.button_sf = tk.Button(self.frame_command,
-                                   text='Sampling frequency',
+                                   text='High Sampling',
+                                   width=10,
                                    command=lambda: self.send_command('frequency'))
+        self.button_buzzer = tk.Button(self.frame_command,
+                                       text='Buzzer',
+                                       width=10,
+                                       command=lambda: self.send_command('buzzer'))
+        self.button_disable = tk.Button(self.frame_command,
+                                        text='Disable Lock',
+                                        width=10,
+                                        command=lambda: self.send_command('disable'))
 
         # ==============================================================================================================
         # add sensorboard frame
@@ -206,7 +219,7 @@ class MainWindow(Frame):
             self.label_sb_name.append(tk.Label(self.frame_sb, text=sb_names[i]))
 
         self.sep1_sb = ttk.Separator(self.frame_sb, orient='vertical')
-        self.sep2_sb = ttk.Separator(self.frame_sb, orient='vertical')
+        # self.sep2_sb = ttk.Separator(self.frame_sb, orient='vertical')
 
         # ==============================================================================================================
         # add GPS frame
@@ -231,8 +244,11 @@ class MainWindow(Frame):
         self.label_gps_name[3].grid(row=2, column=3, sticky='W')
         self.label_gps_name[4].grid(row=0, column=4)
         self.label_gps_name[5].grid(row=0, column=5)
+        self.label_gps_name[6].grid(row=3, column=0, sticky='W')
+        self.label_gps_name[7].grid(row=4, column=0, sticky='W')
+        self.label_gps_name[8].grid(row=5, column=0, sticky='W')
 
-        self.sep_gps.grid(row=0, column=2, rowspan=3, sticky='ns')
+        self.sep_gps.grid(row=1, column=2, rowspan=5, sticky='ns')
 
         self.label_gps_val[0].grid(row=1, column=1, padx=10)
         self.label_gps_val[1].grid(row=2, column=1, padx=10)
@@ -240,6 +256,9 @@ class MainWindow(Frame):
         self.label_gps_val[3].grid(row=2, column=4, padx=10)
         self.label_gps_val[4].grid(row=1, column=5, padx=10)
         self.label_gps_val[5].grid(row=2, column=5, padx=10)
+        self.label_gps_val[6].grid(row=3, column=1, padx=10)
+        self.label_gps_val[7].grid(row=4, column=1, padx=10)
+        self.label_gps_val[8].grid(row=5, column=1, padx=10)
 
         # ==============================================================================================================
         # add battery monitoring frame
@@ -307,6 +326,8 @@ class MainWindow(Frame):
         self.button_airbrake.grid(row=0, column=0, padx=5)
         self.button_sensor.grid(row=0, column=1, padx=5)
         self.button_sf.grid(row=0, column=2, padx=5)
+        self.button_buzzer.grid(row=1, column=0, padx=5)
+        self.button_disable.grid(row=1, column=1, padx=5)
 
         self.logger.addHandler(LoggingHandler(st))
 
@@ -324,26 +345,26 @@ class MainWindow(Frame):
         self.entry_name.delete(0, 'end')
         self.entry_name.insert(0, 'recording.csv')
 
-        self.label_sb_name[0].grid(row=0, column=0)
-        self.label_sb_name[1].grid(row=1, column=0)
-        self.label_sb_name[2].grid(row=0, column=3)
-        self.label_sb_name[3].grid(row=1, column=3)
-        self.label_sb_name[4].grid(row=2, column=3)
-        self.label_sb_name[5].grid(row=0, column=6)
-        self.label_sb_name[6].grid(row=1, column=6)
-        self.label_sb_name[7].grid(row=2, column=6)
+        self.label_sb_name[0].grid(row=0, column=0, pady=(10, 0), sticky='W')
+        self.label_sb_name[1].grid(row=1, column=0, sticky='W')
+        self.label_sb_name[2].grid(row=0, column=3, pady=(10, 0), sticky='W')
+        self.label_sb_name[3].grid(row=1, column=3, sticky='W')
+        self.label_sb_name[4].grid(row=2, column=3, sticky='W')
+        self.label_sb_name[5].grid(row=3, column=3, sticky='W')
+        self.label_sb_name[6].grid(row=4, column=3, sticky='W')
+        self.label_sb_name[7].grid(row=5, column=3, sticky='W')
 
-        self.sep1_sb.grid(row=0, column=2, rowspan=3, sticky='ns')
-        self.sep2_sb.grid(row=0, column=5, rowspan=3, sticky='ns')
+        self.sep1_sb.grid(row=0, column=2, rowspan=6, sticky='ns')
+        # self.sep2_sb.grid(row=0, column=5, rowspan=3, sticky='ns')
 
-        self.label_sb_val[0].grid(row=0, column=1, padx=10)
+        self.label_sb_val[0].grid(row=0, column=1, padx=10, pady=(10, 0))
         self.label_sb_val[1].grid(row=1, column=1, padx=10)
-        self.label_sb_val[2].grid(row=0, column=4, padx=10)
+        self.label_sb_val[2].grid(row=0, column=4, padx=10, pady=(10, 0))
         self.label_sb_val[3].grid(row=1, column=4, padx=10)
         self.label_sb_val[4].grid(row=2, column=4, padx=10)
-        self.label_sb_val[5].grid(row=0, column=7, padx=10)
-        self.label_sb_val[6].grid(row=1, column=7, padx=10)
-        self.label_sb_val[7].grid(row=2, column=7, padx=10)
+        self.label_sb_val[5].grid(row=3, column=4, padx=10)
+        self.label_sb_val[6].grid(row=4, column=4, padx=10)
+        self.label_sb_val[7].grid(row=5, column=4, padx=10)
 
     def send_command(self, command):
         """
@@ -546,17 +567,33 @@ class MainWindow(Frame):
             for i in range(len(self.label_fsm_val)):
                 self.label_fsm_val[i].config(text='-----')
         else:
-            data = data[1:]
+            data = list(data[1:])
             sb_data = data[:len_sb]
             battery_data = data[len_sb:len_sb + len_battery]
             gps_data = data[len_sb + len_battery:len_sb + len_battery + len_gps]
-            fsm_data = data[len_sb+len_gps+len_battery:len_sb+len_gps+len_battery+len_fsm]
+            fsm_data = data[len_sb + len_gps + len_battery:len_sb + len_gps + len_battery + len_fsm]
 
-            gps_time = str(gps_data[0])+':'+str(gps_data[1])+':'+str(gps_data[2])
-            tmp = [0]*(len_gps-2)
+            gps_time = str(gps_data[0]+2) + ':' + str(gps_data[1]) + ':' + str(gps_data[2])
+            tmp = [0] * (len_gps - 2)
             tmp[0] = gps_time
             tmp[1:] = gps_data[3:]
             gps_data = tmp
+
+            # sb data scaling
+            sb_data[1] = sb_data[1]/100
+            sb_data[2] = sb_data[2]/32.8
+            sb_data[3] = sb_data[3]/32.8
+            sb_data[4] = sb_data[4]/32.8
+            sb_data[5] = sb_data[5]/1024*9.81
+            sb_data[6] = sb_data[6] / 1024 * 9.81
+            sb_data[7] = sb_data[7] / 1024 * 9.81
+
+
+            # fsm data scaling
+            fsm_data[0] = fsm_data[0]/1000
+            fsm_data[1] = fsm_data[1]/1000
+            fsm_data[2] = fsm_data[2]/10
+            fsm_data[4] = fsm_data[4]/1000
 
             for i in range(len(self.label_sb_val)):
                 self.label_sb_val[i].config(text=sb_data[i])
@@ -584,5 +621,3 @@ class MainWindow(Frame):
 
             self.current_altitude = fsm_data[0]
             self.current_velocity = fsm_data[1]
-
-
