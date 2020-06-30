@@ -46,7 +46,7 @@ extern state_est_data_t state_est_data_global;
 extern int32_t controller_output_global;
 extern flight_phase_detection_t global_flight_phase_detection;
 extern command_e global_telemetry_command;
-extern gps_telemetry_t globalGPS;
+extern gps_data_t globalGPS;
 extern telemetry_battery_data_t global_battery_data;
 
 

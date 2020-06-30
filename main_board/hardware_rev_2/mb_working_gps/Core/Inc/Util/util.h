@@ -117,17 +117,6 @@ typedef struct {
 
 /** XBEE SUPER STRUCT **/
 
-typedef struct {
-	uint32_t hour;
-	uint32_t minute;
-	uint32_t second;
-	uint8_t lat_deg;
-	uint32_t lat_decimal;
-	uint8_t lon_deg;
-	uint32_t lon_decimal;
-	uint8_t satellite;
-} gps_telemetry_t;
-
 /* Battery Data */
 typedef struct  {
 	uint16_t battery;
@@ -146,7 +135,7 @@ typedef struct {
 typedef struct {
 	telemetry_sb_data_t sb_data;
 	telemetry_battery_data_t battery;
-	gps_telemetry_t gps;
+	gps_data_t gps;
 	int32_t height;
 	int32_t velocity;
 	int32_t airbrake_extension;

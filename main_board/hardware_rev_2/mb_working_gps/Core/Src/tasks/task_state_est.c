@@ -46,7 +46,7 @@ void vTaskStateEst(void *argument) {
 	float sum_press = 0;
 	uint16_t calibrate_count = 0;
 
-	osDelay(500);
+	osDelay(600);
 
 
 	/* Infinite loop */

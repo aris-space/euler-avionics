@@ -32,10 +32,7 @@ void vTaskMotorCont(void *argument) {
 	int32_t PPM_acceleration = 100000;
 	int32_t PPM_deceleration = 100000;
 
-	int32_t counter = 0;
-	uint32_t telemetry_counter;
-
-	osDelay(500);
+	osDelay(2000);
 
 
 	/* Controller Variables */
@@ -75,7 +72,7 @@ void vTaskMotorCont(void *argument) {
 		/* Read Telemetry Command */
 		ReadMutex(&command_mutex, &global_telemetry_command, &telemetry_command, sizeof(global_telemetry_command));
 
-		UsbPrint("[MOTOR] Read Position:%d\n", GetPosition);
+		UsbPrint("[MOTOR] Read Position:%d\n", measured_motor_position);
 
 		/* Read FSM State */
 		ReadMutex(&fsm_mutex, &global_flight_phase_detection, &flight_phase_detection, sizeof(global_flight_phase_detection));
