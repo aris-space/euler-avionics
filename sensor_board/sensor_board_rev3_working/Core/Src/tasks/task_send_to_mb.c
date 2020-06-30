@@ -43,9 +43,7 @@ void vTaskSendToMb(void *argument) {
 		}
 
 
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_RESET);
 		HAL_SPI_Transmit(&hspi2, (uint8_t*) &fullsb_data, sizeof(fullsb_data), HAL_MAX_DELAY);
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_SET);
 
 
 

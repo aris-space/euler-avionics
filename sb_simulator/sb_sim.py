@@ -127,7 +127,7 @@ def run(ser_port, baud_rate, ticks_per_second_mb, filename):
                 print(time.time() - start)
 
 #args
-ser_port = 'COM4'
+ser_port = 'COM10'
 baud_rate = 9600
 ticks_per_second_mb = 1000
 filename = 'Sensor_data_100Hz'
