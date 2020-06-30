@@ -24002,3 +24002,116 @@ struct.error: unpack requires a buffer of 80 bytes
 2020-06-29 23:10:24,669 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
 2020-06-29 23:10:24,673 - root - INFO - Connected to COM6 at 115200 BAUD.
 2020-06-29 23:10:26,399 - root - INFO - Ready to receive data
+2020-06-30 08:03:17,482 - root - INFO - ==========================================================================
+2020-06-30 08:03:17,482 - root - INFO -                         ARIS Groundstation started                        
+2020-06-30 08:03:17,482 - root - INFO - ==========================================================================
+2020-06-30 08:03:17,701 - root - INFO - Initialised Groundstation
+2020-06-30 08:03:31,997 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-30 08:03:32,001 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-30 08:03:34,926 - root - INFO - Ready to receive data
+2020-06-30 08:04:09,743 - root - INFO - Stopped receiving data
+2020-06-30 08:04:11,587 - root - INFO - Serial connection closed
+2020-06-30 08:04:11,651 - root - INFO - ==========================================================================
+2020-06-30 08:04:11,651 - root - INFO -                         ARIS Groundstation closed                         
+2020-06-30 08:04:11,652 - root - INFO - ==========================================================================
+2020-06-30 08:14:15,648 - root - INFO - ==========================================================================
+2020-06-30 08:14:15,648 - root - INFO -                         ARIS Groundstation started                        
+2020-06-30 08:14:15,648 - root - INFO - ==========================================================================
+2020-06-30 08:14:15,845 - root - INFO - Initialised Groundstation
+2020-06-30 08:14:20,077 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-30 08:14:20,083 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-30 08:14:22,790 - root - INFO - Ready to receive data
+2020-06-30 08:14:28,823 - root - INFO - Started recording.
+2020-06-30 08:14:34,072 - root - INFO - Stopped recording.
+2020-06-30 08:14:36,491 - root - INFO - Stopped receiving data
+2020-06-30 08:18:40,585 - root - INFO - Serial connection closed
+2020-06-30 08:18:40,667 - root - INFO - ==========================================================================
+2020-06-30 08:18:40,668 - root - INFO -                         ARIS Groundstation closed                         
+2020-06-30 08:18:40,668 - root - INFO - ==========================================================================
+2020-06-30 08:19:43,244 - root - INFO - ==========================================================================
+2020-06-30 08:19:43,244 - root - INFO -                         ARIS Groundstation started                        
+2020-06-30 08:19:43,244 - root - INFO - ==========================================================================
+2020-06-30 08:19:43,440 - root - INFO - Initialised Groundstation
+2020-06-30 08:19:47,789 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-30 08:19:47,793 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-30 08:19:49,609 - root - INFO - Ready to receive data
+2020-06-30 08:19:53,671 - root - INFO - Started recording.
+2020-06-30 08:19:55,409 - root - INFO - Stopped recording.
+2020-06-30 08:21:41,149 - root - INFO - ==========================================================================
+2020-06-30 08:21:41,149 - root - INFO -                         ARIS Groundstation started                        
+2020-06-30 08:21:41,149 - root - INFO - ==========================================================================
+2020-06-30 08:21:41,351 - root - INFO - Initialised Groundstation
+2020-06-30 08:21:47,566 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-30 08:21:47,570 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-30 08:21:49,084 - root - INFO - Ready to receive data
+2020-06-30 08:21:52,589 - root - INFO - Started recording.
+2020-06-30 08:21:54,263 - root - INFO - Stopped recording.
+2020-06-30 08:21:56,400 - root - INFO - Stopped receiving data
+2020-06-30 08:24:00,387 - root - INFO - ==========================================================================
+2020-06-30 08:24:00,387 - root - INFO -                         ARIS Groundstation started                        
+2020-06-30 08:24:00,387 - root - INFO - ==========================================================================
+2020-06-30 08:24:00,587 - root - INFO - Initialised Groundstation
+2020-06-30 08:25:12,088 - root - INFO - ==========================================================================
+2020-06-30 08:25:12,089 - root - INFO -                         ARIS Groundstation started                        
+2020-06-30 08:25:12,089 - root - INFO - ==========================================================================
+2020-06-30 08:25:12,351 - root - INFO - Initialised Groundstation
+2020-06-30 08:25:25,234 - root - INFO - ==========================================================================
+2020-06-30 08:25:25,234 - root - INFO -                         ARIS Groundstation started                        
+2020-06-30 08:25:25,234 - root - INFO - ==========================================================================
+2020-06-30 08:25:25,434 - root - INFO - Initialised Groundstation
+2020-06-30 08:25:27,154 - root - INFO - ==========================================================================
+2020-06-30 08:25:27,154 - root - INFO -                         ARIS Groundstation closed                         
+2020-06-30 08:25:27,154 - root - INFO - ==========================================================================
+2020-06-30 08:26:12,993 - root - INFO - ==========================================================================
+2020-06-30 08:26:12,994 - root - INFO -                         ARIS Groundstation started                        
+2020-06-30 08:26:12,994 - root - INFO - ==========================================================================
+2020-06-30 08:26:13,198 - root - INFO - Initialised Groundstation
+2020-06-30 08:26:19,491 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-30 08:26:19,495 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-30 08:26:21,168 - root - INFO - Ready to receive data
+2020-06-30 08:26:25,139 - root - INFO - Started recording.
+2020-06-30 08:26:27,373 - root - INFO - Stopped recording.
+2020-06-30 08:26:30,357 - root - INFO - Stopped receiving data
+2020-06-30 08:27:24,288 - root - INFO - Serial connection closed
+2020-06-30 08:27:24,377 - root - INFO - ==========================================================================
+2020-06-30 08:27:24,378 - root - INFO -                         ARIS Groundstation closed                         
+2020-06-30 08:27:24,378 - root - INFO - ==========================================================================
+2020-06-30 08:27:37,311 - root - INFO - ==========================================================================
+2020-06-30 08:27:37,311 - root - INFO -                         ARIS Groundstation started                        
+2020-06-30 08:27:37,311 - root - INFO - ==========================================================================
+2020-06-30 08:27:37,510 - root - INFO - Initialised Groundstation
+2020-06-30 08:27:41,017 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-30 08:27:41,022 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-30 08:27:42,545 - root - INFO - Ready to receive data
+2020-06-30 08:27:46,283 - root - INFO - Started recording.
+2020-06-30 08:27:49,862 - root - INFO - Stopped recording.
+2020-06-30 08:27:53,553 - root - INFO - Stopped receiving data
+2020-06-30 08:28:16,106 - root - INFO - Serial connection closed
+2020-06-30 08:28:16,188 - root - INFO - ==========================================================================
+2020-06-30 08:28:16,188 - root - INFO -                         ARIS Groundstation closed                         
+2020-06-30 08:28:16,188 - root - INFO - ==========================================================================
+2020-06-30 08:28:21,920 - root - INFO - ==========================================================================
+2020-06-30 08:28:21,920 - root - INFO -                         ARIS Groundstation started                        
+2020-06-30 08:28:21,920 - root - INFO - ==========================================================================
+2020-06-30 08:28:22,123 - root - INFO - Initialised Groundstation
+2020-06-30 08:28:25,155 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-30 08:28:25,158 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-30 08:28:27,005 - root - INFO - Ready to receive data
+2020-06-30 08:28:31,313 - root - INFO - Started recording.
+2020-06-30 08:28:35,669 - root - INFO - Stopped recording.
+2020-06-30 08:28:37,842 - root - INFO - Stopped receiving data
+2020-06-30 08:35:18,610 - root - INFO - Serial connection closed
+2020-06-30 08:35:18,690 - root - INFO - ==========================================================================
+2020-06-30 08:35:18,690 - root - INFO -                         ARIS Groundstation closed                         
+2020-06-30 08:35:18,690 - root - INFO - ==========================================================================
+2020-06-30 08:35:22,253 - root - INFO - ==========================================================================
+2020-06-30 08:35:22,253 - root - INFO -                         ARIS Groundstation started                        
+2020-06-30 08:35:22,253 - root - INFO - ==========================================================================
+2020-06-30 08:35:22,450 - root - INFO - Initialised Groundstation
+2020-06-30 08:35:25,830 - root - INFO - Trying to connect to: COM6 at 115200 BAUD.
+2020-06-30 08:35:25,834 - root - INFO - Connected to COM6 at 115200 BAUD.
+2020-06-30 08:35:27,296 - root - INFO - Ready to receive data
+2020-06-30 08:37:28,886 - root - INFO - Serial connection closed
+2020-06-30 08:37:29,027 - root - INFO - ==========================================================================
+2020-06-30 08:37:29,027 - root - INFO -                         ARIS Groundstation closed                         
+2020-06-30 08:37:29,027 - root - INFO - ==========================================================================

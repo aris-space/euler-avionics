@@ -20,32 +20,7 @@ style.use('ggplot')
 import logging
 from Logs.LoggingHandler import LoggingHandler
 from View.PlotControl import PlotControl
-
-sb_names = ["pressure",
-            "temp",
-            "gyro_x",
-            "gyro_y",
-            "gyro_z",
-            "acc_x",
-            "acc_y",
-            "acc_z"]
-
-battery_names = ['battery voltage',
-                 'current draw',
-                 'consumption']
-
-gps_names = ['time',
-             'num satellites',
-             'latitude',
-             'longitude',
-             'degree',
-             'decimal']
-
-fsm_names = ['altitude',
-             'velocity',
-             'airbrake extension',
-             'flight phase',
-             'timestamp']
+from utils import sb_names, gps_names, battery_names, fsm_names
 
 len_sb = len(sb_names)
 len_gps = len(gps_names)+2
@@ -125,20 +100,15 @@ class MainWindow(Frame):
         else:
             self._root.state('normal')
 
-
         self._root.grid_rowconfigure(1, weight=1)
         self._root.grid_columnconfigure(1, weight=1)
 
         self.thread1 = threading.Thread(target=animate)
         self.__setup__()
 
-
         # ani2 = animation.FuncAnimation(fig_height, animate, interval=10)
 
-
-
     def __setup__(self):
-
         # ==============================================================================================================
         # Menu Bar
         # ==============================================================================================================
@@ -214,7 +184,7 @@ class MainWindow(Frame):
         self.frame_recording = tk.LabelFrame(self.frame_upper_left, text='Recording', width=40, height=10)
         self.label_file_name = tk.Label(self.frame_recording, text='file name')
         self.button_start_rec = tk.Button(self.frame_recording, text='Start', font=4, command=self.start_recording)
-        self.button_stop_rec = tk.Button(self.frame_recording, text='Stop', font=4)
+        self.button_stop_rec = tk.Button(self.frame_recording, text='Stop', font=4, command=self.stop_recording)
         self.entry_name = tk.Entry(self.frame_recording)
 
         # ==============================================================================================================
@@ -432,16 +402,19 @@ class MainWindow(Frame):
             if answer == 'yes':
                 with open(self.file_name, 'w') as outfile:
                     writer = csv.writer(outfile)
-                    writer.writerow(get_measurement_names())
+                    writer.writerow(list(get_measurement_names())[1:])
                 self.recording = True
+                self.logger.info('Started recording.')
         else:
             with open(self.file_name, 'a') as outfile:
                 writer = csv.writer(outfile)
-                writer.writerow(get_measurement_names())
+                writer.writerow(list(get_measurement_names())[1:])
             self.recording = True
+            self.logger.info('Started recording.')
 
     def stop_recording(self):
         self.recording = False
+        self.logger.info('Stopped recording.')
 
     def donothing(self):
         filewin = tk.Toplevel(self._root)
@@ -545,7 +518,7 @@ class MainWindow(Frame):
             if self.recording:
                 with open(self.file_name, 'a') as outfile:
                     writer = csv.writer(outfile)
-                    writer.writerow(data[:40])
+                    writer.writerow(data[:-3])
 
             height_data.append(fsm_data[0])
             velocity_data.append(fsm_data[1])

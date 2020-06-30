@@ -6,6 +6,33 @@ dict_commands = {'airbrake': bytearray([217]*4),
                  'frequency': bytearray([205]*4)}
 
 
+sb_names = ["pressure",
+            "temp",
+            "gyro_x",
+            "gyro_y",
+            "gyro_z",
+            "acc_x",
+            "acc_y",
+            "acc_z"]
+
+battery_names = ['battery voltage',
+                 'current draw',
+                 'consumption']
+
+gps_names = ['time',
+             'num satellites',
+             'latitude',
+             'longitude',
+             'degree',
+             'decimal']
+
+fsm_names = ['altitude',
+             'velocity',
+             'airbrake extension',
+             'flight phase',
+             'timestamp']
+
+
 def data_struct():
     if sys.platform.startswith('win'):
         imu_data_t = {'gyro_x': 'h',

@@ -55,7 +55,7 @@ telemetry_t = data_struct()
 data_types_order = flatten(telemetry_t)
 fmt = ''.join(data_types_order.values())
 measurements = data_types_order.keys()
-# print(measurements)
+# print(list(measurements)[1:])
 
 
 def get_measurement_names():
