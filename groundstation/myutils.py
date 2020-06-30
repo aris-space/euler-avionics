@@ -8,35 +8,40 @@ import sys
 
 
 dict_commands = {'airbrake': bytearray([217]*4),
-                 'sensor': bytearray([210]*4),
-                 'frequency': bytearray([205]*4)}
+                 'sensor': bytearray([73]*4),
+                 'frequency': bytearray([13]*4),
+                 'buzzer': bytearray([113]*4),
+                 'disable': bytearray([251]*4)}
 
 
-sb_names = ["pressure",
-            "temp",
-            "gyro_x",
-            "gyro_y",
-            "gyro_z",
-            "acc_x",
-            "acc_y",
-            "acc_z"]
+sb_names = ["pressure [Pa]",
+            "temp [C]",
+            "gyro_x [deg/s]",
+            "gyro_y [deg/s]",
+            "gyro_z [deg/s]",
+            "acc_x [m/s^2]",
+            "acc_y [m/s^2]",
+            "acc_z [m/s^2]"]
 
-battery_names = ['battery voltage',
-                 'current draw',
-                 'consumption']
+battery_names = ['battery voltage   [V]',
+                 'current draw    [mA]',
+                 'consumption [mAh]']
 
 gps_names = ['time',
              'num satellites',
              'latitude',
              'longitude',
              'degree',
-             'decimal']
+             'decimal',
+             'fix',
+             'HDOP',
+             'altitude']
 
-fsm_names = ['altitude',
-             'velocity',
-             'airbrake extension',
+fsm_names = ['altitude [m]',
+             'velocity [m/s]',
+             'airbrake extension [%]',
              'flight phase',
-             'timestamp']
+             'timestamp [s]']
 
 
 def data_struct():
@@ -71,7 +76,10 @@ def data_struct():
                            'lat_deg': 'B',
                            'lat_decimal': 'l',
                            'lon_deg': 'B',
-                           'lon_decimal': 'l'}
+                           'lon_decimal': 'l',
+                           'fix': 'B',
+                           'HDOP': 'h',
+                           'altitude': 'h'}
 
         telemetry_battery_data_t = {'battery': 'h',
                                     'current': 'h',
@@ -92,7 +100,7 @@ def data_struct():
                        'gps': gps_telemetry_t,
                        'altitude': 'l',
                        'velocity': 'l',
-                       'airbrake_extension': 'l',
+                       'airbrake_extension [%]': 'l',
                        'flight_phase': 'B',
                        'ts': 'l',
                        'cs': 'B'}
