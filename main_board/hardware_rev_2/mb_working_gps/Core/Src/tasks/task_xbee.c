@@ -26,8 +26,6 @@ void vTaskXbee(void *argument) {
 	state_est_data_t state_est_data;
 	sb_data_t local_sb_data;
 
-	telemetry_t dummy_telemetry = { 0 };
-
 	/* Telemetry struct */
 	telemetry_t telemetry_send = { 0 };
 	telemetry_send.flight_phase = IDLE;
@@ -39,7 +37,7 @@ void vTaskXbee(void *argument) {
 
 	uint8_t buzzercounter = 0;
 
-	osDelay(500);
+	osDelay(4000);
 
 
 	/* Infinite loop */
@@ -147,8 +145,6 @@ void vTaskXbee(void *argument) {
 		telemetry_send.ts = osKernelGetTickCount();
 
 		telemetry_send.checksum = calculate_checksum(&telemetry_send);
-		dummy_telemetry.ts = osKernelGetTickCount();
-		dummy_telemetry.checksum ='\n';
 
 		/* Send to Xbee module */
 		HAL_UART_Transmit(&huart7, (uint8_t*) &telemetry_send, sizeof(telemetry_send), 100);

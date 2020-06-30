@@ -48,7 +48,7 @@ osStatus_t logSensor(timestamp_t ts, board_id_t sensor_board_id,
 	case IMU: {
 		imu_data_t *imu_data_ptr = (imu_data_t*) sensor_data;
 		snprintf(log_entry.str + strlen(log_entry.str),
-		LOG_BUFFER_LEN, "%ld,%ld,%ld,%ld,%ld,%ld,%lu\n", imu_data_ptr->acc_x,
+		LOG_BUFFER_LEN, "%hd,%hd,%hd,%hd,%hd,%hd,%lu\n", imu_data_ptr->acc_x,
 				imu_data_ptr->acc_y, imu_data_ptr->acc_z, imu_data_ptr->gyro_x,
 				imu_data_ptr->gyro_y, imu_data_ptr->gyro_z, imu_data_ptr->ts);
 	}
@@ -56,7 +56,7 @@ osStatus_t logSensor(timestamp_t ts, board_id_t sensor_board_id,
 	case GPS: {
 		gps_data_t *gps_data = (gps_data_t*) sensor_data;
 		snprintf(log_entry.str + strlen(log_entry.str),
-		LOG_BUFFER_LEN, "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n",
+		LOG_BUFFER_LEN, "%ld,%ld,%ld,%d,%ld,%d,%ld,%d,%hd,%hd\n",
 			gps_data->hour, gps_data->minute, gps_data->second, gps_data->lat_deg,
 			gps_data->lat_decimal, gps_data->lon_deg, gps_data->lon_decimal, gps_data->satellite,
 			gps_data->altitude, gps_data->HDOP);
@@ -65,7 +65,7 @@ osStatus_t logSensor(timestamp_t ts, board_id_t sensor_board_id,
 	case BATTERY: {
 		battery_data_t *battery_data = (battery_data_t*) sensor_data;
 		snprintf(log_entry.str + strlen(log_entry.str),
-		LOG_BUFFER_LEN, "%ld,%ld,%ld,%ld\n",
+		LOG_BUFFER_LEN, "%hd,%hd,%hd,%hd\n",
 			battery_data->battery, battery_data->consumption,
 			battery_data->current, battery_data->supply);
 	}

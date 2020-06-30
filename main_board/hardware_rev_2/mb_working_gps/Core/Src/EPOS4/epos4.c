@@ -6,7 +6,6 @@
  */
 #include "EPOS4/epos4.h"
 
-
 uint16_t calculateCRC(uint8_t *data, uint8_t len) {
 	uint16_t shifter, c;
 	uint16_t carry;
@@ -291,14 +290,14 @@ osStatus_t WriteCommand(uint8_t *command, uint8_t *data, uint8_t *rx_buffer){
 	byte_stream_write[12] = crc_calc & 0xFF;;				// CRC low byte
 	byte_stream_write[13] = (crc_calc >> 8) & 0xFF;;		// CRC high byte
 
-	//HAL_UART_DMAPause(&huart4);
+
 	HAL_UART_Transmit(&huart4, byte_stream_write, 14, 20);
-//	HAL_UART_DMAResume(&huart4);
-	HAL_UART_Receive(&huart4, dma_buffer, 20, 10);
-//	osDelay(10);
-//	HAL_UART_DMAPause(&huart4);
+
+	HAL_UART_DMAResume(&huart4);
+	HAL_UART_Receive_DMA(&huart4, dma_buffer, 20);
+	osDelay(3);
+	HAL_UART_DMAStop(&huart4);
 	memcpy(rx_buffer, dma_buffer, 20);
-//	HAL_UART_DMAStop(&huart4);
 
 	/* Check if we have an error code */
 	if((rx_buffer[7] | rx_buffer[6] | rx_buffer[5] | rx_buffer[4]) == 0){
@@ -335,18 +334,16 @@ osStatus_t ReadCommand(uint8_t *command, uint8_t *rx_buffer){
 	byte_stream_read[8] = crc_calc & 0xFF;;				// CRC low byte
 	byte_stream_read[9] = (crc_calc >> 8) & 0xFF;;		// CRC high byte
 
-	HAL_UART_DMAPause(&huart4);
-	//HAL_UART_DMAStop(&huart4);
-	HAL_UART_Transmit(&huart4, byte_stream_read, 10, 10);
-	//osDelay(10);
-	HAL_UART_DMAResume(&huart4);
-	HAL_UART_Receive_DMA(&huart4, dma_buffer, 30);
-	osDelay(10);
-	HAL_UART_DMAPause(&huart4);
-	memcpy(rx_buffer, dma_buffer, 20);
-	HAL_UART_DMAStop(&huart4);
 
-	osDelay(1);
+	HAL_UART_Transmit(&huart4, byte_stream_read, 10, 10);
+
+	HAL_UART_DMAResume(&huart4);
+	HAL_UART_Receive_DMA(&huart4, dma_buffer, 20);
+	osDelay(3);
+	HAL_UART_DMAStop(&huart4);
+	memcpy(rx_buffer, dma_buffer, 20);
+
+
 	/* check if we have an error code */
 	if((rx_buffer[7] | rx_buffer[6] | rx_buffer[5] | rx_buffer[4]) == 0){
 		status = osOK;
@@ -354,3 +351,4 @@ osStatus_t ReadCommand(uint8_t *command, uint8_t *rx_buffer){
 	return status;
 
 }
+

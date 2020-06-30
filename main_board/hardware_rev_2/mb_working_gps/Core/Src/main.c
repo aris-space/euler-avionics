@@ -235,7 +235,7 @@ osMutexId_t fsm_mutex_only;
 custom_mutex_t fsm_mutex;
 
 /* GPS */
-gps_telemetry_t globalGPS;
+gps_data_t globalGPS;
 
 osMutexId_t gps_mutex_only;
 custom_mutex_t gps_mutex;

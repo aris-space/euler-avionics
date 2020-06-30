@@ -47,7 +47,7 @@ typedef struct gps_device {
 
 extern uint8_t gps_read_sensor (struct gps_device *dev);
 extern void gps_dma_init(struct gps_device *dev);
-
+extern void gps_reset(struct gps_device *dev);
 
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
