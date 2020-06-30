@@ -46,6 +46,10 @@ void vTaskStateEst(void *argument) {
 	float sum_press = 0;
 	uint16_t calibrate_count = 0;
 
+	/* reset counter */
+	uint32_t reset_counter = 0;
+	bool was_reset = false;
+
 	osDelay(600);
 
 
@@ -67,6 +71,14 @@ void vTaskStateEst(void *argument) {
 		if(flight_phase_detection.flight_phase == IDLE && global_telemetry_command == CALIBRATE_SENSORS){
 			resetStateEstimation(&kf_state, &flight_phase_detection, &env, &extrapolation_rolling_memory, average_press, average_temp);
 		}
+
+		/* Reset the whole thing automatically after 30 Seconds of running */
+		if(reset_counter > 30*STATE_ESTIMATION_FREQUENCY && !was_reset){
+			resetStateEstimation(&kf_state, &flight_phase_detection, &env, &extrapolation_rolling_memory, average_press, average_temp);
+			was_reset = true;
+		}
+		reset_counter++;
+
 
 		/* Acquire the Sensor data */
 

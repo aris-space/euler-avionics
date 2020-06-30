@@ -66,6 +66,8 @@ void Error_Handler(void);
 #define CURRBAT1_GPIO_Port GPIOC
 #define CURRBAT2_Pin GPIO_PIN_0
 #define CURRBAT2_GPIO_Port GPIOB
+#define PW_HOLD_Pin GPIO_PIN_1
+#define PW_HOLD_GPIO_Port GPIOB
 #define LED3_Pin GPIO_PIN_11
 #define LED3_GPIO_Port GPIOD
 #define LED4_Pin GPIO_PIN_12

@@ -29,6 +29,7 @@ void vTaskXbee(void *argument) {
 	/* Telemetry struct */
 	telemetry_t telemetry_send = { 0 };
 	telemetry_send.flight_phase = IDLE;
+	telemetry_send.startbyte = 0x17;
 
 
 	/* Command struct */
@@ -38,6 +39,7 @@ void vTaskXbee(void *argument) {
 	uint8_t buzzercounter = 0;
 
 	osDelay(400);
+	HAL_GPIO_WritePin(PW_HOLD_GPIO_Port, PW_HOLD_Pin, GPIO_PIN_SET);
 
 
 	/* Infinite loop */
@@ -84,6 +86,16 @@ void vTaskXbee(void *argument) {
 		/* Enable Buzzer Trough FSM */
 		if(telemetry_send.flight_phase == RECOVERY){
 			buzzer_on_fsm = true;
+		}
+
+		/*Enable Self Power Hold */
+		if(local_command == TELEMETRY_HIGH_SAMPLING){
+			HAL_GPIO_WritePin(PW_HOLD_GPIO_Port, PW_HOLD_Pin, GPIO_PIN_RESET);
+		}
+
+		/* Disable Self Power Hold */
+		if(local_command == DISABLE_SELF_HOLD){
+			HAL_GPIO_WritePin(PW_HOLD_GPIO_Port, PW_HOLD_Pin, GPIO_PIN_SET);
 		}
 
 		/* reset command */
@@ -148,7 +160,6 @@ void vTaskXbee(void *argument) {
 
 		/* Send to Xbee module */
 		HAL_UART_Transmit(&huart7, (uint8_t*) &telemetry_send, sizeof(telemetry_send), 100);
-//		HAL_UART_Transmit(&huart7, (uint8_t*) &dummy_telemetry, sizeof(dummy_telemetry), 100);
 
 		telemetry_send.checksum = 0;
 
@@ -184,5 +195,5 @@ uint8_t calculate_checksum(telemetry_t *cnf){
 	for(int i=0; i< sizeof(telemetry_t);i++){
 		cs+=*data++;
 	}
-	return cs;
+	return (255 - cs);
 }

@@ -25,6 +25,9 @@ void vTaskFSM(void *argument) {
 	init_env(&dummy_env);
 	init_env(&environment);
 
+	/* Telemetry Command */
+	command_e telemetry_command = IDLE_COMMAND;
+
 	osDelay(700);
 
 
@@ -35,6 +38,15 @@ void vTaskFSM(void *argument) {
 	while (1) {
 		/* Tick Update */
 		tick_count += tick_update;
+
+		/* Read Telemetry Command */
+		ReadMutex(&command_mutex, &global_telemetry_command, &telemetry_command, sizeof(global_telemetry_command));
+
+		/* Reset Flight Phase if Telemetry asks to */
+		if(telemetry_command == CALIBRATE_SENSORS && flight_phase_detection.flight_phase == IDLE){
+			reset_flight_phase_detection(&flight_phase_detection);
+			telemetry_command == IDLE_COMMAND;
+		}
 
 
 		/* Update Local State Estimation Data */

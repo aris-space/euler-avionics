@@ -65,36 +65,36 @@ void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3){
 	/* Read SB 1, Write SB 1 Global Variable */
 	uint8_t checksum;
 	checksum = calculate_checksum_sb(sb1);
-//	if(checksum == sb1->checksum){
+	if(checksum == sb1->checksum){
 		if(AcquireMutex(&sb1_mutex) == osOK ){
 			sb1_baro = sb1->baro;
 			sb1_imu = sb1->imu;
 			ReleaseMutex(&sb1_mutex);
 			sb1_imu.acc_z = -sb1_imu.acc_z;
 		}
-//	}
+	}
 
 	/* Read SB 2, Write SB 2 Global Variable  */
 	checksum = calculate_checksum_sb(sb2);
-//	if(checksum == sb2->checksum){
+	if(checksum == sb2->checksum){
 		if(AcquireMutex(&sb2_mutex) == osOK){
 			sb2_baro = sb2->baro;
 			sb2_imu = sb2->imu;
 			ReleaseMutex(&sb2_mutex);
 			sb2_imu.acc_z = -sb2_imu.acc_z;
 		}
-//	}
+	}
 
 	/* Read SB 3, Write SB 3 Global Variable  */
 	checksum = calculate_checksum_sb(sb3);
-//	if(checksum == sb3->checksum){
+	if(checksum == sb3->checksum){
 		if(AcquireMutex(&sb3_mutex) == osOK){
 			sb3_baro = sb2->baro;
 			sb3_imu = sb2->imu;
 			ReleaseMutex(&sb3_mutex);
 			sb3_imu.acc_z = -sb3_imu.acc_z;
 		}
-//	}
+	}
 }
 
 /* Read Data from USB */
