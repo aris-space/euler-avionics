@@ -45,7 +45,7 @@ void vTaskFSM(void *argument) {
 		/* Reset Flight Phase if Telemetry asks to */
 		if(telemetry_command == CALIBRATE_SENSORS && flight_phase_detection.flight_phase == IDLE){
 			reset_flight_phase_detection(&flight_phase_detection);
-			telemetry_command == IDLE_COMMAND;
+			telemetry_command = IDLE_COMMAND;
 		}
 
 

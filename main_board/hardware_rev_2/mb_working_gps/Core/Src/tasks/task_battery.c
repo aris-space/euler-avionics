@@ -50,6 +50,10 @@ void vTaskBattery(void *argument) {
 		double current1 = ((double)adc_value[3] * (2.5/4096.0) - (3.3*0.107)) / 0.264; // CURR1
 		get_temp(adc_value[4]); // temp
 
+		if ((adc_value[0] | adc_value[1]) == 0){
+			HAL_ADC_Stop_DMA(&hadc1);
+			HAL_ADC_Start_DMA(&hadc1, adc_value, 5);
+		}
 		// Filter adc values
 		if (counter < 50) {
 			counter++;
@@ -72,7 +76,7 @@ void vTaskBattery(void *argument) {
 					battery_data.consumption, battery_data.power);
 
 			/* Log Battery Power */
-			logSensor(tick_count, 1, BATTERY, &battery_data);
+			logSensor(osKernelGetTickCount(), 1, BATTERY, &battery_data);
 
 			/* Write Data into global Variable */
 			if(AcquireMutex(&battery_mutex) == osOK ){
