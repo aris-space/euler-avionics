@@ -22,7 +22,7 @@ matplotlib.use("TkAgg")
 style.use('ggplot')
 
 len_sb = len(sb_names)
-len_gps = len(gps_names) + 2
+len_gps = len(gps_names) + 4
 len_battery = len(battery_names)
 len_fsm = len(fsm_names)
 
@@ -228,11 +228,18 @@ class MainWindow(Frame):
         self.label_gps_val = []
         self.label_gps_name = []
         for i in range(len(gps_names)):
-            self.label_gps_val.append(tk.Label(self.frame_gps,
-                                               text='--------',
-                                               borderwidth=2,
-                                               relief='sunken',
-                                               width=10))
+            if i == 2 or i == 3:
+                self.label_gps_val.append(tk.Label(self.frame_gps,
+                                                   text='--------',
+                                                   borderwidth=2,
+                                                   relief='sunken',
+                                                   width=15))
+            else:
+                self.label_gps_val.append(tk.Label(self.frame_gps,
+                                                   text='--------',
+                                                   borderwidth=2,
+                                                   relief='sunken',
+                                                   width=10))
 
             self.label_gps_name.append(tk.Label(self.frame_gps, text=gps_names[i]))
 
@@ -242,11 +249,9 @@ class MainWindow(Frame):
         self.label_gps_name[1].grid(row=2, column=0, sticky='W')
         self.label_gps_name[2].grid(row=1, column=3, sticky='W')
         self.label_gps_name[3].grid(row=2, column=3, sticky='W')
-        self.label_gps_name[4].grid(row=0, column=4)
-        self.label_gps_name[5].grid(row=0, column=5)
-        self.label_gps_name[6].grid(row=3, column=0, sticky='W')
-        self.label_gps_name[7].grid(row=4, column=0, sticky='W')
-        self.label_gps_name[8].grid(row=5, column=0, sticky='W')
+        self.label_gps_name[4].grid(row=3, column=0, sticky='W')
+        self.label_gps_name[5].grid(row=4, column=0, sticky='W')
+        self.label_gps_name[6].grid(row=5, column=0, sticky='W')
 
         self.sep_gps.grid(row=1, column=2, rowspan=5, sticky='ns')
 
@@ -254,11 +259,9 @@ class MainWindow(Frame):
         self.label_gps_val[1].grid(row=2, column=1, padx=10)
         self.label_gps_val[2].grid(row=1, column=4, padx=10)
         self.label_gps_val[3].grid(row=2, column=4, padx=10)
-        self.label_gps_val[4].grid(row=1, column=5, padx=10)
-        self.label_gps_val[5].grid(row=2, column=5, padx=10)
-        self.label_gps_val[6].grid(row=3, column=1, padx=10)
-        self.label_gps_val[7].grid(row=4, column=1, padx=10)
-        self.label_gps_val[8].grid(row=5, column=1, padx=10)
+        self.label_gps_val[4].grid(row=3, column=1, padx=10)
+        self.label_gps_val[5].grid(row=4, column=1, padx=10)
+        self.label_gps_val[6].grid(row=5, column=1, padx=10)
 
         # ==============================================================================================================
         # add battery monitoring frame
@@ -574,20 +577,27 @@ class MainWindow(Frame):
             fsm_data = data[len_sb + len_gps + len_battery:len_sb + len_gps + len_battery + len_fsm]
 
             gps_time = str(gps_data[0]+2) + ':' + str(gps_data[1]) + ':' + str(gps_data[2])
-            tmp = [0] * (len_gps - 2)
+            tmp = ['0'] * (len_gps - 4)
             tmp[0] = gps_time
-            tmp[1:] = gps_data[3:]
+            tmp[1] = gps_data[3]
+
+            gps_lat_fmt = f'{gps_data[4]}.{gps_data[5]}'
+            gps_lon_fmt = f'{gps_data[6]}.{gps_data[7]}'
+            tmp[2] = gps_lat_fmt
+            tmp[3] = gps_lon_fmt
+            tmp[4:] = gps_data[8:]
+
             gps_data = tmp
 
             # sb data scaling
             sb_data[1] = sb_data[1]/100
-            sb_data[2] = sb_data[2]/32.8
-            sb_data[3] = sb_data[3]/32.8
-            sb_data[4] = sb_data[4]/32.8
-            sb_data[5] = sb_data[5]/1024*9.81
-            sb_data[6] = sb_data[6] / 1024 * 9.81
-            sb_data[7] = sb_data[7] / 1024 * 9.81
+            sb_data[2:5] = map(lambda x: x / 32.8, sb_data[2:5])
+            sb_data[5:] = map(lambda x: x / 1024 * 9.81, sb_data[5:])
 
+            sb_data[2:] = [f'{x:.2f}' for x in sb_data[2:]]
+
+            # battery data scaling
+            battery_data[0] = battery_data[0]/1000
 
             # fsm data scaling
             fsm_data[0] = fsm_data[0]/1000
