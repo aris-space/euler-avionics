@@ -21,7 +21,7 @@ void vTaskSensRead(void *argument) {
 	/* For periodic update */
 	uint32_t tick_count, tick_update;
 
-	osDelay(5000);
+	osDelay(500);
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();
 	tick_update = osKernelGetTickFreq() / SENSOR_READ_FREQUENCY;

@@ -32,7 +32,7 @@ void vTaskMotorCont(void *argument) {
 	int32_t PPM_acceleration = 100000;
 	int32_t PPM_deceleration = 100000;
 
-	osDelay(9000);
+	osDelay(2000);
 
 
 	/* Controller Variables */

@@ -12417,162 +12417,163 @@ void vTaskBattery(void *argument) {
  8005cc8:	4862      	ldr	r0, [pc, #392]	; (8005e54 <vTaskBattery+0x1ec>)
  8005cca:	f001 fcbf 	bl	800764c <HAL_ADC_Start_DMA>
 
-	osDelay(1000);
- 8005cce:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
- 8005cd2:	f010 f80b 	bl	8015cec <osDelay>
+	osDelay(200);
+ 8005cce:	20c8      	movs	r0, #200	; 0xc8
+ 8005cd0:	f010 f80c 	bl	8015cec <osDelay>
 
 
 
 	for (;;) {
 		tick_count += tick_update;
- 8005cd6:	6efa      	ldr	r2, [r7, #108]	; 0x6c
- 8005cd8:	6c3b      	ldr	r3, [r7, #64]	; 0x40
- 8005cda:	4413      	add	r3, r2
- 8005cdc:	66fb      	str	r3, [r7, #108]	; 0x6c
+ 8005cd4:	6efa      	ldr	r2, [r7, #108]	; 0x6c
+ 8005cd6:	6c3b      	ldr	r3, [r7, #64]	; 0x40
+ 8005cd8:	4413      	add	r3, r2
+ 8005cda:	66fb      	str	r3, [r7, #108]	; 0x6c
 
 		double current2 = ((double)adc_value[0] * (2.5/4096.0) - (3.3*0.107)) / 0.264; // CURR2
- 8005cde:	68bb      	ldr	r3, [r7, #8]
- 8005ce0:	4618      	mov	r0, r3
- 8005ce2:	f7fa fc2f 	bl	8000544 <__aeabi_ui2d>
- 8005ce6:	f04f 0200 	mov.w	r2, #0
- 8005cea:	4b5b      	ldr	r3, [pc, #364]	; (8005e58 <vTaskBattery+0x1f0>)
- 8005cec:	f7fa fca4 	bl	8000638 <__aeabi_dmul>
- 8005cf0:	4603      	mov	r3, r0
- 8005cf2:	460c      	mov	r4, r1
- 8005cf4:	4618      	mov	r0, r3
- 8005cf6:	4621      	mov	r1, r4
- 8005cf8:	a34f      	add	r3, pc, #316	; (adr r3, 8005e38 <vTaskBattery+0x1d0>)
- 8005cfa:	e9d3 2300 	ldrd	r2, r3, [r3]
- 8005cfe:	f7fa fae3 	bl	80002c8 <__aeabi_dsub>
- 8005d02:	4603      	mov	r3, r0
- 8005d04:	460c      	mov	r4, r1
- 8005d06:	4618      	mov	r0, r3
- 8005d08:	4621      	mov	r1, r4
- 8005d0a:	a34d      	add	r3, pc, #308	; (adr r3, 8005e40 <vTaskBattery+0x1d8>)
- 8005d0c:	e9d3 2300 	ldrd	r2, r3, [r3]
- 8005d10:	f7fa fdbc 	bl	800088c <__aeabi_ddiv>
- 8005d14:	4603      	mov	r3, r0
- 8005d16:	460c      	mov	r4, r1
- 8005d18:	e9c7 340e 	strd	r3, r4, [r7, #56]	; 0x38
+ 8005cdc:	68bb      	ldr	r3, [r7, #8]
+ 8005cde:	4618      	mov	r0, r3
+ 8005ce0:	f7fa fc30 	bl	8000544 <__aeabi_ui2d>
+ 8005ce4:	f04f 0200 	mov.w	r2, #0
+ 8005ce8:	4b5b      	ldr	r3, [pc, #364]	; (8005e58 <vTaskBattery+0x1f0>)
+ 8005cea:	f7fa fca5 	bl	8000638 <__aeabi_dmul>
+ 8005cee:	4603      	mov	r3, r0
+ 8005cf0:	460c      	mov	r4, r1
+ 8005cf2:	4618      	mov	r0, r3
+ 8005cf4:	4621      	mov	r1, r4
+ 8005cf6:	a350      	add	r3, pc, #320	; (adr r3, 8005e38 <vTaskBattery+0x1d0>)
+ 8005cf8:	e9d3 2300 	ldrd	r2, r3, [r3]
+ 8005cfc:	f7fa fae4 	bl	80002c8 <__aeabi_dsub>
+ 8005d00:	4603      	mov	r3, r0
+ 8005d02:	460c      	mov	r4, r1
+ 8005d04:	4618      	mov	r0, r3
+ 8005d06:	4621      	mov	r1, r4
+ 8005d08:	a34d      	add	r3, pc, #308	; (adr r3, 8005e40 <vTaskBattery+0x1d8>)
+ 8005d0a:	e9d3 2300 	ldrd	r2, r3, [r3]
+ 8005d0e:	f7fa fdbd 	bl	800088c <__aeabi_ddiv>
+ 8005d12:	4603      	mov	r3, r0
+ 8005d14:	460c      	mov	r4, r1
+ 8005d16:	e9c7 340e 	strd	r3, r4, [r7, #56]	; 0x38
 		float supply_voltage = adc_value[1] * (2.5/4096) * 2; // 3V3
- 8005d1c:	68fb      	ldr	r3, [r7, #12]
- 8005d1e:	4618      	mov	r0, r3
- 8005d20:	f7fa fc10 	bl	8000544 <__aeabi_ui2d>
- 8005d24:	f04f 0200 	mov.w	r2, #0
- 8005d28:	4b4b      	ldr	r3, [pc, #300]	; (8005e58 <vTaskBattery+0x1f0>)
- 8005d2a:	f7fa fc85 	bl	8000638 <__aeabi_dmul>
- 8005d2e:	4603      	mov	r3, r0
- 8005d30:	460c      	mov	r4, r1
- 8005d32:	4618      	mov	r0, r3
- 8005d34:	4621      	mov	r1, r4
- 8005d36:	4602      	mov	r2, r0
- 8005d38:	460b      	mov	r3, r1
- 8005d3a:	f7fa fac7 	bl	80002cc <__adddf3>
- 8005d3e:	4603      	mov	r3, r0
- 8005d40:	460c      	mov	r4, r1
- 8005d42:	4618      	mov	r0, r3
- 8005d44:	4621      	mov	r1, r4
- 8005d46:	f7fa ff47 	bl	8000bd8 <__aeabi_d2f>
- 8005d4a:	4603      	mov	r3, r0
- 8005d4c:	637b      	str	r3, [r7, #52]	; 0x34
+ 8005d1a:	68fb      	ldr	r3, [r7, #12]
+ 8005d1c:	4618      	mov	r0, r3
+ 8005d1e:	f7fa fc11 	bl	8000544 <__aeabi_ui2d>
+ 8005d22:	f04f 0200 	mov.w	r2, #0
+ 8005d26:	4b4c      	ldr	r3, [pc, #304]	; (8005e58 <vTaskBattery+0x1f0>)
+ 8005d28:	f7fa fc86 	bl	8000638 <__aeabi_dmul>
+ 8005d2c:	4603      	mov	r3, r0
+ 8005d2e:	460c      	mov	r4, r1
+ 8005d30:	4618      	mov	r0, r3
+ 8005d32:	4621      	mov	r1, r4
+ 8005d34:	4602      	mov	r2, r0
+ 8005d36:	460b      	mov	r3, r1
+ 8005d38:	f7fa fac8 	bl	80002cc <__adddf3>
+ 8005d3c:	4603      	mov	r3, r0
+ 8005d3e:	460c      	mov	r4, r1
+ 8005d40:	4618      	mov	r0, r3
+ 8005d42:	4621      	mov	r1, r4
+ 8005d44:	f7fa ff48 	bl	8000bd8 <__aeabi_d2f>
+ 8005d48:	4603      	mov	r3, r0
+ 8005d4a:	637b      	str	r3, [r7, #52]	; 0x34
 		float battery_voltage = adc_value[2] * (2.5/4096) * 5.2; // BAT
- 8005d4e:	693b      	ldr	r3, [r7, #16]
- 8005d50:	4618      	mov	r0, r3
- 8005d52:	f7fa fbf7 	bl	8000544 <__aeabi_ui2d>
- 8005d56:	f04f 0200 	mov.w	r2, #0
- 8005d5a:	4b3f      	ldr	r3, [pc, #252]	; (8005e58 <vTaskBattery+0x1f0>)
- 8005d5c:	f7fa fc6c 	bl	8000638 <__aeabi_dmul>
- 8005d60:	4603      	mov	r3, r0
- 8005d62:	460c      	mov	r4, r1
- 8005d64:	4618      	mov	r0, r3
- 8005d66:	4621      	mov	r1, r4
- 8005d68:	a337      	add	r3, pc, #220	; (adr r3, 8005e48 <vTaskBattery+0x1e0>)
- 8005d6a:	e9d3 2300 	ldrd	r2, r3, [r3]
- 8005d6e:	f7fa fc63 	bl	8000638 <__aeabi_dmul>
- 8005d72:	4603      	mov	r3, r0
- 8005d74:	460c      	mov	r4, r1
- 8005d76:	4618      	mov	r0, r3
- 8005d78:	4621      	mov	r1, r4
- 8005d7a:	f7fa ff2d 	bl	8000bd8 <__aeabi_d2f>
- 8005d7e:	4603      	mov	r3, r0
- 8005d80:	633b      	str	r3, [r7, #48]	; 0x30
+ 8005d4c:	693b      	ldr	r3, [r7, #16]
+ 8005d4e:	4618      	mov	r0, r3
+ 8005d50:	f7fa fbf8 	bl	8000544 <__aeabi_ui2d>
+ 8005d54:	f04f 0200 	mov.w	r2, #0
+ 8005d58:	4b3f      	ldr	r3, [pc, #252]	; (8005e58 <vTaskBattery+0x1f0>)
+ 8005d5a:	f7fa fc6d 	bl	8000638 <__aeabi_dmul>
+ 8005d5e:	4603      	mov	r3, r0
+ 8005d60:	460c      	mov	r4, r1
+ 8005d62:	4618      	mov	r0, r3
+ 8005d64:	4621      	mov	r1, r4
+ 8005d66:	a338      	add	r3, pc, #224	; (adr r3, 8005e48 <vTaskBattery+0x1e0>)
+ 8005d68:	e9d3 2300 	ldrd	r2, r3, [r3]
+ 8005d6c:	f7fa fc64 	bl	8000638 <__aeabi_dmul>
+ 8005d70:	4603      	mov	r3, r0
+ 8005d72:	460c      	mov	r4, r1
+ 8005d74:	4618      	mov	r0, r3
+ 8005d76:	4621      	mov	r1, r4
+ 8005d78:	f7fa ff2e 	bl	8000bd8 <__aeabi_d2f>
+ 8005d7c:	4603      	mov	r3, r0
+ 8005d7e:	633b      	str	r3, [r7, #48]	; 0x30
 		double current1 = ((double)adc_value[3] * (2.5/4096.0) - (3.3*0.107)) / 0.264; // CURR1
- 8005d82:	697b      	ldr	r3, [r7, #20]
- 8005d84:	4618      	mov	r0, r3
- 8005d86:	f7fa fbdd 	bl	8000544 <__aeabi_ui2d>
- 8005d8a:	f04f 0200 	mov.w	r2, #0
- 8005d8e:	4b32      	ldr	r3, [pc, #200]	; (8005e58 <vTaskBattery+0x1f0>)
- 8005d90:	f7fa fc52 	bl	8000638 <__aeabi_dmul>
- 8005d94:	4603      	mov	r3, r0
- 8005d96:	460c      	mov	r4, r1
- 8005d98:	4618      	mov	r0, r3
- 8005d9a:	4621      	mov	r1, r4
- 8005d9c:	a326      	add	r3, pc, #152	; (adr r3, 8005e38 <vTaskBattery+0x1d0>)
- 8005d9e:	e9d3 2300 	ldrd	r2, r3, [r3]
- 8005da2:	f7fa fa91 	bl	80002c8 <__aeabi_dsub>
- 8005da6:	4603      	mov	r3, r0
- 8005da8:	460c      	mov	r4, r1
- 8005daa:	4618      	mov	r0, r3
- 8005dac:	4621      	mov	r1, r4
- 8005dae:	a324      	add	r3, pc, #144	; (adr r3, 8005e40 <vTaskBattery+0x1d8>)
- 8005db0:	e9d3 2300 	ldrd	r2, r3, [r3]
- 8005db4:	f7fa fd6a 	bl	800088c <__aeabi_ddiv>
- 8005db8:	4603      	mov	r3, r0
- 8005dba:	460c      	mov	r4, r1
- 8005dbc:	e9c7 340a 	strd	r3, r4, [r7, #40]	; 0x28
+ 8005d80:	697b      	ldr	r3, [r7, #20]
+ 8005d82:	4618      	mov	r0, r3
+ 8005d84:	f7fa fbde 	bl	8000544 <__aeabi_ui2d>
+ 8005d88:	f04f 0200 	mov.w	r2, #0
+ 8005d8c:	4b32      	ldr	r3, [pc, #200]	; (8005e58 <vTaskBattery+0x1f0>)
+ 8005d8e:	f7fa fc53 	bl	8000638 <__aeabi_dmul>
+ 8005d92:	4603      	mov	r3, r0
+ 8005d94:	460c      	mov	r4, r1
+ 8005d96:	4618      	mov	r0, r3
+ 8005d98:	4621      	mov	r1, r4
+ 8005d9a:	a327      	add	r3, pc, #156	; (adr r3, 8005e38 <vTaskBattery+0x1d0>)
+ 8005d9c:	e9d3 2300 	ldrd	r2, r3, [r3]
+ 8005da0:	f7fa fa92 	bl	80002c8 <__aeabi_dsub>
+ 8005da4:	4603      	mov	r3, r0
+ 8005da6:	460c      	mov	r4, r1
+ 8005da8:	4618      	mov	r0, r3
+ 8005daa:	4621      	mov	r1, r4
+ 8005dac:	a324      	add	r3, pc, #144	; (adr r3, 8005e40 <vTaskBattery+0x1d8>)
+ 8005dae:	e9d3 2300 	ldrd	r2, r3, [r3]
+ 8005db2:	f7fa fd6b 	bl	800088c <__aeabi_ddiv>
+ 8005db6:	4603      	mov	r3, r0
+ 8005db8:	460c      	mov	r4, r1
+ 8005dba:	e9c7 340a 	strd	r3, r4, [r7, #40]	; 0x28
 		get_temp(adc_value[4]); // temp
- 8005dc0:	69bb      	ldr	r3, [r7, #24]
- 8005dc2:	b29b      	uxth	r3, r3
- 8005dc4:	4618      	mov	r0, r3
- 8005dc6:	f000 f917 	bl	8005ff8 <get_temp>
+ 8005dbe:	69bb      	ldr	r3, [r7, #24]
+ 8005dc0:	b29b      	uxth	r3, r3
+ 8005dc2:	4618      	mov	r0, r3
+ 8005dc4:	f000 f918 	bl	8005ff8 <get_temp>
 
 		// Filter adc values
 		if (counter < 50) {
- 8005dca:	6c7b      	ldr	r3, [r7, #68]	; 0x44
- 8005dcc:	2b31      	cmp	r3, #49	; 0x31
- 8005dce:	dc45      	bgt.n	8005e5c <vTaskBattery+0x1f4>
+ 8005dc8:	6c7b      	ldr	r3, [r7, #68]	; 0x44
+ 8005dca:	2b31      	cmp	r3, #49	; 0x31
+ 8005dcc:	dc46      	bgt.n	8005e5c <vTaskBattery+0x1f4>
 			counter++;
- 8005dd0:	6c7b      	ldr	r3, [r7, #68]	; 0x44
- 8005dd2:	3301      	adds	r3, #1
- 8005dd4:	647b      	str	r3, [r7, #68]	; 0x44
+ 8005dce:	6c7b      	ldr	r3, [r7, #68]	; 0x44
+ 8005dd0:	3301      	adds	r3, #1
+ 8005dd2:	647b      	str	r3, [r7, #68]	; 0x44
 			curr += current1 + current2;
- 8005dd6:	e9d7 230e 	ldrd	r2, r3, [r7, #56]	; 0x38
- 8005dda:	e9d7 010a 	ldrd	r0, r1, [r7, #40]	; 0x28
- 8005dde:	f7fa fa75 	bl	80002cc <__adddf3>
- 8005de2:	4603      	mov	r3, r0
- 8005de4:	460c      	mov	r4, r1
- 8005de6:	461a      	mov	r2, r3
- 8005de8:	4623      	mov	r3, r4
- 8005dea:	e9d7 0116 	ldrd	r0, r1, [r7, #88]	; 0x58
- 8005dee:	f7fa fa6d 	bl	80002cc <__adddf3>
- 8005df2:	4603      	mov	r3, r0
- 8005df4:	460c      	mov	r4, r1
- 8005df6:	e9c7 3416 	strd	r3, r4, [r7, #88]	; 0x58
+ 8005dd4:	e9d7 230e 	ldrd	r2, r3, [r7, #56]	; 0x38
+ 8005dd8:	e9d7 010a 	ldrd	r0, r1, [r7, #40]	; 0x28
+ 8005ddc:	f7fa fa76 	bl	80002cc <__adddf3>
+ 8005de0:	4603      	mov	r3, r0
+ 8005de2:	460c      	mov	r4, r1
+ 8005de4:	461a      	mov	r2, r3
+ 8005de6:	4623      	mov	r3, r4
+ 8005de8:	e9d7 0116 	ldrd	r0, r1, [r7, #88]	; 0x58
+ 8005dec:	f7fa fa6e 	bl	80002cc <__adddf3>
+ 8005df0:	4603      	mov	r3, r0
+ 8005df2:	460c      	mov	r4, r1
+ 8005df4:	e9c7 3416 	strd	r3, r4, [r7, #88]	; 0x58
 			supp += supply_voltage;
- 8005dfa:	6b78      	ldr	r0, [r7, #52]	; 0x34
- 8005dfc:	f7fa fbc4 	bl	8000588 <__aeabi_f2d>
- 8005e00:	4603      	mov	r3, r0
- 8005e02:	460c      	mov	r4, r1
- 8005e04:	461a      	mov	r2, r3
- 8005e06:	4623      	mov	r3, r4
- 8005e08:	e9d7 0114 	ldrd	r0, r1, [r7, #80]	; 0x50
- 8005e0c:	f7fa fa5e 	bl	80002cc <__adddf3>
- 8005e10:	4603      	mov	r3, r0
- 8005e12:	460c      	mov	r4, r1
- 8005e14:	e9c7 3414 	strd	r3, r4, [r7, #80]	; 0x50
+ 8005df8:	6b78      	ldr	r0, [r7, #52]	; 0x34
+ 8005dfa:	f7fa fbc5 	bl	8000588 <__aeabi_f2d>
+ 8005dfe:	4603      	mov	r3, r0
+ 8005e00:	460c      	mov	r4, r1
+ 8005e02:	461a      	mov	r2, r3
+ 8005e04:	4623      	mov	r3, r4
+ 8005e06:	e9d7 0114 	ldrd	r0, r1, [r7, #80]	; 0x50
+ 8005e0a:	f7fa fa5f 	bl	80002cc <__adddf3>
+ 8005e0e:	4603      	mov	r3, r0
+ 8005e10:	460c      	mov	r4, r1
+ 8005e12:	e9c7 3414 	strd	r3, r4, [r7, #80]	; 0x50
 			bat += battery_voltage;
- 8005e18:	6b38      	ldr	r0, [r7, #48]	; 0x30
- 8005e1a:	f7fa fbb5 	bl	8000588 <__aeabi_f2d>
- 8005e1e:	4603      	mov	r3, r0
- 8005e20:	460c      	mov	r4, r1
- 8005e22:	461a      	mov	r2, r3
- 8005e24:	4623      	mov	r3, r4
- 8005e26:	e9d7 0112 	ldrd	r0, r1, [r7, #72]	; 0x48
- 8005e2a:	f7fa fa4f 	bl	80002cc <__adddf3>
- 8005e2e:	4603      	mov	r3, r0
- 8005e30:	460c      	mov	r4, r1
- 8005e32:	e9c7 3412 	strd	r3, r4, [r7, #72]	; 0x48
- 8005e36:	e0c9      	b.n	8005fcc <vTaskBattery+0x364>
+ 8005e16:	6b38      	ldr	r0, [r7, #48]	; 0x30
+ 8005e18:	f7fa fbb6 	bl	8000588 <__aeabi_f2d>
+ 8005e1c:	4603      	mov	r3, r0
+ 8005e1e:	460c      	mov	r4, r1
+ 8005e20:	461a      	mov	r2, r3
+ 8005e22:	4623      	mov	r3, r4
+ 8005e24:	e9d7 0112 	ldrd	r0, r1, [r7, #72]	; 0x48
+ 8005e28:	f7fa fa50 	bl	80002cc <__adddf3>
+ 8005e2c:	4603      	mov	r3, r0
+ 8005e2e:	460c      	mov	r4, r1
+ 8005e30:	e9c7 3412 	strd	r3, r4, [r7, #72]	; 0x48
+ 8005e34:	e0ca      	b.n	8005fcc <vTaskBattery+0x364>
+ 8005e36:	bf00      	nop
  8005e38:	be0ded28 	.word	0xbe0ded28
  8005e3c:	3fd69930 	.word	0x3fd69930
  8005e40:	4189374c 	.word	0x4189374c
@@ -12757,7 +12758,7 @@ void vTaskBattery(void *argument) {
  8005fcc:	6ef8      	ldr	r0, [r7, #108]	; 0x6c
  8005fce:	f00f febb 	bl	8015d48 <osDelayUntil>
 	for (;;) {
- 8005fd2:	e680      	b.n	8005cd6 <vTaskBattery+0x6e>
+ 8005fd2:	e67f      	b.n	8005cd4 <vTaskBattery+0x6c>
  8005fd4:	40668000 	.word	0x40668000
  8005fd8:	408f4000 	.word	0x408f4000
  8005fdc:	51eb851f 	.word	0x51eb851f
@@ -12874,8 +12875,8 @@ void vTaskController(void *argument) {
  80060c6:	4618      	mov	r0, r3
  80060c8:	f7fb fea4 	bl	8001e14 <control_data_init>
 
-	osDelay(8000);
- 80060cc:	f44f 50fa 	mov.w	r0, #8000	; 0x1f40
+	osDelay(800);
+ 80060cc:	f44f 7048 	mov.w	r0, #800	; 0x320
  80060d0:	f00f fe0c 	bl	8015cec <osDelay>
 
 	/* Infinite loop */
@@ -13059,8 +13060,8 @@ void vTaskFSM(void *argument) {
  8006242:	4618      	mov	r0, r3
  8006244:	f7fb ff68 	bl	8002118 <init_env>
 
-	osDelay(7000);
- 8006248:	f641 3058 	movw	r0, #7000	; 0x1b58
+	osDelay(700);
+ 8006248:	f44f 702f 	mov.w	r0, #700	; 0x2bc
  800624c:	f00f fd4e 	bl	8015cec <osDelay>
 
 
@@ -13223,289 +13224,290 @@ void vTaskGps(void *argument) {
  800636e:	4603      	mov	r3, r0
  8006370:	085b      	lsrs	r3, r3, #1
  8006372:	f8c7 30b0 	str.w	r3, [r7, #176]	; 0xb0
-	osDelay(2000);
- 8006376:	f44f 60fa 	mov.w	r0, #2000	; 0x7d0
- 800637a:	f00f fcb7 	bl	8015cec <osDelay>
+	osDelay(200);
+ 8006376:	20c8      	movs	r0, #200	; 0xc8
+ 8006378:	f00f fcb8 	bl	8015cec <osDelay>
 
 	gps_dma_init(&GPS1);
- 800637e:	f107 0384 	add.w	r3, r7, #132	; 0x84
- 8006382:	4618      	mov	r0, r3
- 8006384:	f7fb fb3a 	bl	80019fc <gps_dma_init>
+ 800637c:	f107 0384 	add.w	r3, r7, #132	; 0x84
+ 8006380:	4618      	mov	r0, r3
+ 8006382:	f7fb fb3b 	bl	80019fc <gps_dma_init>
 	gps_dma_init(&GPS2);
- 8006388:	f107 0358 	add.w	r3, r7, #88	; 0x58
- 800638c:	4618      	mov	r0, r3
- 800638e:	f7fb fb35 	bl	80019fc <gps_dma_init>
+ 8006386:	f107 0358 	add.w	r3, r7, #88	; 0x58
+ 800638a:	4618      	mov	r0, r3
+ 800638c:	f7fb fb36 	bl	80019fc <gps_dma_init>
 	gps_dma_init(&GPS3);
- 8006392:	f107 032c 	add.w	r3, r7, #44	; 0x2c
- 8006396:	4618      	mov	r0, r3
- 8006398:	f7fb fb30 	bl	80019fc <gps_dma_init>
+ 8006390:	f107 032c 	add.w	r3, r7, #44	; 0x2c
+ 8006394:	4618      	mov	r0, r3
+ 8006396:	f7fb fb31 	bl	80019fc <gps_dma_init>
 
 	for (;;) {
 		tick_count += tick_update;
- 800639c:	f8d7 20b8 	ldr.w	r2, [r7, #184]	; 0xb8
- 80063a0:	f8d7 30b0 	ldr.w	r3, [r7, #176]	; 0xb0
- 80063a4:	4413      	add	r3, r2
- 80063a6:	f8c7 30b8 	str.w	r3, [r7, #184]	; 0xb8
+ 800639a:	f8d7 20b8 	ldr.w	r2, [r7, #184]	; 0xb8
+ 800639e:	f8d7 30b0 	ldr.w	r3, [r7, #176]	; 0xb0
+ 80063a2:	4413      	add	r3, r2
+ 80063a4:	f8c7 30b8 	str.w	r3, [r7, #184]	; 0xb8
 
 		/* Read GPS */
 		if (gps_read_sensor(&GPS1)){
- 80063aa:	f107 0384 	add.w	r3, r7, #132	; 0x84
- 80063ae:	4618      	mov	r0, r3
- 80063b0:	f7fb fb48 	bl	8001a44 <gps_read_sensor>
- 80063b4:	4603      	mov	r3, r0
- 80063b6:	2b00      	cmp	r3, #0
- 80063b8:	d003      	beq.n	80063c2 <vTaskGps+0xd2>
+ 80063a8:	f107 0384 	add.w	r3, r7, #132	; 0x84
+ 80063ac:	4618      	mov	r0, r3
+ 80063ae:	f7fb fb49 	bl	8001a44 <gps_read_sensor>
+ 80063b2:	4603      	mov	r3, r0
+ 80063b4:	2b00      	cmp	r3, #0
+ 80063b6:	d003      	beq.n	80063c0 <vTaskGps+0xd0>
 			timeout_counter1 = 0;
- 80063ba:	2300      	movs	r3, #0
- 80063bc:	f8c7 30c4 	str.w	r3, [r7, #196]	; 0xc4
- 80063c0:	e010      	b.n	80063e4 <vTaskGps+0xf4>
+ 80063b8:	2300      	movs	r3, #0
+ 80063ba:	f8c7 30c4 	str.w	r3, [r7, #196]	; 0xc4
+ 80063be:	e010      	b.n	80063e2 <vTaskGps+0xf2>
 		} else {
 			timeout_counter1++;
- 80063c2:	f8d7 30c4 	ldr.w	r3, [r7, #196]	; 0xc4
- 80063c6:	3301      	adds	r3, #1
- 80063c8:	f8c7 30c4 	str.w	r3, [r7, #196]	; 0xc4
+ 80063c0:	f8d7 30c4 	ldr.w	r3, [r7, #196]	; 0xc4
+ 80063c4:	3301      	adds	r3, #1
+ 80063c6:	f8c7 30c4 	str.w	r3, [r7, #196]	; 0xc4
 			if (timeout_counter1 == 10){
- 80063cc:	f8d7 30c4 	ldr.w	r3, [r7, #196]	; 0xc4
- 80063d0:	2b0a      	cmp	r3, #10
- 80063d2:	d107      	bne.n	80063e4 <vTaskGps+0xf4>
+ 80063ca:	f8d7 30c4 	ldr.w	r3, [r7, #196]	; 0xc4
+ 80063ce:	2b0a      	cmp	r3, #10
+ 80063d0:	d107      	bne.n	80063e2 <vTaskGps+0xf2>
 				gps_reset(&GPS1);
- 80063d4:	f107 0384 	add.w	r3, r7, #132	; 0x84
- 80063d8:	4618      	mov	r0, r3
- 80063da:	f7fb fb7d 	bl	8001ad8 <gps_reset>
+ 80063d2:	f107 0384 	add.w	r3, r7, #132	; 0x84
+ 80063d6:	4618      	mov	r0, r3
+ 80063d8:	f7fb fb7e 	bl	8001ad8 <gps_reset>
 				timeout_counter1 = 0;
- 80063de:	2300      	movs	r3, #0
- 80063e0:	f8c7 30c4 	str.w	r3, [r7, #196]	; 0xc4
+ 80063dc:	2300      	movs	r3, #0
+ 80063de:	f8c7 30c4 	str.w	r3, [r7, #196]	; 0xc4
 			}
 		}
 		if (gps_read_sensor(&GPS2)){
- 80063e4:	f107 0358 	add.w	r3, r7, #88	; 0x58
- 80063e8:	4618      	mov	r0, r3
- 80063ea:	f7fb fb2b 	bl	8001a44 <gps_read_sensor>
- 80063ee:	4603      	mov	r3, r0
- 80063f0:	2b00      	cmp	r3, #0
- 80063f2:	d003      	beq.n	80063fc <vTaskGps+0x10c>
+ 80063e2:	f107 0358 	add.w	r3, r7, #88	; 0x58
+ 80063e6:	4618      	mov	r0, r3
+ 80063e8:	f7fb fb2c 	bl	8001a44 <gps_read_sensor>
+ 80063ec:	4603      	mov	r3, r0
+ 80063ee:	2b00      	cmp	r3, #0
+ 80063f0:	d003      	beq.n	80063fa <vTaskGps+0x10a>
 			timeout_counter2 = 0;
- 80063f4:	2300      	movs	r3, #0
- 80063f6:	f8c7 30c0 	str.w	r3, [r7, #192]	; 0xc0
- 80063fa:	e010      	b.n	800641e <vTaskGps+0x12e>
+ 80063f2:	2300      	movs	r3, #0
+ 80063f4:	f8c7 30c0 	str.w	r3, [r7, #192]	; 0xc0
+ 80063f8:	e010      	b.n	800641c <vTaskGps+0x12c>
 		} else {
 			timeout_counter2++;
- 80063fc:	f8d7 30c0 	ldr.w	r3, [r7, #192]	; 0xc0
- 8006400:	3301      	adds	r3, #1
- 8006402:	f8c7 30c0 	str.w	r3, [r7, #192]	; 0xc0
+ 80063fa:	f8d7 30c0 	ldr.w	r3, [r7, #192]	; 0xc0
+ 80063fe:	3301      	adds	r3, #1
+ 8006400:	f8c7 30c0 	str.w	r3, [r7, #192]	; 0xc0
 			if (timeout_counter2 == 10){
- 8006406:	f8d7 30c0 	ldr.w	r3, [r7, #192]	; 0xc0
- 800640a:	2b0a      	cmp	r3, #10
- 800640c:	d107      	bne.n	800641e <vTaskGps+0x12e>
+ 8006404:	f8d7 30c0 	ldr.w	r3, [r7, #192]	; 0xc0
+ 8006408:	2b0a      	cmp	r3, #10
+ 800640a:	d107      	bne.n	800641c <vTaskGps+0x12c>
 				gps_reset(&GPS2);
- 800640e:	f107 0358 	add.w	r3, r7, #88	; 0x58
- 8006412:	4618      	mov	r0, r3
- 8006414:	f7fb fb60 	bl	8001ad8 <gps_reset>
+ 800640c:	f107 0358 	add.w	r3, r7, #88	; 0x58
+ 8006410:	4618      	mov	r0, r3
+ 8006412:	f7fb fb61 	bl	8001ad8 <gps_reset>
 				timeout_counter2 = 0;
- 8006418:	2300      	movs	r3, #0
- 800641a:	f8c7 30c0 	str.w	r3, [r7, #192]	; 0xc0
+ 8006416:	2300      	movs	r3, #0
+ 8006418:	f8c7 30c0 	str.w	r3, [r7, #192]	; 0xc0
 			}
 		}
 		if (gps_read_sensor(&GPS3)){
- 800641e:	f107 032c 	add.w	r3, r7, #44	; 0x2c
- 8006422:	4618      	mov	r0, r3
- 8006424:	f7fb fb0e 	bl	8001a44 <gps_read_sensor>
- 8006428:	4603      	mov	r3, r0
- 800642a:	2b00      	cmp	r3, #0
- 800642c:	d003      	beq.n	8006436 <vTaskGps+0x146>
+ 800641c:	f107 032c 	add.w	r3, r7, #44	; 0x2c
+ 8006420:	4618      	mov	r0, r3
+ 8006422:	f7fb fb0f 	bl	8001a44 <gps_read_sensor>
+ 8006426:	4603      	mov	r3, r0
+ 8006428:	2b00      	cmp	r3, #0
+ 800642a:	d003      	beq.n	8006434 <vTaskGps+0x144>
 			timeout_counter3 = 0;
- 800642e:	2300      	movs	r3, #0
- 8006430:	f8c7 30bc 	str.w	r3, [r7, #188]	; 0xbc
- 8006434:	e010      	b.n	8006458 <vTaskGps+0x168>
+ 800642c:	2300      	movs	r3, #0
+ 800642e:	f8c7 30bc 	str.w	r3, [r7, #188]	; 0xbc
+ 8006432:	e010      	b.n	8006456 <vTaskGps+0x166>
 		} else {
 			timeout_counter3++;
- 8006436:	f8d7 30bc 	ldr.w	r3, [r7, #188]	; 0xbc
- 800643a:	3301      	adds	r3, #1
- 800643c:	f8c7 30bc 	str.w	r3, [r7, #188]	; 0xbc
+ 8006434:	f8d7 30bc 	ldr.w	r3, [r7, #188]	; 0xbc
+ 8006438:	3301      	adds	r3, #1
+ 800643a:	f8c7 30bc 	str.w	r3, [r7, #188]	; 0xbc
 			if (timeout_counter3 == 10){
- 8006440:	f8d7 30bc 	ldr.w	r3, [r7, #188]	; 0xbc
- 8006444:	2b0a      	cmp	r3, #10
- 8006446:	d107      	bne.n	8006458 <vTaskGps+0x168>
+ 800643e:	f8d7 30bc 	ldr.w	r3, [r7, #188]	; 0xbc
+ 8006442:	2b0a      	cmp	r3, #10
+ 8006444:	d107      	bne.n	8006456 <vTaskGps+0x166>
 				gps_reset(&GPS3);
- 8006448:	f107 032c 	add.w	r3, r7, #44	; 0x2c
- 800644c:	4618      	mov	r0, r3
- 800644e:	f7fb fb43 	bl	8001ad8 <gps_reset>
+ 8006446:	f107 032c 	add.w	r3, r7, #44	; 0x2c
+ 800644a:	4618      	mov	r0, r3
+ 800644c:	f7fb fb44 	bl	8001ad8 <gps_reset>
 				timeout_counter3 = 0;
- 8006452:	2300      	movs	r3, #0
- 8006454:	f8c7 30bc 	str.w	r3, [r7, #188]	; 0xbc
+ 8006450:	2300      	movs	r3, #0
+ 8006452:	f8c7 30bc 	str.w	r3, [r7, #188]	; 0xbc
 		//		UsbPrint("[GPS3] Time: %d:%d.%d Lat: %d.%ld Lon: %d.%ld Sats: %d, Alt: %d\n",
 		//								GPS3.data.hour, GPS3.data.minute, GPS3.data.second, GPS3.data.lat_deg,
 		//								GPS3.data.lat_decimal, GPS3.data.lon_deg, GPS3.data.lon_decimal, GPS3.data.satellite, GPS3.data.altitude);
 
 		/* Write GPS to Log */
 		logSensor(osKernelGetTickCount(), 1, GPS, &GPS1.data);
- 8006458:	f00f fb70 	bl	8015b3c <osKernelGetTickCount>
- 800645c:	f107 0384 	add.w	r3, r7, #132	; 0x84
- 8006460:	3308      	adds	r3, #8
- 8006462:	2203      	movs	r2, #3
- 8006464:	2101      	movs	r1, #1
- 8006466:	f7fd fd6f 	bl	8003f48 <logSensor>
+ 8006456:	f00f fb71 	bl	8015b3c <osKernelGetTickCount>
+ 800645a:	f107 0384 	add.w	r3, r7, #132	; 0x84
+ 800645e:	3308      	adds	r3, #8
+ 8006460:	2203      	movs	r2, #3
+ 8006462:	2101      	movs	r1, #1
+ 8006464:	f7fd fd70 	bl	8003f48 <logSensor>
 		logSensor(osKernelGetTickCount(), 2, GPS, &GPS2.data);
- 800646a:	f00f fb67 	bl	8015b3c <osKernelGetTickCount>
- 800646e:	f107 0358 	add.w	r3, r7, #88	; 0x58
- 8006472:	3308      	adds	r3, #8
- 8006474:	2203      	movs	r2, #3
- 8006476:	2102      	movs	r1, #2
- 8006478:	f7fd fd66 	bl	8003f48 <logSensor>
+ 8006468:	f00f fb68 	bl	8015b3c <osKernelGetTickCount>
+ 800646c:	f107 0358 	add.w	r3, r7, #88	; 0x58
+ 8006470:	3308      	adds	r3, #8
+ 8006472:	2203      	movs	r2, #3
+ 8006474:	2102      	movs	r1, #2
+ 8006476:	f7fd fd67 	bl	8003f48 <logSensor>
 		logSensor(osKernelGetTickCount(), 3, GPS, &GPS3.data);
- 800647c:	f00f fb5e 	bl	8015b3c <osKernelGetTickCount>
- 8006480:	f107 032c 	add.w	r3, r7, #44	; 0x2c
- 8006484:	3308      	adds	r3, #8
- 8006486:	2203      	movs	r2, #3
- 8006488:	2103      	movs	r1, #3
- 800648a:	f7fd fd5d 	bl	8003f48 <logSensor>
+ 800647a:	f00f fb5f 	bl	8015b3c <osKernelGetTickCount>
+ 800647e:	f107 032c 	add.w	r3, r7, #44	; 0x2c
+ 8006482:	3308      	adds	r3, #8
+ 8006484:	2203      	movs	r2, #3
+ 8006486:	2103      	movs	r1, #3
+ 8006488:	f7fd fd5e 	bl	8003f48 <logSensor>
 
 		/* get best possible GPS for Telemetry */
 
 		if(GPS1.data.satellite >= GPS2.data.satellite){
- 800648e:	f897 20a9 	ldrb.w	r2, [r7, #169]	; 0xa9
- 8006492:	f897 307d 	ldrb.w	r3, [r7, #125]	; 0x7d
- 8006496:	429a      	cmp	r2, r3
- 8006498:	d30d      	bcc.n	80064b6 <vTaskGps+0x1c6>
+ 800648c:	f897 20a9 	ldrb.w	r2, [r7, #169]	; 0xa9
+ 8006490:	f897 307d 	ldrb.w	r3, [r7, #125]	; 0x7d
+ 8006494:	429a      	cmp	r2, r3
+ 8006496:	d30d      	bcc.n	80064b4 <vTaskGps+0x1c4>
 			if(GPS1.data.satellite >= GPS3.data.satellite){
- 800649a:	f897 20a9 	ldrb.w	r2, [r7, #169]	; 0xa9
- 800649e:	f897 3051 	ldrb.w	r3, [r7, #81]	; 0x51
- 80064a2:	429a      	cmp	r2, r3
- 80064a4:	d303      	bcc.n	80064ae <vTaskGps+0x1be>
+ 8006498:	f897 20a9 	ldrb.w	r2, [r7, #169]	; 0xa9
+ 800649c:	f897 3051 	ldrb.w	r3, [r7, #81]	; 0x51
+ 80064a0:	429a      	cmp	r2, r3
+ 80064a2:	d303      	bcc.n	80064ac <vTaskGps+0x1bc>
 				choose_GPS = 1;
- 80064a6:	2301      	movs	r3, #1
- 80064a8:	f887 30b7 	strb.w	r3, [r7, #183]	; 0xb7
- 80064ac:	e02a      	b.n	8006504 <vTaskGps+0x214>
+ 80064a4:	2301      	movs	r3, #1
+ 80064a6:	f887 30b7 	strb.w	r3, [r7, #183]	; 0xb7
+ 80064aa:	e02a      	b.n	8006502 <vTaskGps+0x212>
 			}
 			else{
 				choose_GPS = 3;
- 80064ae:	2303      	movs	r3, #3
- 80064b0:	f887 30b7 	strb.w	r3, [r7, #183]	; 0xb7
- 80064b4:	e026      	b.n	8006504 <vTaskGps+0x214>
+ 80064ac:	2303      	movs	r3, #3
+ 80064ae:	f887 30b7 	strb.w	r3, [r7, #183]	; 0xb7
+ 80064b2:	e026      	b.n	8006502 <vTaskGps+0x212>
 			}
 		}
 		else if(GPS2.data.satellite >= GPS3.data.satellite){
- 80064b6:	f897 207d 	ldrb.w	r2, [r7, #125]	; 0x7d
- 80064ba:	f897 3051 	ldrb.w	r3, [r7, #81]	; 0x51
- 80064be:	429a      	cmp	r2, r3
- 80064c0:	d30d      	bcc.n	80064de <vTaskGps+0x1ee>
+ 80064b4:	f897 207d 	ldrb.w	r2, [r7, #125]	; 0x7d
+ 80064b8:	f897 3051 	ldrb.w	r3, [r7, #81]	; 0x51
+ 80064bc:	429a      	cmp	r2, r3
+ 80064be:	d30d      	bcc.n	80064dc <vTaskGps+0x1ec>
 			if(GPS2.data.satellite >= GPS1.data.satellite){
- 80064c2:	f897 207d 	ldrb.w	r2, [r7, #125]	; 0x7d
- 80064c6:	f897 30a9 	ldrb.w	r3, [r7, #169]	; 0xa9
- 80064ca:	429a      	cmp	r2, r3
- 80064cc:	d303      	bcc.n	80064d6 <vTaskGps+0x1e6>
+ 80064c0:	f897 207d 	ldrb.w	r2, [r7, #125]	; 0x7d
+ 80064c4:	f897 30a9 	ldrb.w	r3, [r7, #169]	; 0xa9
+ 80064c8:	429a      	cmp	r2, r3
+ 80064ca:	d303      	bcc.n	80064d4 <vTaskGps+0x1e4>
 				choose_GPS = 2;
- 80064ce:	2302      	movs	r3, #2
- 80064d0:	f887 30b7 	strb.w	r3, [r7, #183]	; 0xb7
- 80064d4:	e016      	b.n	8006504 <vTaskGps+0x214>
+ 80064cc:	2302      	movs	r3, #2
+ 80064ce:	f887 30b7 	strb.w	r3, [r7, #183]	; 0xb7
+ 80064d2:	e016      	b.n	8006502 <vTaskGps+0x212>
 			}
 			else{
 				choose_GPS = 1;
- 80064d6:	2301      	movs	r3, #1
- 80064d8:	f887 30b7 	strb.w	r3, [r7, #183]	; 0xb7
- 80064dc:	e012      	b.n	8006504 <vTaskGps+0x214>
+ 80064d4:	2301      	movs	r3, #1
+ 80064d6:	f887 30b7 	strb.w	r3, [r7, #183]	; 0xb7
+ 80064da:	e012      	b.n	8006502 <vTaskGps+0x212>
 			}
 		}
 		else if(GPS3.data.satellite >= GPS1.data.satellite){
- 80064de:	f897 2051 	ldrb.w	r2, [r7, #81]	; 0x51
- 80064e2:	f897 30a9 	ldrb.w	r3, [r7, #169]	; 0xa9
- 80064e6:	429a      	cmp	r2, r3
- 80064e8:	d30c      	bcc.n	8006504 <vTaskGps+0x214>
+ 80064dc:	f897 2051 	ldrb.w	r2, [r7, #81]	; 0x51
+ 80064e0:	f897 30a9 	ldrb.w	r3, [r7, #169]	; 0xa9
+ 80064e4:	429a      	cmp	r2, r3
+ 80064e6:	d30c      	bcc.n	8006502 <vTaskGps+0x212>
 			if(GPS3.data.satellite >= GPS2.data.satellite){
- 80064ea:	f897 2051 	ldrb.w	r2, [r7, #81]	; 0x51
- 80064ee:	f897 307d 	ldrb.w	r3, [r7, #125]	; 0x7d
- 80064f2:	429a      	cmp	r2, r3
- 80064f4:	d303      	bcc.n	80064fe <vTaskGps+0x20e>
+ 80064e8:	f897 2051 	ldrb.w	r2, [r7, #81]	; 0x51
+ 80064ec:	f897 307d 	ldrb.w	r3, [r7, #125]	; 0x7d
+ 80064f0:	429a      	cmp	r2, r3
+ 80064f2:	d303      	bcc.n	80064fc <vTaskGps+0x20c>
 				choose_GPS = 3;
- 80064f6:	2303      	movs	r3, #3
- 80064f8:	f887 30b7 	strb.w	r3, [r7, #183]	; 0xb7
- 80064fc:	e002      	b.n	8006504 <vTaskGps+0x214>
+ 80064f4:	2303      	movs	r3, #3
+ 80064f6:	f887 30b7 	strb.w	r3, [r7, #183]	; 0xb7
+ 80064fa:	e002      	b.n	8006502 <vTaskGps+0x212>
 			}
 			else{
 				choose_GPS = 2;
- 80064fe:	2302      	movs	r3, #2
- 8006500:	f887 30b7 	strb.w	r3, [r7, #183]	; 0xb7
+ 80064fc:	2302      	movs	r3, #2
+ 80064fe:	f887 30b7 	strb.w	r3, [r7, #183]	; 0xb7
 			}
 		}
 
 		if(choose_GPS == 1){
- 8006504:	f897 30b7 	ldrb.w	r3, [r7, #183]	; 0xb7
- 8006508:	2b01      	cmp	r3, #1
- 800650a:	d10a      	bne.n	8006522 <vTaskGps+0x232>
+ 8006502:	f897 30b7 	ldrb.w	r3, [r7, #183]	; 0xb7
+ 8006506:	2b01      	cmp	r3, #1
+ 8006508:	d10a      	bne.n	8006520 <vTaskGps+0x230>
 			gps_telemetry = GPS1.data;
- 800650c:	f107 0408 	add.w	r4, r7, #8
- 8006510:	f107 058c 	add.w	r5, r7, #140	; 0x8c
- 8006514:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
- 8006516:	c40f      	stmia	r4!, {r0, r1, r2, r3}
- 8006518:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
- 800651a:	c40f      	stmia	r4!, {r0, r1, r2, r3}
- 800651c:	682b      	ldr	r3, [r5, #0]
- 800651e:	6023      	str	r3, [r4, #0]
- 8006520:	e018      	b.n	8006554 <vTaskGps+0x264>
+ 800650a:	f107 0408 	add.w	r4, r7, #8
+ 800650e:	f107 058c 	add.w	r5, r7, #140	; 0x8c
+ 8006512:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
+ 8006514:	c40f      	stmia	r4!, {r0, r1, r2, r3}
+ 8006516:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
+ 8006518:	c40f      	stmia	r4!, {r0, r1, r2, r3}
+ 800651a:	682b      	ldr	r3, [r5, #0]
+ 800651c:	6023      	str	r3, [r4, #0]
+ 800651e:	e018      	b.n	8006552 <vTaskGps+0x262>
 //			gps_telemetry.lat_decimal = GPS1.data.lat_decimal;
 //			gps_telemetry.lon_deg = GPS1.data.lon_deg;
 //			gps_telemetry.lon_decimal = GPS1.data.lon_decimal;
 //			gps_telemetry.satellite = GPS1.data.satellite;
 		}
 		else if(choose_GPS == 2){
- 8006522:	f897 30b7 	ldrb.w	r3, [r7, #183]	; 0xb7
- 8006526:	2b02      	cmp	r3, #2
- 8006528:	d10a      	bne.n	8006540 <vTaskGps+0x250>
+ 8006520:	f897 30b7 	ldrb.w	r3, [r7, #183]	; 0xb7
+ 8006524:	2b02      	cmp	r3, #2
+ 8006526:	d10a      	bne.n	800653e <vTaskGps+0x24e>
 			gps_telemetry = GPS2.data;
- 800652a:	f107 0408 	add.w	r4, r7, #8
- 800652e:	f107 0560 	add.w	r5, r7, #96	; 0x60
- 8006532:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
- 8006534:	c40f      	stmia	r4!, {r0, r1, r2, r3}
- 8006536:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
- 8006538:	c40f      	stmia	r4!, {r0, r1, r2, r3}
- 800653a:	682b      	ldr	r3, [r5, #0]
- 800653c:	6023      	str	r3, [r4, #0]
- 800653e:	e009      	b.n	8006554 <vTaskGps+0x264>
+ 8006528:	f107 0408 	add.w	r4, r7, #8
+ 800652c:	f107 0560 	add.w	r5, r7, #96	; 0x60
+ 8006530:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
+ 8006532:	c40f      	stmia	r4!, {r0, r1, r2, r3}
+ 8006534:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
+ 8006536:	c40f      	stmia	r4!, {r0, r1, r2, r3}
+ 8006538:	682b      	ldr	r3, [r5, #0]
+ 800653a:	6023      	str	r3, [r4, #0]
+ 800653c:	e009      	b.n	8006552 <vTaskGps+0x262>
 //			gps_telemetry.lon_deg = GPS2.data.lon_deg;
 //			gps_telemetry.lon_decimal = GPS2.data.lon_decimal;
 //			gps_telemetry.satellite = GPS2.data.satellite;
 		}
 		else{
 			gps_telemetry = GPS3.data;
- 8006540:	f107 0408 	add.w	r4, r7, #8
- 8006544:	f107 0534 	add.w	r5, r7, #52	; 0x34
- 8006548:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
- 800654a:	c40f      	stmia	r4!, {r0, r1, r2, r3}
- 800654c:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
- 800654e:	c40f      	stmia	r4!, {r0, r1, r2, r3}
- 8006550:	682b      	ldr	r3, [r5, #0]
- 8006552:	6023      	str	r3, [r4, #0]
+ 800653e:	f107 0408 	add.w	r4, r7, #8
+ 8006542:	f107 0534 	add.w	r5, r7, #52	; 0x34
+ 8006546:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
+ 8006548:	c40f      	stmia	r4!, {r0, r1, r2, r3}
+ 800654a:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
+ 800654c:	c40f      	stmia	r4!, {r0, r1, r2, r3}
+ 800654e:	682b      	ldr	r3, [r5, #0]
+ 8006550:	6023      	str	r3, [r4, #0]
 //			gps_telemetry.lon_deg = GPS3.data.lon_deg;
 //			gps_telemetry.lon_decimal = GPS3.data.lon_decimal;
 //			gps_telemetry.satellite = GPS3.data.satellite;
 		}
 
 		if(AcquireMutex(&gps_mutex) == osOK){
- 8006554:	480e      	ldr	r0, [pc, #56]	; (8006590 <vTaskGps+0x2a0>)
- 8006556:	f7fd fbeb 	bl	8003d30 <AcquireMutex>
- 800655a:	4603      	mov	r3, r0
- 800655c:	2b00      	cmp	r3, #0
- 800655e:	d10c      	bne.n	800657a <vTaskGps+0x28a>
+ 8006552:	480f      	ldr	r0, [pc, #60]	; (8006590 <vTaskGps+0x2a0>)
+ 8006554:	f7fd fbec 	bl	8003d30 <AcquireMutex>
+ 8006558:	4603      	mov	r3, r0
+ 800655a:	2b00      	cmp	r3, #0
+ 800655c:	d10c      	bne.n	8006578 <vTaskGps+0x288>
 			globalGPS = gps_telemetry;
- 8006560:	4b0c      	ldr	r3, [pc, #48]	; (8006594 <vTaskGps+0x2a4>)
- 8006562:	461d      	mov	r5, r3
- 8006564:	f107 0408 	add.w	r4, r7, #8
- 8006568:	cc0f      	ldmia	r4!, {r0, r1, r2, r3}
- 800656a:	c50f      	stmia	r5!, {r0, r1, r2, r3}
- 800656c:	cc0f      	ldmia	r4!, {r0, r1, r2, r3}
- 800656e:	c50f      	stmia	r5!, {r0, r1, r2, r3}
- 8006570:	6823      	ldr	r3, [r4, #0]
- 8006572:	602b      	str	r3, [r5, #0]
+ 800655e:	4b0d      	ldr	r3, [pc, #52]	; (8006594 <vTaskGps+0x2a4>)
+ 8006560:	461d      	mov	r5, r3
+ 8006562:	f107 0408 	add.w	r4, r7, #8
+ 8006566:	cc0f      	ldmia	r4!, {r0, r1, r2, r3}
+ 8006568:	c50f      	stmia	r5!, {r0, r1, r2, r3}
+ 800656a:	cc0f      	ldmia	r4!, {r0, r1, r2, r3}
+ 800656c:	c50f      	stmia	r5!, {r0, r1, r2, r3}
+ 800656e:	6823      	ldr	r3, [r4, #0]
+ 8006570:	602b      	str	r3, [r5, #0]
 			ReleaseMutex(&gps_mutex);
- 8006574:	4806      	ldr	r0, [pc, #24]	; (8006590 <vTaskGps+0x2a0>)
- 8006576:	f7fd fbf5 	bl	8003d64 <ReleaseMutex>
+ 8006572:	4807      	ldr	r0, [pc, #28]	; (8006590 <vTaskGps+0x2a0>)
+ 8006574:	f7fd fbf6 	bl	8003d64 <ReleaseMutex>
 		}
 		/* Sleep */
 		osDelayUntil(tick_count);
- 800657a:	f8d7 00b8 	ldr.w	r0, [r7, #184]	; 0xb8
- 800657e:	f00f fbe3 	bl	8015d48 <osDelayUntil>
+ 8006578:	f8d7 00b8 	ldr.w	r0, [r7, #184]	; 0xb8
+ 800657c:	f00f fbe4 	bl	8015d48 <osDelayUntil>
 		tick_count += tick_update;
- 8006582:	e70b      	b.n	800639c <vTaskGps+0xac>
+ 8006580:	e70b      	b.n	800639a <vTaskGps+0xaa>
+ 8006582:	bf00      	nop
  8006584:	2000fc24 	.word	0x2000fc24
  8006588:	20019fc0 	.word	0x20019fc0
  800658c:	200097f8 	.word	0x200097f8
@@ -13565,8 +13567,8 @@ void vTaskMotorCont(void *argument) {
  80065ce:	4b44      	ldr	r3, [pc, #272]	; (80066e0 <vTaskMotorCont+0x148>)
  80065d0:	627b      	str	r3, [r7, #36]	; 0x24
 
-	osDelay(9000);
- 80065d2:	f242 3028 	movw	r0, #9000	; 0x2328
+	osDelay(2000);
+ 80065d2:	f44f 60fa 	mov.w	r0, #2000	; 0x7d0
  80065d6:	f00f fb89 	bl	8015cec <osDelay>
 
 
@@ -14229,8 +14231,8 @@ void vTaskSensRead(void *argument) {
 	/* For periodic update */
 	uint32_t tick_count, tick_update;
 
-	osDelay(5000);
- 8006acc:	f241 3088 	movw	r0, #5000	; 0x1388
+	osDelay(500);
+ 8006acc:	f44f 70fa 	mov.w	r0, #500	; 0x1f4
  8006ad0:	f00f f90c 	bl	8015cec <osDelay>
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();
@@ -14664,8 +14666,8 @@ void vTaskStateEst(void *argument) {
  8006dd6:	2300      	movs	r3, #0
  8006dd8:	f8a7 357a 	strh.w	r3, [r7, #1402]	; 0x57a
 
-	osDelay(6000);
- 8006ddc:	f241 7070 	movw	r0, #6000	; 0x1770
+	osDelay(600);
+ 8006ddc:	f44f 7016 	mov.w	r0, #600	; 0x258
  8006de0:	f00e ff84 	bl	8015cec <osDelay>
 
 
@@ -15081,8 +15083,8 @@ void vTaskXbee(void *argument) {
  8007138:	2300      	movs	r3, #0
  800713a:	f887 30cb 	strb.w	r3, [r7, #203]	; 0xcb
 
-	osDelay(4000);
- 800713e:	f44f 607a 	mov.w	r0, #4000	; 0xfa0
+	osDelay(400);
+ 800713e:	f44f 70c8 	mov.w	r0, #400	; 0x190
  8007142:	f00e fdd3 	bl	8015cec <osDelay>
 
 

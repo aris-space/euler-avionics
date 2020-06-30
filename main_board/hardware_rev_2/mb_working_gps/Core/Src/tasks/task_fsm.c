@@ -25,7 +25,7 @@ void vTaskFSM(void *argument) {
 	init_env(&dummy_env);
 	init_env(&environment);
 
-	osDelay(7000);
+	osDelay(700);
 
 
 	/* Infinite loop */

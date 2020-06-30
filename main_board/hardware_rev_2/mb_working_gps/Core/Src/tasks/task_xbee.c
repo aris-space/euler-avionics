@@ -37,7 +37,7 @@ void vTaskXbee(void *argument) {
 
 	uint8_t buzzercounter = 0;
 
-	osDelay(4000);
+	osDelay(400);
 
 
 	/* Infinite loop */

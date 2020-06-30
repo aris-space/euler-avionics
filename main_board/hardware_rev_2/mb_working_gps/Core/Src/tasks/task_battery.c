@@ -37,7 +37,7 @@ void vTaskBattery(void *argument) {
 	HAL_ADC_Stop_DMA(&hadc1);
 	HAL_ADC_Start_DMA(&hadc1, adc_value, 5);
 
-	osDelay(1000);
+	osDelay(200);
 
 
 
