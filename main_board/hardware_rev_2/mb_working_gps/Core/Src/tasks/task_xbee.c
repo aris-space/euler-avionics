@@ -88,9 +88,14 @@ void vTaskXbee(void *argument) {
 			buzzer_on_fsm = true;
 		}
 
-		/*Enable Self Power Hold */
+		/* Enable Self Power Hold */
 		if(local_command == TELEMETRY_HIGH_SAMPLING){
 			HAL_GPIO_WritePin(PW_HOLD_GPIO_Port, PW_HOLD_Pin, GPIO_PIN_RESET);
+		}
+
+		/* Go Back to Low Sampling if we are in Recovery */
+		if(telemetry_send.flight_phase == RECOVERY){
+			fast_sampling = false;
 		}
 
 		/* Disable Self Power Hold */
@@ -155,6 +160,9 @@ void vTaskXbee(void *argument) {
 		telemetry_send.height = state_est_data.position_world[2];
 		telemetry_send.velocity = state_est_data.velocity_world[2];
 		telemetry_send.ts = osKernelGetTickCount();
+
+		/* Write Buzzer State*/
+		telemetry_send.flight_phase = telemetry_send.flight_phase + 128*(buzzer_on_fsm ^ buzzer_on_telemetry);
 
 		telemetry_send.checksum = calculate_checksum(&telemetry_send);
 

@@ -178,7 +178,7 @@ const osThreadAttr_t task_battery_attributes = {
   .stack_size = sizeof(task_batteryBuffer),
   .cb_mem = &task_batteryControlBlock,
   .cb_size = sizeof(task_batteryControlBlock),
-  .priority = (osPriority_t) osPriorityBelowNormal7,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for task_xbee */
 osThreadId_t task_xbeeHandle;

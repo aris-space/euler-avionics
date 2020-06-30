@@ -189,7 +189,7 @@ osStatus_t logMsg(timestamp_t ts, char *msg);
 #undef DEBUG
 #endif
 /* Comment the next line in order to disable debug mode */
-#define DEBUG
+//#define DEBUG
 
 #ifdef DEBUG
 osMutexId_t print_mutex;
