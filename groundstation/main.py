@@ -1,4 +1,8 @@
-#!/home/imre/anaconda3/bin/python
+#!/usr/bin/env python3
+
+"""
+Author(s): Imre Kertesz
+"""
 
 from tkinter import Tk
 from GroundStation import GroundStation

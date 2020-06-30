@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+
+"""
+Author(s): Imre Kertesz
+"""
+
 from threading import Thread
 import serial
 import time
@@ -7,7 +13,7 @@ from tkinter import messagebox
 import sys
 import glob
 import logging
-from utils import data_struct, dict_commands
+from myutils import data_struct, dict_commands
 
 
 def available_ports():
@@ -40,6 +46,9 @@ def available_ports():
 
 
 def flatten(d, parent_key='', sep='_'):
+    """
+    Flattens a dict of dicts
+    """
     items = []
     for k, v in d.items():
         new_key = parent_key + sep + k if parent_key else k
@@ -63,7 +72,22 @@ def get_measurement_names():
 
 
 class SerialConnection:
+    """
+    This class handles the serial communication with the Xbee module.
+    """
     def __init__(self, root, serial_port='COM6', serial_baud=115200):
+        """
+        Constructor.
+
+        Parameters
+        ----------
+        root : MainWindow
+            main window object.
+        serial_port : str
+            defines which port
+        serial_baud : int
+            baud rate
+        """
         self.root = root
         self.logger = logging.getLogger()
         self.port = serial_port
@@ -80,6 +104,9 @@ class SerialConnection:
         self.reset_flag = False
 
     def start_connection(self):
+        """
+        Establishes serial connection.
+        """
         print('Trying to connect to: ' + str(self.port) + ' at ' + str(self.baud) + ' BAUD.')
         self.logger.info('Trying to connect to: ' + str(self.port) + ' at ' + str(self.baud) + ' BAUD.')
         try:
@@ -92,7 +119,7 @@ class SerialConnection:
                                                   timeout=None)
 
             self.logger.info('Connected to ' + str(self.port) + ' at ' + str(self.baud) + ' BAUD.')
-            # self.read_serial_start()
+
             return True
         except (OSError, serial.SerialException):
 
@@ -100,13 +127,13 @@ class SerialConnection:
             return False
 
     def read_serial_start(self):
+        """
+        Starts reading data from serial connection.
+        """
         if self.thread is None:
             self.thread = Thread(target=self.back_ground_thread)
             self.thread.start()
             self.logger.info('Ready to receive data')
-            # Block till we start receiving values
-            # while not self.isReceiving:
-            #    time.sleep(1.0)
 
     def get_serial_data(self):
         if self.data is not None:
@@ -114,10 +141,16 @@ class SerialConnection:
         return 0
 
     def send(self, command):
+        """
+        Writes data to serial connection.
+        """
         self.serialConnection.write(dict_commands.get(command))
         self.logger.info(command+' command was sent.')
 
     def verify_checksum(self, data):
+        """
+        Verifies the checksum and the starting byte
+        """
         # print(hex(sum(data))[-2:])
         cs = hex(sum(data))[-2:]
         # print(data[0])
