@@ -16,7 +16,7 @@ from matplotlib.figure import Figure
 from matplotlib import style
 import logging
 from Logs.LoggingHandler import LoggingHandler
-from myutils import sb_names, gps_names, battery_names, fsm_names
+from myutils import sb_names, gps_names, battery_names, fsm_names, rf_names, dict_command_msg
 
 matplotlib.use("TkAgg")
 style.use('ggplot')
@@ -83,6 +83,8 @@ class MainWindow(Frame):
         self.recording = False
         self.is_receiving = False
         self.update_plot = False
+        self.num_packets_bad = 0
+        self.num_packets_good = 0
 
         self._root = parent
         self._root.title("ARIS Groundstation")
@@ -141,7 +143,6 @@ class MainWindow(Frame):
         self.frame_upper_left = tk.LabelFrame(self.frame_upper, text='Commands', font=6, width=10, height=100)
         self.frame_upper_middle = tk.LabelFrame(self.frame_upper, text='Velocity [m/s]', font=6, width=500, height=100)
         self.frame_upper_right = tk.LabelFrame(self.frame_upper, text='Altitude [m]', font=6, width=500, height=100)
-        self.frame_log = tk.LabelFrame(self.frame_upper_left, text='Log', width=10, height=20)
 
         # ==============================================================================================================
         # create plots
@@ -200,7 +201,10 @@ class MainWindow(Frame):
                                         text='Disable Lock',
                                         width=10,
                                         command=lambda: self.send_command('disable'))
-
+        # ==============================================================================================================
+        # add log frame
+        # ==============================================================================================================
+        self.frame_log = tk.LabelFrame(self.frame_upper_left, text='Log', width=10, height=20)
         # ==============================================================================================================
         # add sensorboard frame
         # ==============================================================================================================
@@ -228,41 +232,36 @@ class MainWindow(Frame):
         self.label_gps_val = []
         self.label_gps_name = []
         for i in range(len(gps_names)):
-            if i == 2 or i == 3:
-                self.label_gps_val.append(tk.Label(self.frame_gps,
-                                                   text='--------',
-                                                   borderwidth=2,
-                                                   relief='sunken',
-                                                   width=15))
-            else:
-                self.label_gps_val.append(tk.Label(self.frame_gps,
-                                                   text='--------',
-                                                   borderwidth=2,
-                                                   relief='sunken',
-                                                   width=10))
+            self.label_gps_val.append(tk.Label(self.frame_gps,
+                                               text='--------',
+                                               borderwidth=2,
+                                               relief='sunken',
+                                               width=10))
 
             self.label_gps_name.append(tk.Label(self.frame_gps, text=gps_names[i]))
 
-        self.sep_gps = ttk.Separator(self.frame_gps, orient='vertical')
+        for i in range(len(gps_names)):
+            self.label_gps_name[i].grid(row=i, column=0, sticky='W')
+            self.label_gps_val[i].grid(row=i, column=1, padx=10)
 
-        self.label_gps_name[0].grid(row=1, column=0, sticky='W')
-        self.label_gps_name[1].grid(row=2, column=0, sticky='W')
-        self.label_gps_name[2].grid(row=1, column=3, sticky='W')
-        self.label_gps_name[3].grid(row=2, column=3, sticky='W')
-        self.label_gps_name[4].grid(row=3, column=0, sticky='W')
-        self.label_gps_name[5].grid(row=4, column=0, sticky='W')
-        self.label_gps_name[6].grid(row=5, column=0, sticky='W')
+        # ==============================================================================================================
+        # add RF frame
+        # ==============================================================================================================
+        self.frame_rf = tk.LabelFrame(self.frame_lower, text='RF', font=6, width=100, height=75)
+        self.label_rf_val = []
+        self.label_rf_name = []
+        for i in range(len(rf_names)):
+            self.label_rf_val.append(tk.Label(self.frame_rf,
+                                              text='--------',
+                                              borderwidth=2,
+                                              relief='sunken',
+                                              width=10))
 
-        self.sep_gps.grid(row=1, column=2, rowspan=5, sticky='ns')
+            self.label_rf_name.append(tk.Label(self.frame_rf, text=rf_names[i]))
 
-        self.label_gps_val[0].grid(row=1, column=1, padx=10)
-        self.label_gps_val[1].grid(row=2, column=1, padx=10)
-        self.label_gps_val[2].grid(row=1, column=4, padx=10)
-        self.label_gps_val[3].grid(row=2, column=4, padx=10)
-        self.label_gps_val[4].grid(row=3, column=1, padx=10)
-        self.label_gps_val[5].grid(row=4, column=1, padx=10)
-        self.label_gps_val[6].grid(row=5, column=1, padx=10)
-
+        for i in range(len(rf_names)):
+            self.label_rf_name[i].grid(row=i, column=0, sticky='W')
+            self.label_rf_val[i].grid(row=i, column=1, padx=10)
         # ==============================================================================================================
         # add battery monitoring frame
         # ==============================================================================================================
@@ -337,6 +336,7 @@ class MainWindow(Frame):
         self.frame_sb.pack(side="left", fill="both", expand=True, padx=5, pady=10)
         # self.sep2.pack(side="left", fill="both")
         self.frame_gps.pack(side="left", fill="both", expand=True, padx=5, pady=10)
+        self.frame_rf.pack(side="left", fill="both", expand=True, padx=5, pady=10)
         self.frame_battery.pack(side="left", fill="both", expand=True, padx=5, pady=10)
         self.frame_fsm.pack(side="left", fill="both", expand=True, padx=5, pady=10)
 
@@ -380,15 +380,11 @@ class MainWindow(Frame):
             sensor, airbrake, frequency
         """
         if self.s is not None:
-            if command == 'airbrake':
-                answer = messagebox.askquestion('Warning', 'Airbrakes will extend. Make sure travel'
-                                                           'range is cleared. Do you want to continue?')
-                if answer == 'yes':
-                    self.s.send(command)
-                else:
-                    self.logger.info('Airbrake test aborted.')
-            else:
+            answer = messagebox.askquestion('Warning', dict_command_msg.get(command))
+            if answer == 'yes':
                 self.s.send(command)
+            else:
+                self.logger.info('Command aborted.')
         else:
             messagebox.showinfo('Info', 'Serial connection is not established.')
 
@@ -545,6 +541,14 @@ class MainWindow(Frame):
             self.connected = True
             self.root2.destroy()
 
+    def update_rf_frame(self):
+        """
+        Updates the values in the rf frame
+        """
+        self.label_rf_val[0].config(text=self.num_packets_good + self.num_packets_bad)
+        self.label_rf_val[1].config(text=self.num_packets_bad)
+        self.label_rf_val[2].config(text=self.num_packets_good)
+
     def update_values(self, data):
         """
         Updates the values in the main window and the data for live plots.
@@ -570,13 +574,13 @@ class MainWindow(Frame):
             for i in range(len(self.label_fsm_val)):
                 self.label_fsm_val[i].config(text='-----')
         else:
-            data = list(data[1:])
+            data = data[1:]
             sb_data = data[:len_sb]
             battery_data = data[len_sb:len_sb + len_battery]
             gps_data = data[len_sb + len_battery:len_sb + len_battery + len_gps]
             fsm_data = data[len_sb + len_gps + len_battery:len_sb + len_gps + len_battery + len_fsm]
 
-            gps_time = str(gps_data[0]+2) + ':' + str(gps_data[1]) + ':' + str(gps_data[2])
+            gps_time = str(gps_data[0] + 2) + ':' + str(gps_data[1]) + ':' + str(gps_data[2])
             tmp = ['0'] * (len_gps - 4)
             tmp[0] = gps_time
             tmp[1] = gps_data[3]
@@ -590,20 +594,20 @@ class MainWindow(Frame):
             gps_data = tmp
 
             # sb data scaling
-            sb_data[1] = sb_data[1]/100
+            sb_data[1] = sb_data[1] / 100
             sb_data[2:5] = map(lambda x: x / 32.8, sb_data[2:5])
             sb_data[5:] = map(lambda x: x / 1024 * 9.81, sb_data[5:])
 
             sb_data[2:] = [f'{x:.2f}' for x in sb_data[2:]]
 
             # battery data scaling
-            battery_data[0] = battery_data[0]/1000
+            battery_data[0] = battery_data[0] / 1000
 
             # fsm data scaling
-            fsm_data[0] = fsm_data[0]/1000
-            fsm_data[1] = fsm_data[1]/1000
-            fsm_data[2] = fsm_data[2]/10
-            fsm_data[4] = fsm_data[4]/1000
+            fsm_data[0] = fsm_data[0] / 1000
+            fsm_data[1] = fsm_data[1] / 1000
+            fsm_data[2] = fsm_data[2] / 10
+            fsm_data[4] = fsm_data[4] / 1000
 
             for i in range(len(self.label_sb_val)):
                 self.label_sb_val[i].config(text=sb_data[i])
@@ -626,7 +630,7 @@ class MainWindow(Frame):
                     self.label_fsm_val[3].config(text=fsm_data[3])
                 self.label_fsm_val[5].config(text='off')
             else:
-                fsm_data[3] = 128-fsm_data[3]
+                fsm_data[3] = 128 - fsm_data[3]
                 if fsm_data[3] in range(len(flight_phase)):
                     self.label_fsm_val[3].config(text=flight_phase[fsm_data[3]])
                 else:

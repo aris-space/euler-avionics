@@ -14,6 +14,8 @@ import sys
 import glob
 import logging
 from myutils import data_struct, dict_commands
+import csv
+from datetime import datetime
 
 
 def available_ports():
@@ -103,6 +105,10 @@ class SerialConnection:
         self.serialConnection = None
         self.reset_flag = False
 
+        now = datetime.now()
+        dt_string = now.strftime("%d-%m-%Y_%H_%M")
+        self.f_name = dt_string + '_raw.csv'
+
     def start_connection(self):
         """
         Establishes serial connection.
@@ -121,7 +127,7 @@ class SerialConnection:
 
             return True
         except (OSError, serial.SerialException):
-
+            self.serialConnection = None
             self.logger.info("Failed to connect with " + str(self.port) + ' at ' + str(self.baud) + ' BAUD.')
             return False
 
@@ -145,6 +151,11 @@ class SerialConnection:
         """
         self.serialConnection.write(dict_commands.get(command))
         self.logger.info(command+' command was sent.')
+
+    def save_raw_data(self):
+        with open(self.f_name, 'a') as outfile:
+            writer = csv.writer(outfile)
+            writer.writerow(self.rawData)
 
     def verify_checksum(self, data):
         """
@@ -185,20 +196,27 @@ class SerialConnection:
                 print(self.rawData.hex())
                 # print('length', len(self.rawData))
 
+                self.save_raw_data()
+
                 if self.verify_checksum(self.rawData):
                     self.data = struct.unpack(fmt+'b'+'b'+'b', self.rawData)
 
                     data_dict = dict(zip(measurements, self.data))
                     print(data_dict)
                     # print(self.serialConnection.inWaiting())
-                    self.root.update_values(self.data)
+                    self.root.update_values(list(self.data))
+                    self.root.num_packets_good += 1
+                else:
+                    self.root.num_packets_bad += 1
+                self.root.update_rf_frame()
 
-            time.sleep(0.001)
+            time.sleep(0.0009)
 
     def close(self):
         self.isRun = False
         if self.thread is not None:
             self.thread.join()
-        self.serialConnection.close()
+        if self.serialConnection is not None:
+            self.serialConnection.close()
         self.logger.info('Serial connection closed')
 

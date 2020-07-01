@@ -13,6 +13,12 @@ dict_commands = {'airbrake': bytearray([217]*4),
                  'buzzer': bytearray([113]*4),
                  'disable': bytearray([251]*4)}
 
+dict_command_msg = {'airbrake': 'Airbrakes will extend. Make sure travel range is cleared. Do you want to continue?',
+                    'sensor': 'Estimator will be reset. Do you want to continue?',
+                    'frequency': 'High sampling rate will be turned on. Do you want to continue?',
+                    'buzzer': 'Buzzer will be turned on. Do you want to continue?',
+                    'disable': 'Lock will be disabled. Do you want to continue?'}
+
 
 sb_names = ["pressure [Pa]",
             "temp [C]",
@@ -41,6 +47,11 @@ fsm_names = ['altitude [m]',
              'flight phase',
              'timestamp [s]',
              'Buzzer']
+
+rf_names = ['Packets total',
+            'Corrupted packets',
+            'Correct packets',
+            'RSSI']
 
 
 def data_struct():

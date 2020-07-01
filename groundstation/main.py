@@ -7,13 +7,17 @@ Author(s): Imre Kertesz
 from tkinter import Tk
 from GroundStation import GroundStation
 import logging
+from datetime import datetime
 
 if __name__ == '__main__':
 
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
+
+    now = datetime.now()
+    dt_string = now.strftime("%d-%m-%Y_%H_%M")
     # create file handler which logs even debug messages
-    fh = logging.FileHandler('Logs/Groundstation.log')
+    fh = logging.FileHandler('Logs/' + dt_string + '_Groundstation.log')
     fh.setLevel(logging.INFO)
     # create console handler with a higher log level
     ch = logging.StreamHandler()
