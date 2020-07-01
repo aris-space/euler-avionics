@@ -379,7 +379,7 @@ class MainWindow(Frame):
             needs to be one of the following commands:
             sensor, airbrake, frequency
         """
-        if self.s is not None:
+        if self.s.serialConnection is not None:
             answer = messagebox.askquestion('Warning', dict_command_msg.get(command))
             if answer == 'yes':
                 self.s.send(command)
@@ -465,6 +465,8 @@ class MainWindow(Frame):
             self.update_plot = True
             self.update_canvas()
             self.logger.info('Live plot started')
+        else:
+            messagebox.showinfo('Info', 'Data reception needs to be started first.')
 
     def stop_plot(self):
         """
