@@ -21,7 +21,7 @@ void vTaskSensRead(void *argument) {
 	/* For periodic update */
 	uint32_t tick_count, tick_update;
 
-	osDelay(500);
+	osDelay(800);
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();
 	tick_update = osKernelGetTickFreq() / SENSOR_READ_FREQUENCY;
@@ -89,8 +89,8 @@ void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3){
 	checksum = calculate_checksum_sb(sb3);
 	if(checksum == sb3->checksum){
 		if(AcquireMutex(&sb3_mutex) == osOK){
-			sb3_baro = sb2->baro;
-			sb3_imu = sb2->imu;
+			sb3_baro = sb3->baro;
+			sb3_imu = sb3->imu;
 			ReleaseMutex(&sb3_mutex);
 			sb3_imu.acc_z = -sb3_imu.acc_z;
 		}

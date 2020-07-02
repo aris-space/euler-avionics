@@ -68,6 +68,10 @@ void Error_Handler(void);
 #define CURRBAT2_GPIO_Port GPIOB
 #define PW_HOLD_Pin GPIO_PIN_1
 #define PW_HOLD_GPIO_Port GPIOB
+#define CAMERA1_Pin GPIO_PIN_11
+#define CAMERA1_GPIO_Port GPIOE
+#define CAMERA2_Pin GPIO_PIN_12
+#define CAMERA2_GPIO_Port GPIOE
 #define LED3_Pin GPIO_PIN_11
 #define LED3_GPIO_Port GPIOD
 #define LED4_Pin GPIO_PIN_12

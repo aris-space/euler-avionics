@@ -32,7 +32,7 @@ void vTaskGps(void *argument) {
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();
 	tick_update = osKernelGetTickFreq() / GPS_SAMPLE_RATE;
-	osDelay(200);
+	osDelay(600);
 
 	gps_dma_init(&GPS1);
 	gps_dma_init(&GPS2);

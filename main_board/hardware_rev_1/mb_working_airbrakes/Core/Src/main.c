@@ -391,8 +391,6 @@ int main(void)
 	global_flight_phase_detection.mach_regime = SUBSONIC;
 	global_telemetry_command = IDLE_COMMAND;
 
-	global_counter = 0;
-
 
 
 

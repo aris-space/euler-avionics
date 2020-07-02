@@ -16,7 +16,7 @@
 #include "EPOS4/epos4.h"
 
 
-#define MOTOR_TASK_FREQUENCY 20
+#define MOTOR_TASK_FREQUENCY 25
 
 /* extern */
 extern custom_mutex_t controller_mutex;
@@ -24,6 +24,9 @@ extern int32_t controller_output_global;
 
 extern custom_mutex_t command_mutex;
 extern command_e global_telemetry_command;
+
+extern custom_mutex_t motor_mutex;
+extern int32_t global_airbrake_extension;
 
 extern custom_mutex_t fsm_mutex;
 extern flight_phase_detection_t global_flight_phase_detection;

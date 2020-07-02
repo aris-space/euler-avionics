@@ -28,7 +28,7 @@ void vTaskFSM(void *argument) {
 	/* Telemetry Command */
 	command_e telemetry_command = IDLE_COMMAND;
 
-	osDelay(700);
+	osDelay(1000);
 
 
 	/* Infinite loop */

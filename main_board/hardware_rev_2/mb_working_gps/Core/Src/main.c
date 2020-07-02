@@ -240,6 +240,10 @@ gps_data_t globalGPS;
 osMutexId_t gps_mutex_only;
 custom_mutex_t gps_mutex;
 
+/* Motor Controller */
+osMutexId_t motor_mutex_only;
+custom_mutex_t motor_mutex;
+
 /* Battery */
 osMutexId_t battery_mutex_only;
 telemetry_battery_data_t global_battery_data;
@@ -248,6 +252,7 @@ custom_mutex_t battery_mutex;
 /* Telemetry Command */
 osMutexId_t command_mutex_only;
 custom_mutex_t command_mutex;
+int32_t global_airbrake_extension;
 
 /* USB debugging */
 osMutexId_t usb_data_mutex_only;
@@ -453,6 +458,16 @@ int main(void)
 
 	battery_mutex_only = osMutexNew(&battery_mutex_attr);
 
+	/* Motor Mutex */
+	const osMutexAttr_t motor_mutex_attr = {
+			"motor_mutex_only",                              // human readable mutex name
+			osMutexPrioInherit,    					 // attr_bits
+			NULL,                                     // memory for control block
+			0U                                        // size for control block
+	};
+
+	motor_mutex_only = osMutexNew(&motor_mutex_attr);
+
 
 	/** Initialise Mutexes **/
 
@@ -467,6 +482,7 @@ int main(void)
 	command_mutex.mutex = command_mutex_only;
 	gps_mutex.mutex = gps_mutex_only;
 	battery_mutex.mutex = battery_mutex_only;
+	motor_mutex.mutex = motor_mutex_only;
 
 	global_flight_phase_detection.flight_phase = IDLE;
 	global_flight_phase_detection.mach_regime = SUBSONIC;
@@ -1077,6 +1093,9 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(PW_HOLD_GPIO_Port, PW_HOLD_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOE, CAMERA1_Pin|CAMERA2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, LED3_Pin|LED4_Pin|BUZZER_Pin|LED1_Pin 
                           |LED2_Pin, GPIO_PIN_RESET);
 
@@ -1092,6 +1111,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(PW_HOLD_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : CAMERA1_Pin CAMERA2_Pin */
+  GPIO_InitStruct.Pin = CAMERA1_Pin|CAMERA2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LED3_Pin LED4_Pin BUZZER_Pin LED1_Pin 
                            LED2_Pin */

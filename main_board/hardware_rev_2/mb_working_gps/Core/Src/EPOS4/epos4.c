@@ -295,7 +295,7 @@ osStatus_t WriteCommand(uint8_t *command, uint8_t *data, uint8_t *rx_buffer){
 
 	HAL_UART_DMAResume(&huart4);
 	HAL_UART_Receive_DMA(&huart4, dma_buffer, 20);
-	osDelay(3);
+	osDelay(5);
 	HAL_UART_DMAStop(&huart4);
 	memcpy(rx_buffer, dma_buffer, 20);
 
@@ -339,7 +339,7 @@ osStatus_t ReadCommand(uint8_t *command, uint8_t *rx_buffer){
 
 	HAL_UART_DMAResume(&huart4);
 	HAL_UART_Receive_DMA(&huart4, dma_buffer, 20);
-	osDelay(3);
+	osDelay(5);
 	HAL_UART_DMAStop(&huart4);
 	memcpy(rx_buffer, dma_buffer, 20);
 

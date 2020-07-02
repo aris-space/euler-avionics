@@ -21,17 +21,20 @@
 #define XBEE_SAMPLING_FREQ 10
 
 #define XBEE_SAMPLING_FREQ_HIGH 100
+#define CAMERA_ON 3500
+#define CAMERA_WAIT 1000
+#define CAMERA_TRIGGER 200
 
 /* extern */
 
 /* Mutexes */
 extern custom_mutex_t fsm_mutex;
 extern custom_mutex_t state_est_mutex;
-extern custom_mutex_t controller_mutex;
+extern custom_mutex_t command_mutex;
 extern custom_mutex_t sb1_mutex;
 extern custom_mutex_t sb2_mutex;
 extern custom_mutex_t sb3_mutex;
-extern custom_mutex_t command_mutex;
+extern custom_mutex_t motor_mutex;
 extern custom_mutex_t battery_mutex;
 extern custom_mutex_t gps_mutex;
 
@@ -43,7 +46,7 @@ extern imu_data_t sb2_imu;
 extern baro_data_t sb3_baro;
 extern imu_data_t sb3_imu;
 extern state_est_data_t state_est_data_global;
-extern int32_t controller_output_global;
+extern int32_t global_airbrake_extension;
 extern flight_phase_detection_t global_flight_phase_detection;
 extern command_e global_telemetry_command;
 extern gps_data_t globalGPS;

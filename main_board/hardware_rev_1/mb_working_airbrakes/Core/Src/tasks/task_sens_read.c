@@ -6,6 +6,7 @@
  */
 
 #include "tasks/task_sens_read.h"
+#include <math.h>
 
 void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3);
 void ReadDataUSB();
@@ -25,6 +26,12 @@ void vTaskSensRead(void *argument) {
 	tick_count = osKernelGetTickCount();
 	tick_update = osKernelGetTickFreq() / SENSOR_READ_FREQUENCY;
 	uint8_t checksum = 0;
+
+	double big_number = 0.000000000000000000000000000061801682552972095845366322049357827036856204828349992874449552802384396000970681606112577811;
+	double velocity = 1400;
+	double result = 0;
+
+	result = big_number*pow(velocity,30);
 
 
 

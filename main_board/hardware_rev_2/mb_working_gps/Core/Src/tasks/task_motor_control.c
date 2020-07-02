@@ -32,7 +32,7 @@ void vTaskMotorCont(void *argument) {
 	int32_t PPM_acceleration = 100000;
 	int32_t PPM_deceleration = 100000;
 
-	osDelay(2000);
+	osDelay(3000);
 
 
 	/* Controller Variables */
@@ -83,8 +83,8 @@ void vTaskMotorCont(void *argument) {
 		desired_motor_position = (int32_t)(((float)controller_actuation)/1000*(-150));
 
 		/* Check Bounds */
-		if(desired_motor_position > -2){
-			desired_motor_position = -2;
+		if(desired_motor_position > 2){
+			desired_motor_position = 2;
 		}
 
 		if(desired_motor_position < -150){
@@ -99,7 +99,7 @@ void vTaskMotorCont(void *argument) {
 			motor_status = MoveToPositionPPM(desired_motor_position);
 		}
 		else{
-			motor_status = MoveToPositionPPM(0);
+			motor_status = MoveToPositionPPM(2);
 		}
 
 		/* Airbrake Test if telemetry command is given and we are in idle state */
@@ -119,6 +119,12 @@ void vTaskMotorCont(void *argument) {
 			EnableMotor();
 		}
 
+		/* Write To global airbrake extension */
+		if(AcquireMutex(&motor_mutex) == osOK){
+			global_airbrake_extension = measured_motor_position;
+			ReleaseMutex(&motor_mutex);
+		}
+
 
 		osDelayUntil(tick_count);
 	}
@@ -126,8 +132,8 @@ void vTaskMotorCont(void *argument) {
 
 void testairbrakes(int32_t position){
 	MoveToPositionPPM(position);
-	osDelay(1000);
-	MoveToPositionPPM(0);
+	osDelay(100);
+	MoveToPositionPPM(2);
 }
 
 

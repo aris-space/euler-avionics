@@ -15,6 +15,8 @@ bool new_command = false;
 bool buzzer_on_fsm = false;
 bool buzzer_on_telemetry = false;
 
+int uart_counter = 0;
+
 
 uint8_t calculate_checksum(telemetry_t *cnf);
 
@@ -38,8 +40,15 @@ void vTaskXbee(void *argument) {
 
 	uint8_t buzzercounter = 0;
 
-	osDelay(400);
+	osDelay(700);
 	HAL_GPIO_WritePin(PW_HOLD_GPIO_Port, PW_HOLD_Pin, GPIO_PIN_SET);
+
+	/* Camera Variables */
+	uint32_t camera_counter = 0;
+	bool camera_enabled = false;
+	bool camera_wait = false;
+	bool camera_trigger = false;
+	bool camera_ready = false;
 
 
 	/* Infinite loop */
@@ -109,6 +118,37 @@ void vTaskXbee(void *argument) {
 			new_command = false;
 		}
 
+		/* Start Enable Camera Sequence */
+		if((local_command == ENABLE_CAMERA) && !camera_enabled){
+			camera_enabled = true;
+			HAL_GPIO_WritePin(CAMERA1_GPIO_Port, CAMERA1_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(CAMERA2_GPIO_Port, CAMERA2_Pin, GPIO_PIN_SET);
+			camera_counter = osKernelGetTickCount() + CAMERA_ON;
+		}
+
+		if((camera_counter > osKernelGetTickCount()) && !camera_wait){
+			camera_wait = true;
+			HAL_GPIO_WritePin(CAMERA1_GPIO_Port, CAMERA1_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(CAMERA2_GPIO_Port, CAMERA2_Pin, GPIO_PIN_RESET);
+			camera_counter = osKernelGetTickCount() + CAMERA_WAIT;
+		}
+
+		if((camera_counter > osKernelGetTickCount()) && !camera_trigger){
+			camera_trigger = true;
+			HAL_GPIO_WritePin(CAMERA1_GPIO_Port, CAMERA1_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(CAMERA2_GPIO_Port, CAMERA2_Pin, GPIO_PIN_SET);
+			camera_counter = osKernelGetTickCount() + CAMERA_TRIGGER;
+		}
+
+		if((camera_counter > osKernelGetTickCount()) && !camera_ready){
+			camera_ready = true;
+			HAL_GPIO_WritePin(CAMERA1_GPIO_Port, CAMERA1_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(CAMERA2_GPIO_Port, CAMERA2_Pin, GPIO_PIN_RESET);
+		}
+
+		/* Camera first enable for some time, then turn off and finally turn on again */
+
+
 		/* Enable Buzzer */
 		if(buzzer_on_fsm ^ buzzer_on_telemetry){
 			if(fast_sampling){
@@ -124,7 +164,7 @@ void vTaskXbee(void *argument) {
 				}
 			}
 		}
-		else{
+		else if(osKernelGetTickCount() > 5000){
 			HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
 		}
 		buzzercounter++;
@@ -146,7 +186,7 @@ void vTaskXbee(void *argument) {
 		/* Read Control Data*/
 		ReadMutex(&state_est_mutex, &state_est_data_global, &state_est_data, sizeof(state_est_data));
 
-		ReadMutex(&controller_mutex, &controller_output_global, &telemetry_send.airbrake_extension, sizeof(controller_output_global));
+		ReadMutex(&motor_mutex, &global_airbrake_extension, &telemetry_send.airbrake_extension, sizeof(global_airbrake_extension));
 
 		ReadMutex(&fsm_mutex, &global_flight_phase_detection.flight_phase, &telemetry_send.flight_phase, sizeof(global_flight_phase_detection.flight_phase));
 
@@ -171,6 +211,7 @@ void vTaskXbee(void *argument) {
 
 		telemetry_send.checksum = 0;
 
+		uart_counter = 0;
 		/* Sleep */
 		osDelayUntil(tick_count);
 	}
@@ -178,14 +219,14 @@ void vTaskXbee(void *argument) {
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	if(huart==&huart7){
-		static int counter = 0;
+
 		static uint8_t buffer [4];
-		buffer[counter] = local_command_rx;
-		counter++;
-		if(counter == 4){
+		buffer[uart_counter] = local_command_rx;
+		uart_counter++;
+		if(uart_counter == 4){
 			uint8_t succesful = 1;
 			for (int i = 1; i < 4; i++) if (buffer[0] != buffer[i]) succesful = 0;
-			counter = 0;
+			uart_counter = 0;
 			if (succesful) {
 				new_command = true;
 				local_command = local_command_rx;
