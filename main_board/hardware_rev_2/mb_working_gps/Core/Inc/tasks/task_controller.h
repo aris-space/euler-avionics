@@ -15,8 +15,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include "Util/util.h"
-#include "Util/mutex.h"
+#include <Util/util.h>
 #include "Sim_Con/controller.h"
 
 /* Constants */
@@ -28,9 +27,9 @@
 /* Commands */
 
 /* Extern */
-extern custom_mutex_t controller_mutex;
-extern custom_mutex_t state_est_mutex;
-extern custom_mutex_t fsm_mutex;
+extern osMutexId_t controller_mutex;
+extern osMutexId_t state_est_mutex;
+extern osMutexId_t fsm_mutex;
 extern state_est_data_t state_est_data_global;
 extern int32_t controller_output_global;
 extern flight_phase_detection_t global_flight_phase_detection;

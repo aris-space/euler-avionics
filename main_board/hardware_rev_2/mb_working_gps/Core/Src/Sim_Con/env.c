@@ -2,7 +2,7 @@
 
 void init_env(env_t *env) {
 	/* init constants */
-	calibrate_env(env, PRESSURE_REFERENCE, TEMPERATURE_REFERENCE);
+	calibrate_env(env, TEMPERATURE_REFERENCE, PRESSURE_REFERENCE);
 	update_env(env, TEMPERATURE_REFERENCE);
 }
 

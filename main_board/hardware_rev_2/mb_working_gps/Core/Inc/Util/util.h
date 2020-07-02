@@ -20,15 +20,6 @@ typedef uint8_t board_id_t;
 
 /** ENUMS **/
 
-typedef enum {
-	IDLE_COMMAND = 155, CALIBRATE_SENSORS = 73, AIRBRAKE_TEST_COMMAND = 217, TELEMETRY_HIGH_SAMPLING = 13,
-	TELEMETRY_LOW_SAMPLING = 197, ENABLE_BUZZER = 113, DISABLE_SELF_HOLD = 251, ENABLE_CAMERA = 2
-} command_e;
-
-typedef struct {
-	command_e command[4];
-} command_xbee_t;
-
 /* Rocket state */
 typedef enum {
 	IDLE = 1, AIRBRAKE_TEST, THRUSTING, COASTING, DESCENT, RECOVERY
@@ -41,7 +32,7 @@ typedef enum {
 
 /* Sensor type */
 typedef enum {
-	BARO = 1, IMU, GPS, BATTERY
+	BARO = 1, IMU, GPS
 } sensor_type_e;
 
 /* Log entry */
@@ -73,30 +64,10 @@ typedef struct {
 } sb_data_t;
 
 /* GPS data */
-typedef struct  {
-	uint32_t hour;
-	uint32_t minute;
-	uint32_t second;
-	uint8_t satellite;
-	uint8_t lat_deg;
-	uint32_t lat_decimal;
-	uint8_t lon_deg;
-	uint32_t lon_decimal;
-	uint8_t fix;
-	uint16_t HDOP;
-	uint16_t altitude;
+typedef struct {
+	/* add more */
+	timestamp_t ts;
 } gps_data_t;
-
-/* Battery Data */
-typedef struct  {
-	uint16_t supply;
-	uint16_t battery;
-	uint16_t current;
-	uint16_t consumption;
-	uint16_t power;
-} battery_data_t;
-
-/** CONTROL DATA TYPES **/
 
 /* State Estimation Output */
 typedef struct {
@@ -115,44 +86,12 @@ typedef struct {
 	int8_t num_samples_positive;
 } flight_phase_detection_t;
 
-/** XBEE SUPER STRUCT **/
 
-/* Battery Data */
-typedef struct  {
-	uint16_t battery;
-	uint16_t current;
-	uint16_t consumption;
-} telemetry_battery_data_t;
-
-/* SB Data */
-typedef struct {
-	int32_t pressure;
-	int32_t temperature;
-	int16_t gyro_x,gyro_y,gyro_z;
-	int16_t acc_x,acc_y,acc_z;
-} telemetry_sb_data_t;
-
-typedef struct {
-	uint8_t startbyte;
-	telemetry_sb_data_t sb_data;
-	telemetry_battery_data_t battery;
-	gps_data_t gps;
-	int32_t height;
-	int32_t velocity;
-	int32_t airbrake_extension;
-	flight_phase_e flight_phase;
-	timestamp_t ts;
-	uint8_t checksum;
-} telemetry_t;
 
 /* Sensor Board Mutexes */
-typedef struct{
-	osMutexId_t mutex;
-	uint32_t counter;
-} custom_mutex_t;
-
-
-static const command_xbee_t IDLE_XBEE_DATA = {{ IDLE_COMMAND, IDLE_COMMAND, IDLE_COMMAND, IDLE_COMMAND }};
+osMutexId_t sb1_mutex;
+osMutexId_t sb2_mutex;
+osMutexId_t sb3_mutex;
 
 static const imu_data_t EMPTY_IMU = { 0 };
 
@@ -169,17 +108,13 @@ typedef struct {
 
 osStatus_t logSensor(timestamp_t ts, board_id_t sensor_board_id,
 		sensor_type_e sens_type, void *sensor_data);
-osStatus_t logRocketState(timestamp_t ts, flight_phase_detection_t flight_phase_detection);
+osStatus_t logRocketState(timestamp_t ts, flight_phase_e flight_phase);
 /* TODO [nstojosk] - this signature & implementation should be adjusted */
 osStatus_t logEstimatorVar(timestamp_t ts, state_est_data_t estimator_data);
 osStatus_t logControllerOutput(timestamp_t ts, int32_t controller_output, int32_t reference_error,
 		int32_t integrated_error);
 osStatus_t logMotor(timestamp_t ts, int32_t desired_position, int32_t actual_position);
 osStatus_t logMsg(timestamp_t ts, char *msg);
-
-/* USB Fake data insert */
-
-#define USB_DATA_ENABLE 0
 
 
 /** USB DEBUGGING **/
@@ -189,7 +124,7 @@ osStatus_t logMsg(timestamp_t ts, char *msg);
 #undef DEBUG
 #endif
 /* Comment the next line in order to disable debug mode */
-//#define DEBUG
+#define DEBUG
 
 #ifdef DEBUG
 osMutexId_t print_mutex;

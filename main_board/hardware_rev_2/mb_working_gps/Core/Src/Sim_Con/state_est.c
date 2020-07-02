@@ -1,5 +1,5 @@
-#include "Sim_Con\state_est.h"
-
+#include "Sim_Con/state_est.h"
+#include "Sim_Con/state_est_settings.h"
 
 void update_state_est_data(state_est_data_t *state_est_data, kf_state_t *kf_state) {
     state_est_data->position_world[2] = (int32_t)(kf_state->x_est[0] * 1000);
@@ -61,19 +61,17 @@ void process_measurements(timestamp_t t, kf_state_t *kf_state, state_est_meas_t 
     /* update num_z_active */
     kf_state->num_z_active = 0;
     /* take the average of the active accelerometers in rocket-x dir as the state estimation input */
-    float u = 0;
-    int num_acc_x_meas_active = 0;
-
+    kf_state->u[0] = 0;
+    int32_t num_acc_x_meas_active = 0;
     /* take the average of the temperature measurement  */
     float temp_meas_mean = 0;
-    int num_temp_meas_active = 0;
-
+    int32_t num_temp_meas_active = 0;
     for (int i = 0; i < NUMBER_MEASUREMENTS; i++){
         if (kf_state->z_active[i]){
             kf_state->num_z_active += 1;
         }
         if (acc_x_meas_active[i]) {
-            u += acc_x_meas[i];
+            kf_state->u[0] += acc_x_meas[i];
             num_acc_x_meas_active += 1;
         }
         if (temp_meas[i]) {
@@ -84,13 +82,11 @@ void process_measurements(timestamp_t t, kf_state_t *kf_state, state_est_meas_t 
 
     pressure2altitudeAGL(env, NUMBER_MEASUREMENTS, kf_state->z, kf_state->z_active, kf_state->z);
 
-    /* we take the old acceleration from the previous timestep, if no acceleration measurements are active */
     if (num_acc_x_meas_active > 0){
-        u /= num_acc_x_meas_active;
+        kf_state->u[0] /= num_acc_x_meas_active;
         /* gravity compensation for accelerometer */
-        kf_state->u[0] = u - GRAVITATION;
+        kf_state->u[0] -= GRAVITATION;
     }
-
     if (num_temp_meas_active > 0){
         temp_meas_mean /= num_temp_meas_active;
         update_env(env, temp_meas_mean);
@@ -144,7 +140,7 @@ void select_noise_models(kf_state_t *kf_state, flight_phase_detection_t *flight_
 
 void sensor_elimination_by_stdev(int32_t n, float measurements[n], bool measurement_active[n]) {
     /* calculate mean of the sample */
-    int num_active = 0;
+    int32_t num_active = 0;
     float mean = 0;
     for (int i = 0; i < n; i++){
         if (measurement_active[i]) {
@@ -202,9 +198,8 @@ void sensor_elimination_by_extrapolation(timestamp_t t, int32_t n, float measure
             }
         }
     }
-    else {}
 
-    int num_active = 0;
+    int32_t num_active = 0;
     for (int i = 0; i < n; ++i) {
         if (measurement_active[i]) {
             num_active += 1;

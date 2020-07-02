@@ -68,25 +68,3 @@ uint8_t gps_read_sensor (struct gps_device *dev){
 
 	return _parse_data(dev, gps_gga[dev->id]);
 }
-
-
-void gps_reset(struct gps_device *dev){
-
-	dev->data.hour = 0;
-	dev->data.minute = 0;
-	dev->data.second = 0;
-
-	dev->data.lat_deg = 0;
-	dev->data.lat_decimal = 0;
-
-	dev->data.lon_deg = 0;
-	dev->data.lon_decimal = 0;
-
-	dev->data.fix = 0;
-
-	dev->data.satellite = 0;
-
-	dev->data.HDOP = 0;
-
-	dev->data.altitude= 0;
-}

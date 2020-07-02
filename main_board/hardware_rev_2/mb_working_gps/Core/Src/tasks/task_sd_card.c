@@ -88,131 +88,107 @@ uint8_t transformFRESULT(FRESULT res) {
 }
 
 void vTaskSdCard(void *argument) {
-	// Try everything forever;
+	FRESULT res;
+	char EULER_LOG_FILE_NAME[13] = "";
+	UsbPrint("[STORAGE TASK] Starting SD Card Task..\n");
+
+	resetSDCard: UsbPrint("[STORAGE TASK] Mounting SD card\n");
+	do {
+		res = f_mount(&EULER_FatFS, "", 1);
+		if (res != FR_OK) {
+			//UsbPrint("[STORAGE TASK] Failed mounting SD card: %d\n", res);
+			// force sd card to be reinitialized
+			disk.is_initialized[0] = 0;
+			osDelay(100);
+		}
+	} while (res != FR_OK);
+
+	if (!EULER_LOG_FILE_NAME[0]) {
+		UsbPrint("[STORAGE TASK] Creating file name\n");
+
+		unsigned int file_number = 1;
+
+		DIR dj;
+		FILINFO fno;
+		res = f_findfirst(&dj, &fno, "", "LOG_???.CSV");
+		while (res == FR_OK && fno.fname[0]) {
+			unsigned int current_file_number = (fno.fname[4] - '0') * 100
+					+ (fno.fname[5] - '0') * 10 + (fno.fname[6] - '0');
+			if (current_file_number + 1 > file_number) {
+				file_number = current_file_number + 1;
+			}
+			res = f_findnext(&dj, &fno);
+		}
+		if (res != FR_OK) {
+			UsbPrint("[STORAGE TASK] Failed finding first or next file: %d\n",
+					res);
+			goto resetSDCard;
+		}
+
+		strcpy(EULER_LOG_FILE_NAME, "LOG_000.CSV");
+		EULER_LOG_FILE_NAME[6] = '0' + file_number % 10;
+		EULER_LOG_FILE_NAME[5] = '0' + (file_number / 10) % 10;
+		EULER_LOG_FILE_NAME[4] = '0' + (file_number / 100) % 10;
+
+		UsbPrint("[STORAGE TASK] Using file name: %s\n", EULER_LOG_FILE_NAME);
+
+		res = f_closedir(&dj);
+		if (res != FR_OK) {
+			UsbPrint("[STORAGE TASK] Failed closing directory: %d\n", res);
+			goto resetSDCard;
+		}
+	}
+
+	UsbPrint("[STORAGE TASK] Opening log file\n");
+	res = f_open(&EULER_LOG_FILE, EULER_LOG_FILE_NAME,
+	FA_OPEN_ALWAYS | FA_WRITE);
+	if (res != FR_OK) {
+		UsbPrint("[STORAGE TASK] Failed opening log file: %d\n", res);
+		goto resetSDCard;
+	}
+
+	UsbPrint("[STORAGE TASK] Going to end of file\n");
+	res = f_lseek(&EULER_LOG_FILE, f_size(&EULER_LOG_FILE));
+	if (res != FR_OK) {
+		UsbPrint("[STORAGE TASK] Failed going to end of file: %d\n", res);
+		goto resetSDCard;
+	}
+
+	volatile int32_t msgCounter = 0;
+	char log_header[32] = "Timestamp;Log Entry Type;Data\n";
+	uint32_t num_bytes = 0;
+	res = f_write(&EULER_LOG_FILE, log_header, strlen(log_header),
+			&EULER_bytesSD);
+	if (res != FR_OK) {
+		UsbPrint("[STORAGE TASK] Failed writing to file: %d\n", res);
+		goto resetSDCard;
+	}
+	log_entry_t log_entry = { 0 };
 	for (;;) {
-		osDelay(100);
-		flight_phase_detection_t local_flight_phase;
-		FRESULT res;
-		char EULER_LOG_FILE_NAME[13] = "";
-		UsbPrint("[STORAGE TASK] Starting SD Card Task..\n");
-		local_flight_phase.flight_phase = IDLE;
-		resetSDCard: //UsbPrint("[STORAGE TASK] Mounting SD card\n");
-		do {
-			EULER_LOG_FILE_NAME[0] = 0;
-			res = f_mount(&EULER_FatFS, "", 1);
-			if (res != FR_OK) {
-				UsbPrint("[STORAGE TASK] Failed mounting SD card: %d\n", res);
-				// force sd card to be reinitialized
-				disk.is_initialized[0] = 0;
-				HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
-				osDelay(10);
-			}
-		} while (res != FR_OK);
-
-		logToNewFile: if (!EULER_LOG_FILE_NAME[0]) {
-			UsbPrint("[STORAGE TASK] Creating file name\n");
-
-			unsigned int file_number = 1;
-
-			DIR dj;
-			FILINFO fno;
-			res = f_findfirst(&dj, &fno, "", "LOG_???.CSV");
-			while (res == FR_OK && fno.fname[0]) {
-				unsigned int current_file_number = (fno.fname[4] - '0') * 100
-						+ (fno.fname[5] - '0') * 10 + (fno.fname[6] - '0');
-				if (current_file_number + 1 > file_number) {
-					file_number = current_file_number + 1;
+		if (osMessageQueueGet(log_queue, &log_entry, NULL,
+		osWaitForever) == osOK) {
+			num_bytes = strlen(log_entry.str);
+			if (num_bytes > 0) {
+				res = f_write(&EULER_LOG_FILE, log_entry.str, num_bytes,
+						&EULER_bytesSD);
+				if (res != FR_OK) {
+					UsbPrint("[STORAGE TASK] Failed writing to file: %d\n",
+							res);
+					goto resetSDCard;
 				}
-				res = f_findnext(&dj, &fno);
-			}
-			if (res != FR_OK) {
-				UsbPrint(
-						"[STORAGE TASK] Failed finding first or next file: %d\n",
-						res);
-				goto resetSDCard;
 			}
 
-			strcpy(EULER_LOG_FILE_NAME, "LOG_000.CSV");
-			EULER_LOG_FILE_NAME[6] = '0' + file_number % 10;
-			EULER_LOG_FILE_NAME[5] = '0' + (file_number / 10) % 10;
-			EULER_LOG_FILE_NAME[4] = '0' + (file_number / 100) % 10;
+			msgCounter++;
 
-			UsbPrint("[STORAGE TASK] Using file name: %s\n",
-					EULER_LOG_FILE_NAME);
+			if (msgCounter >= SYNC_AFTER_COUNT) {
+				msgCounter = 0;
 
-			res = f_closedir(&dj);
-			if (res != FR_OK) {
-				UsbPrint("[STORAGE TASK] Failed closing directory: %d\n", res);
-				goto resetSDCard;
-			}
-		}
-
-		UsbPrint("[STORAGE TASK] Opening log file\n");
-		res = f_open(&EULER_LOG_FILE, EULER_LOG_FILE_NAME,
-		FA_OPEN_ALWAYS | FA_WRITE);
-		if (res != FR_OK) {
-			UsbPrint("[STORAGE TASK] Failed opening log file: %d\n", res);
-			goto resetSDCard;
-		}
-
-		UsbPrint("[STORAGE TASK] Going to end of file\n");
-		res = f_lseek(&EULER_LOG_FILE, f_size(&EULER_LOG_FILE));
-		if (res != FR_OK) {
-			UsbPrint("[STORAGE TASK] Failed going to end of file: %d\n", res);
-			goto resetSDCard;
-		}
-
-		volatile int32_t msgCounter = 0;
-		char log_header[32] = "Timestamp;Log Entry Type;Data\n";
-		uint32_t num_bytes = 0;
-		res = f_write(&EULER_LOG_FILE, log_header, strlen(log_header),
-				&EULER_bytesSD);
-		if (res != FR_OK) {
-			UsbPrint("[STORAGE TASK] Failed writing to file: %d\n", res);
-			goto resetSDCard;
-		}
-		log_entry_t log_entry = { 0 };
-		HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
-		for (;;) {
-			if (osMessageQueueGet(log_queue, &log_entry, NULL,
-			osWaitForever) == osOK) {
-				num_bytes = strlen(log_entry.str);
-				if (num_bytes > 0) {
-					res = f_write(&EULER_LOG_FILE, log_entry.str, num_bytes,
-							&EULER_bytesSD);
-					if (res != FR_OK) {
-						UsbPrint("[STORAGE TASK] Failed writing to file: %d\n",
-								res);
-						goto resetSDCard;
-					}
-				}
-
-				msgCounter++;
-
-				if (msgCounter >= SYNC_AFTER_COUNT) {
-					msgCounter = 0;
-
-					UsbPrint("[STORAGE TASK] Syncing file..\n");
-					HAL_GPIO_TogglePin(LED4_GPIO_Port, LED4_Pin);
-					res = f_sync(&EULER_LOG_FILE);
-					if (res != FR_OK) {
-						UsbPrint("[STORAGE TASK] Failed syncing file: %d\n",
-								res);
-						goto resetSDCard;
-					}
-
-					;
-
-					// if the rocket landed, create a new file and write to that one
-					if (ReadMutex(&fsm_mutex, &global_flight_phase_detection,
-							&local_flight_phase,
-							sizeof(global_flight_phase_detection)) == osOK
-							&& local_flight_phase.flight_phase == RECOVERY) {
-						f_close(&EULER_LOG_FILE);
-						// "clean" current file name
-						EULER_LOG_FILE_NAME[0] = 0;
-						goto logToNewFile;
-					}
+				UsbPrint("[STORAGE TASK] Syncing file..\n");
+				HAL_GPIO_TogglePin(LED4_GPIO_Port, LED4_Pin);
+				res = f_sync(&EULER_LOG_FILE);
+				if (res != FR_OK) {
+					UsbPrint("[STORAGE TASK] Failed syncing file: %d\n", res);
+					goto resetSDCard;
 				}
 			}
 		}
