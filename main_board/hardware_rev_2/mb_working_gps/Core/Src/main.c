@@ -32,6 +32,9 @@
 #include "tasks/task_motor_control.h"
 #include "tasks/task_fsm.h"
 #include "tasks/task_gps.h"
+#include "tasks/task_battery.h"
+#include "tasks/task_sd_card.h"
+#include "tasks/task_xbee.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -60,12 +63,16 @@ DMA_HandleTypeDef hdma_sdmmc1_tx;
 SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi2;
 SPI_HandleTypeDef hspi3;
+DMA_HandleTypeDef hdma_spi1_rx;
+DMA_HandleTypeDef hdma_spi2_rx;
+DMA_HandleTypeDef hdma_spi3_rx;
 
 UART_HandleTypeDef huart4;
 UART_HandleTypeDef huart7;
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
+DMA_HandleTypeDef hdma_uart4_rx;
 DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart2_rx;
 DMA_HandleTypeDef hdma_usart3_rx;
@@ -137,16 +144,16 @@ const osThreadAttr_t task_motor_cont_attributes = {
   .cb_size = sizeof(task_motor_contControlBlock),
   .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for tas_fsm */
-osThreadId_t tas_fsmHandle;
-uint32_t tas_fsmBuffer[ 2048 ];
-osStaticThreadDef_t tas_fsmControlBlock;
-const osThreadAttr_t tas_fsm_attributes = {
-  .name = "tas_fsm",
-  .stack_mem = &tas_fsmBuffer[0],
-  .stack_size = sizeof(tas_fsmBuffer),
-  .cb_mem = &tas_fsmControlBlock,
-  .cb_size = sizeof(tas_fsmControlBlock),
+/* Definitions for task_fsm */
+osThreadId_t task_fsmHandle;
+uint32_t task_fsmBuffer[ 2048 ];
+osStaticThreadDef_t task_fsmControlBlock;
+const osThreadAttr_t task_fsm_attributes = {
+  .name = "task_fsm",
+  .stack_mem = &task_fsmBuffer[0],
+  .stack_size = sizeof(task_fsmBuffer),
+  .cb_mem = &task_fsmControlBlock,
+  .cb_size = sizeof(task_fsmControlBlock),
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for task_gps */
@@ -171,23 +178,88 @@ const osThreadAttr_t task_battery_attributes = {
   .stack_size = sizeof(task_batteryBuffer),
   .cb_mem = &task_batteryControlBlock,
   .cb_size = sizeof(task_batteryControlBlock),
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for task_xbee */
+osThreadId_t task_xbeeHandle;
+uint32_t task_xbeeBuffer[ 2048 ];
+osStaticThreadDef_t task_xbeeControlBlock;
+const osThreadAttr_t task_xbee_attributes = {
+  .name = "task_xbee",
+  .stack_mem = &task_xbeeBuffer[0],
+  .stack_size = sizeof(task_xbeeBuffer),
+  .cb_mem = &task_xbeeControlBlock,
+  .cb_size = sizeof(task_xbeeControlBlock),
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
+/** SENSOR BOARD VARIABLES **/
+
 baro_data_t sb1_baro = { 0 };
 imu_data_t sb1_imu = { 0 };
 baro_data_t sb2_baro = { 0 };
 imu_data_t sb2_imu = { 0 };
 baro_data_t sb3_baro = { 0 };
 imu_data_t sb3_imu = { 0 };
+
+/** CONTROL VARIABLES **/
+
 state_est_data_t state_est_data_global = { 0 };
 int32_t controller_output_global = 0;
 env_t global_env = { 0 };
 flight_phase_detection_t global_flight_phase_detection = { 0 };
-osMutexId_t environment_mutex;
-osMutexId_t fsm_mutex;
-osMutexId_t state_est_mutex;
-osMutexId_t controller_mutex;
+
+/** TELEMETRY COMMAND **/
+command_e global_telemetry_command;
+
+/** MUTEXES **/
+
+/* Sensor Board */
+osMutexId_t sb1_mutex_only;
+custom_mutex_t sb1_mutex;
+osMutexId_t sb2_mutex_only;
+custom_mutex_t sb2_mutex;
+osMutexId_t sb3_mutex_only;
+custom_mutex_t sb3_mutex;
+
+/* Control */
+osMutexId_t environment_mutex_only;
+custom_mutex_t env_mutex;
+osMutexId_t state_est_mutex_only;
+custom_mutex_t state_est_mutex;
+osMutexId_t controller_mutex_only;
+custom_mutex_t controller_mutex;
+
+/* FSM */
+osMutexId_t fsm_mutex_only;
+custom_mutex_t fsm_mutex;
+
+/* GPS */
+gps_data_t globalGPS;
+
+osMutexId_t gps_mutex_only;
+custom_mutex_t gps_mutex;
+
+/* Motor Controller */
+osMutexId_t motor_mutex_only;
+custom_mutex_t motor_mutex;
+
+/* Battery */
+osMutexId_t battery_mutex_only;
+telemetry_battery_data_t global_battery_data;
+custom_mutex_t battery_mutex;
+
+/* Telemetry Command */
+osMutexId_t command_mutex_only;
+custom_mutex_t command_mutex;
+int32_t global_airbrake_extension;
+
+/* USB debugging */
+osMutexId_t usb_data_mutex_only;
+custom_mutex_t usb_data_mutex;
+char usb_data_buffer[256] = { 0 };
+
+/** Logging Queue **/
 osMessageQueueId_t log_queue;
 /* USER CODE END PV */
 
@@ -214,6 +286,7 @@ extern void vTaskMotorCont(void *argument);
 extern void vTaskFSM(void *argument);
 extern void vTaskGps(void *argument);
 extern void vTaskBattery(void *argument);
+extern void vTaskXbee(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -277,73 +350,144 @@ int main(void)
   /* USER CODE BEGIN RTOS_MUTEX */
 	/* Sensor Board 1 Mutex */
 	const osMutexAttr_t sb1_mutex_attr = {
-			"sb1_mutex",                              // human readable mutex name
+			"sb1_mutex_only",                              // human readable mutex name
 			osMutexPrioInherit,                       // attr_bits
 			NULL,                                     // memory for control block
 			0U                                        // size for control block
 	};
 
-	sb1_mutex = osMutexNew(&sb1_mutex_attr);
+	sb1_mutex_only = osMutexNew(&sb1_mutex_attr);
 
 	/* Sensor Board 2 Mutex */
 	const osMutexAttr_t sb2_mutex_attr = {
-			"sb2_mutex",                              // human readable mutex name
+			"sb2_mutex_only",                              // human readable mutex name
 			osMutexPrioInherit,                       // attr_bits
 			NULL,                                     // memory for control block
 			0U                                        // size for control block
 	};
 
-	sb2_mutex = osMutexNew(&sb2_mutex_attr);
+	sb2_mutex_only = osMutexNew(&sb2_mutex_attr);
 
 	/* Sensor Board 3 Mutex */
 	const osMutexAttr_t sb3_mutex_attr = {
-			"sb3_mutex",                              // human readable mutex name
+			"sb3_mutex_only",                              // human readable mutex name
 			osMutexPrioInherit,    					 // attr_bits
 			NULL,                                     // memory for control block
 			0U                                        // size for control block
 	};
 
-	sb3_mutex = osMutexNew(&sb3_mutex_attr);
+	sb3_mutex_only = osMutexNew(&sb3_mutex_attr);
 
 	/* State Estimation Output Mutex */
 	const osMutexAttr_t state_est_mutex_attr = {
-			"state_est_mutex",                              // human readable mutex name
+			"state_est_mutex_only",                              // human readable mutex name
 			osMutexPrioInherit,    					 // attr_bits
 			NULL,                                     // memory for control block
 			0U                                        // size for control block
 	};
 
-	state_est_mutex = osMutexNew(&state_est_mutex_attr);
+	state_est_mutex_only = osMutexNew(&state_est_mutex_attr);
 
 	/* Controller Output Mutex */
 	const osMutexAttr_t controller_mutex_attr = {
-			"controller_mutex",                              // human readable mutex name
+			"controller_mutex_only",                              // human readable mutex name
 			osMutexPrioInherit,    					 // attr_bits
 			NULL,                                     // memory for control block
 			0U                                        // size for control block
 	};
 
-	controller_mutex = osMutexNew(&controller_mutex_attr);
+	controller_mutex_only = osMutexNew(&controller_mutex_attr);
 
 	/* FSM Output Mutex */
 	const osMutexAttr_t fsm_mutex_attr = {
-			"fsm_mutex",                              // human readable mutex name
+			"fsm_mutex_only",                              // human readable mutex name
 			osMutexPrioInherit,    					 // attr_bits
 			NULL,                                     // memory for control block
 			0U                                        // size for control block
 	};
 
-	fsm_mutex = osMutexNew(&fsm_mutex_attr);
+	fsm_mutex_only = osMutexNew(&fsm_mutex_attr);
 
 	/* Environment Mutex */
 	const osMutexAttr_t environment_mutex_attr = {
-			"environment_mutex",                              // human readable mutex name
+			"environment_mutex_only",                              // human readable mutex name
 			osMutexPrioInherit,    					 // attr_bits
 			NULL,                                     // memory for control block
 			0U                                        // size for control block
 	};
 
-	environment_mutex = osMutexNew(&environment_mutex_attr);
+	environment_mutex_only = osMutexNew(&environment_mutex_attr);
+
+	/* USB Data Mutex */
+	const osMutexAttr_t usb_data_mutex_attr = {
+			"usb_data_mutex_only",                              // human readable mutex name
+			osMutexPrioInherit,    					 // attr_bits
+			NULL,                                     // memory for control block
+			0U                                        // size for control block
+	};
+
+	usb_data_mutex_only = osMutexNew(&usb_data_mutex_attr);
+
+	/* Command Mutex */
+	const osMutexAttr_t command_mutex_attr = {
+			"command_mutex_only",                              // human readable mutex name
+			osMutexPrioInherit,    					 // attr_bits
+			NULL,                                     // memory for control block
+			0U                                        // size for control block
+	};
+
+	command_mutex_only = osMutexNew(&command_mutex_attr);
+
+	/* GPS Mutex */
+	const osMutexAttr_t gps_mutex_attr = {
+			"gps_mutex_only",                              // human readable mutex name
+			osMutexPrioInherit,    					 // attr_bits
+			NULL,                                     // memory for control block
+			0U                                        // size for control block
+	};
+
+	gps_mutex_only = osMutexNew(&gps_mutex_attr);
+
+	/* Battery Mutex */
+	const osMutexAttr_t battery_mutex_attr = {
+			"battery_mutex_only",                              // human readable mutex name
+			osMutexPrioInherit,    					 // attr_bits
+			NULL,                                     // memory for control block
+			0U                                        // size for control block
+	};
+
+	battery_mutex_only = osMutexNew(&battery_mutex_attr);
+
+	/* Motor Mutex */
+	const osMutexAttr_t motor_mutex_attr = {
+			"motor_mutex_only",                              // human readable mutex name
+			osMutexPrioInherit,    					 // attr_bits
+			NULL,                                     // memory for control block
+			0U                                        // size for control block
+	};
+
+	motor_mutex_only = osMutexNew(&motor_mutex_attr);
+
+
+	/** Initialise Mutexes **/
+
+	sb1_mutex.mutex = sb1_mutex_only;
+	sb2_mutex.mutex = sb2_mutex_only;
+	sb3_mutex.mutex = sb3_mutex_only;
+	env_mutex.mutex = environment_mutex_only;
+	fsm_mutex.mutex = fsm_mutex_only;
+	controller_mutex.mutex = controller_mutex_only;
+	state_est_mutex.mutex = state_est_mutex_only;
+	usb_data_mutex.mutex = usb_data_mutex_only;
+	command_mutex.mutex = command_mutex_only;
+	gps_mutex.mutex = gps_mutex_only;
+	battery_mutex.mutex = battery_mutex_only;
+	motor_mutex.mutex = motor_mutex_only;
+
+	global_flight_phase_detection.flight_phase = IDLE;
+	global_flight_phase_detection.mach_regime = SUBSONIC;
+	global_telemetry_command = IDLE_COMMAND;
+
 
 
 
@@ -390,14 +534,17 @@ int main(void)
   /* creation of task_motor_cont */
   task_motor_contHandle = osThreadNew(vTaskMotorCont, NULL, &task_motor_cont_attributes);
 
-  /* creation of tas_fsm */
-  tas_fsmHandle = osThreadNew(vTaskFSM, NULL, &tas_fsm_attributes);
+  /* creation of task_fsm */
+  task_fsmHandle = osThreadNew(vTaskFSM, NULL, &task_fsm_attributes);
 
   /* creation of task_gps */
   task_gpsHandle = osThreadNew(vTaskGps, NULL, &task_gps_attributes);
 
   /* creation of task_battery */
   task_batteryHandle = osThreadNew(vTaskBattery, NULL, &task_battery_attributes);
+
+  /* creation of task_xbee */
+  task_xbeeHandle = osThreadNew(vTaskXbee, NULL, &task_xbee_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
 	/* add threads, ... */
@@ -607,7 +754,7 @@ static void MX_SPI1_Init(void)
   /* SPI1 parameter configuration*/
   hspi1.Instance = SPI1;
   hspi1.Init.Mode = SPI_MODE_SLAVE;
-  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi1.Init.Direction = SPI_DIRECTION_2LINES_RXONLY;
   hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
@@ -646,7 +793,7 @@ static void MX_SPI2_Init(void)
   /* SPI2 parameter configuration*/
   hspi2.Instance = SPI2;
   hspi2.Init.Mode = SPI_MODE_SLAVE;
-  hspi2.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi2.Init.Direction = SPI_DIRECTION_2LINES_RXONLY;
   hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
@@ -685,7 +832,7 @@ static void MX_SPI3_Init(void)
   /* SPI3 parameter configuration*/
   hspi3.Instance = SPI3;
   hspi3.Init.Mode = SPI_MODE_SLAVE;
-  hspi3.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi3.Init.Direction = SPI_DIRECTION_2LINES_RXONLY;
   hspi3.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi3.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi3.Init.CLKPhase = SPI_PHASE_1EDGE;
@@ -765,9 +912,7 @@ static void MX_UART7_Init(void)
   huart7.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart7.Init.OverSampling = UART_OVERSAMPLING_16;
   huart7.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-  huart7.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_RXOVERRUNDISABLE_INIT|UART_ADVFEATURE_DMADISABLEONERROR_INIT;
-  huart7.AdvancedInit.OverrunDisable = UART_ADVFEATURE_OVERRUN_DISABLE;
-  huart7.AdvancedInit.DMADisableonRxError = UART_ADVFEATURE_DMA_DISABLEONRXERROR;
+  huart7.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
   if (HAL_UART_Init(&huart7) != HAL_OK)
   {
     Error_Handler();
@@ -894,9 +1039,18 @@ static void MX_DMA_Init(void)
   __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
+  /* DMA1_Stream0_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
   /* DMA1_Stream1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
+  /* DMA1_Stream2_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream2_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream2_IRQn);
+  /* DMA1_Stream3_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
   /* DMA1_Stream5_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
@@ -909,6 +1063,9 @@ static void MX_DMA_Init(void)
   /* DMA2_Stream3_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream3_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream3_IRQn);
+  /* DMA2_Stream4_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream4_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream4_IRQn);
   /* DMA2_Stream6_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream6_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream6_IRQn);
@@ -933,7 +1090,14 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, LED3_Pin|LED4_Pin|LED1_Pin|LED2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(PW_HOLD_GPIO_Port, PW_HOLD_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOE, CAMERA1_Pin|CAMERA2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOD, LED3_Pin|LED4_Pin|BUZZER_Pin|LED1_Pin 
+                          |LED2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PC13 */
   GPIO_InitStruct.Pin = GPIO_PIN_13;
@@ -941,8 +1105,24 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LED3_Pin LED4_Pin LED1_Pin LED2_Pin */
-  GPIO_InitStruct.Pin = LED3_Pin|LED4_Pin|LED1_Pin|LED2_Pin;
+  /*Configure GPIO pin : PW_HOLD_Pin */
+  GPIO_InitStruct.Pin = PW_HOLD_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(PW_HOLD_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : CAMERA1_Pin CAMERA2_Pin */
+  GPIO_InitStruct.Pin = CAMERA1_Pin|CAMERA2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : LED3_Pin LED4_Pin BUZZER_Pin LED1_Pin 
+                           LED2_Pin */
+  GPIO_InitStruct.Pin = LED3_Pin|LED4_Pin|BUZZER_Pin|LED1_Pin 
+                          |LED2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

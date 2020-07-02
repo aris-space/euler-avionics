@@ -19,11 +19,12 @@
 #define HEADER_SIZE 3
 #define BUFFER_SIZE 1000
 #define DATA_SIZE 70
+#define GPS_NUMBER 3
 
 
-uint8_t gps_data [3][BUFFER_SIZE];
+uint8_t gps_data [GPS_NUMBER][BUFFER_SIZE];
 
-uint8_t gps_gga [3][DATA_SIZE];
+uint8_t gps_gga [GPS_NUMBER][DATA_SIZE];
 
 // *** Macros *** //
 
@@ -33,24 +34,12 @@ uint8_t gps_gga [3][DATA_SIZE];
 
 // *** structs *** //
 
-struct gps_data {
-	uint32_t hour;
-	uint32_t minute;
-	uint32_t second;
-	uint8_t lat_deg;
-	uint32_t lat_decimal;
-	uint8_t lon_deg;
-	uint32_t lon_decimal;
-	uint8_t fix;
-	uint8_t satellite;
-	uint16_t HDOP;
-	uint16_t altitude;
-    };
+
 
 typedef struct gps_device {
 	uint8_t id;
 	UART_HandleTypeDef* uart_bus;
-	struct gps_data data;
+	gps_data_t data;
     } UBLOX;
 
 
@@ -58,7 +47,7 @@ typedef struct gps_device {
 
 extern uint8_t gps_read_sensor (struct gps_device *dev);
 extern void gps_dma_init(struct gps_device *dev);
-
+extern void gps_reset(struct gps_device *dev);
 
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;

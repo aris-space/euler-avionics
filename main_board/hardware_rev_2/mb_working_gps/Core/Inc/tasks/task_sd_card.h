@@ -8,7 +8,13 @@
 #ifndef INC_TASKS_TASK_SD_CARD_H_
 #define INC_TASKS_TASK_SD_CARD_H_
 
+#include "Util/mutex.h"
+
 #define SYNC_AFTER_COUNT 128
+
+
+extern custom_mutex_t fsm_mutex;
+extern flight_phase_detection_t global_flight_phase_detection;
 
 void vTaskSdCard(void *argument);
 

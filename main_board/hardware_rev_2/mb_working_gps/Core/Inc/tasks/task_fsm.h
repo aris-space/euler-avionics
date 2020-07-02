@@ -12,12 +12,13 @@
 #include "Sim_Con/env.h"
 #include "Sim_Con/flight_phase_detection.h"
 #include "Util/util.h"
+#include "Util/mutex.h"
 #include "stm32f7xx_hal.h"
 #include "cmsis_os.h"
 #include "main.h"
 
 /* Constants */
-#define FSM_SAMPLING_FREQ 20
+#define FSM_SAMPLING_FREQ 100
 
 /* Parameters */
 
@@ -26,16 +27,17 @@
 /* Extern */
 
 
-/* FSM Mutex */
-extern osMutexId_t fsm_mutex;
-extern osMutexId_t environment_mutex;
+/** MUTEXES **/
+extern custom_mutex_t fsm_mutex;
+extern custom_mutex_t env_mutex;
+extern custom_mutex_t state_est_mutex;
+extern custom_mutex_t command_mutex;
 
+/** GLOBAL VARIABLES **/
 extern env_t global_env;
 extern flight_phase_detection_t global_flight_phase_detection;
-
-/* State Estimation Mutex */
-extern osMutexId_t state_est_mutex;
 extern state_est_data_t state_est_data_global;
+extern command_e global_telemetry_command;
 
 /* Tasks */
 void vTaskFSM(void *argument);

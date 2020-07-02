@@ -48,9 +48,26 @@ osStatus_t logSensor(timestamp_t ts, board_id_t sensor_board_id,
 	case IMU: {
 		imu_data_t *imu_data_ptr = (imu_data_t*) sensor_data;
 		snprintf(log_entry.str + strlen(log_entry.str),
-		LOG_BUFFER_LEN, "%ld,%ld,%ld,%ld,%ld,%ld,%lu\n", imu_data_ptr->acc_x,
+		LOG_BUFFER_LEN, "%hd,%hd,%hd,%hd,%hd,%hd,%lu\n", imu_data_ptr->acc_x,
 				imu_data_ptr->acc_y, imu_data_ptr->acc_z, imu_data_ptr->gyro_x,
 				imu_data_ptr->gyro_y, imu_data_ptr->gyro_z, imu_data_ptr->ts);
+	}
+		break;
+	case GPS: {
+		gps_data_t *gps_data = (gps_data_t*) sensor_data;
+		snprintf(log_entry.str + strlen(log_entry.str),
+		LOG_BUFFER_LEN, "%ld,%ld,%ld,%d,%ld,%d,%ld,%d,%hd,%hd\n",
+			gps_data->hour, gps_data->minute, gps_data->second, gps_data->lat_deg,
+			gps_data->lat_decimal, gps_data->lon_deg, gps_data->lon_decimal, gps_data->satellite,
+			gps_data->altitude, gps_data->HDOP);
+	}
+		break;
+	case BATTERY: {
+		battery_data_t *battery_data = (battery_data_t*) sensor_data;
+		snprintf(log_entry.str + strlen(log_entry.str),
+		LOG_BUFFER_LEN, "%hd,%hd,%hd,%hd\n",
+			battery_data->battery, battery_data->consumption,
+			battery_data->current, battery_data->supply);
 	}
 		break;
 	default:
@@ -62,19 +79,19 @@ osStatus_t logSensor(timestamp_t ts, board_id_t sensor_board_id,
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
 }
 
-osStatus_t logRocketState(timestamp_t ts, flight_phase_e flight_phase) {
+osStatus_t logRocketState(timestamp_t ts, flight_phase_detection_t flight_phase_detection) {
 	log_entry_t log_entry = { 0 };
 
 	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%d\n", ts, STATE,
-			flight_phase);
+			flight_phase_detection.flight_phase);
 
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
 }
 
 osStatus_t logEstimatorVar(timestamp_t ts, state_est_data_t estimator_data) {
 	log_entry_t log_entry = { 0 };
-	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld;%ld\n", ts, ESTIMATOR_VAR,
-			estimator_data.position_world[2], estimator_data.velocity_rocket[0]);
+	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld,%ld,%ld\n", ts, ESTIMATOR_VAR,
+			estimator_data.position_world[2], estimator_data.velocity_rocket[0], estimator_data.acceleration_rocket[0]);
 
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
 }
@@ -82,7 +99,7 @@ osStatus_t logEstimatorVar(timestamp_t ts, state_est_data_t estimator_data) {
 osStatus_t logControllerOutput(timestamp_t ts, int32_t controller_output, int32_t reference_error,
 		int32_t integrated_error) {
 	log_entry_t log_entry = { 0 };
-	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld;%ld;%ld\n", ts, CONTROLLER_OUTPUT,
+	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld,%ld,%ld\n", ts, CONTROLLER_OUTPUT,
 			controller_output, reference_error, integrated_error);
 
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
@@ -90,7 +107,15 @@ osStatus_t logControllerOutput(timestamp_t ts, int32_t controller_output, int32_
 
 osStatus_t logMotor(timestamp_t ts, int32_t desired_position, int32_t actual_position) {
 	log_entry_t log_entry = { 0 };
-	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld;%ld\n", ts, MOTOR_POSITION,
+	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld,%ld\n", ts, MOTOR_POSITION,
+			desired_position, actual_position);
+
+	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
+}
+
+osStatus_t logBattery(timestamp_t ts, int32_t desired_position, int32_t actual_position) {
+	log_entry_t log_entry = { 0 };
+	snprintf(log_entry.str, LOG_BUFFER_LEN, "%lu;%d;%ld,%ld\n", ts, MOTOR_POSITION,
 			desired_position, actual_position);
 
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
@@ -103,6 +128,7 @@ osStatus_t logMsg(timestamp_t ts, char *msg) {
 
 	return osMessageQueuePut(log_queue, &log_entry, 0U, 0U);
 }
+
 
 /** USB DEBUGGING SECTION **/
 

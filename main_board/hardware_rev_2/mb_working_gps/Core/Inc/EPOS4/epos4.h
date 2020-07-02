@@ -25,7 +25,8 @@ osStatus_t WriteCommand(uint8_t *command, uint8_t *data, uint8_t *rx_buffer);
 osStatus_t ReadCommand(uint8_t *command, uint8_t *rx_buffer);
 
 /* external */
-extern UART_HandleTypeDef huart7;
+extern UART_HandleTypeDef huart4;
+
 
 
 
