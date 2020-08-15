@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<!--    <script src="https://use.fontawesome.com/d4185732c4.js"></script>-->
+
+    <link href="../static/css/bootstrap/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="../static/css/style.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <title>Launch Overlay</title>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row justify-content-between no-gutters">
+        <div class="col-md-5" id="time">
+            Current time: <span id="current_time">...</span>
+        </div>
+        <br/>
+        <div class="col-md-5" id="countdown">
+            <button type="button" class="btn btn-danger invisible" id="countdown_ctrl"></button>
+            T <span id="countdown_sign">?</span> <span id="countdown_minutes">..</span>:<span
+                id="countdown_seconds">..</span>
+        </div>
+    </div>
+
+    <div class="border form-row justify-content-end no-gutters" style="margin-top: 10px">
+        <form id="countdown_set" class="form-inline">
+            T&nbsp;
+            <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="countdown_set_sign">
+                <option selected value="-">-</option>
+                <option value="+">+</option>
+            </select>
+
+            <input type="number" class="form-control mb-2 mr-sm-2 mb-sm-0" id="countdown_set_min"
+                   placeholder="Minutes"
+                   min="0">
+            :&nbsp;
+            <input type="number" class="form-control" id="countdown_set_sec" placeholder="Seconds" min="0">
+            &nbsp;
+            <label class="form-check-label" for="countdown_start_on_set">
+                Start on set
+            </label>&nbsp;
+            <input class="form-check-input" type="checkbox" value="" id="countdown_start_on_set">
+
+            &nbsp;<button type="button" class="btn btn-primary" id="countdown_set_btn">Set</button>
+        </form>
+    </div>
+    <div class="border form-row justify-content-end no-gutters" style="margin-top: 10px">
+        <form id="event_bar_timespan" class="form-inline">
+            Event bar timespan&nbsp;
+            <input type="number" class="form-control mb-2 mr-sm-2 mb-sm-0" id="event_bar_timespan3"
+                   placeholder="Minutes"
+                   min="0">
+            :&nbsp;
+            <input type="number" class="form-control" id="event_bar_timespan4" placeholder="Seconds" min="0">
+
+            &nbsp;<button type="button" class="btn btn-primary" id="event_bar_timespan_btn">Set</button>
+        </form>
+    </div>
+
+    <div class="border form-row justify-content-end no-gutters" style="margin-top: 10px">
+        <form class="form-inline">
+            Enter a new event&nbsp;
+            <input type="text" class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder="Event name" id="event_name">
+            <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="event_sign">
+                <option selected value="-">-</option>
+                <option value="+">+</option>
+            </select>
+            &nbsp;
+            <input type="number" class="form-control mb-2 mr-sm-2 mb-sm-0" id="event_set_min"
+                   placeholder="Minutes"
+                   min="0">
+            :&nbsp;
+            <input type="number" class="form-control" placeholder="Seconds" min="0" id="event_set_sec">
+
+            &nbsp;<button type="button" class="btn btn-primary" id="add_event_btn">Set</button>
+        </form>
+    </div>
+    <div class="events" id="events">Stuff<span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></i></div>
+    <div class="progress">
+        <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+</div>
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+        integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script src="../static/js/jquery-3.5.0.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    let play_btn = '<i class="fa fa-play"></i>'
+    let pause_btn = '<i class="fa fa-pause"></i>'
+
+    var socket = io();
+    socket.on('connect', function () {
+        socket.emit('my event', {data: 'Admin connected!'});
+    });
+    socket.on('countdown_update', function (data) {
+        document.getElementById("countdown_sign").innerHTML = data.negative ? '-' : '+';
+        document.getElementById("countdown_minutes").innerHTML = ('0' + data.minutes).slice(-2);
+        document.getElementById("countdown_seconds").innerHTML = ('0' + data.seconds).slice(-2);
+    });
+    socket.on('time_update', function (data) {
+        document.getElementById("current_time").innerHTML = data.current_time;
+    });
+
+    let countdown_ctrl_btn = $('#countdown_ctrl');
+    countdown_ctrl_btn.on('click', function (e) {
+        console.log(countdown_ctrl_btn.html())
+        if (countdown_ctrl_btn.html().includes('play')) {
+            socket.emit('countdown_unhold');
+            countdown_ctrl_btn.html(pause_btn);
+        } else {
+            socket.emit('countdown_hold');
+            countdown_ctrl_btn.html(play_btn);
+        }
+    })
+    var events_counter = 0
+
+    let add_event_btn = $('#add_event_btn');
+    add_event_btn.on('click', function (e) {
+        console.log(add_event_btn.html())
+        let t = parseInt($('#event_set_min').val()) * 60 + parseInt($('#event_set_sec').val())
+        socket.emit('add_event', {
+            id: events_counter,
+            name: $('#event_name').val(),
+            sign: $('#event_sign').val(),
+            t: t,
+        })
+        let event = document.createElement('div');
+        event.id = events_counter
+        event.textContent = $("#event_name").val()
+        event.className = "event"
+        $("#events")[0].appendChild(event)
+        events_counter += 1
+    })
+
+    $('#countdown_set_btn').on('click', function (e) {
+        let start_on_set = $('#countdown_start_on_set')
+        socket.emit('countdown_set', {
+            sign: $('#countdown_set_sign').val(),
+            minutes: parseInt($('#countdown_set_min').val()),
+            seconds: parseInt($('#countdown_set_sec').val()),
+            hold: !(start_on_set.is(":checked"))
+        });
+
+        if (start_on_set.is(":checked")) {
+            countdown_ctrl_btn.html(pause_btn)
+        } else {
+            countdown_ctrl_btn.html(play_btn)
+        }
+        if (countdown_ctrl_btn.hasClass('invisible')) {
+            countdown_ctrl_btn.removeClass('invisible').addClass('visible');
+        }
+    })
+</script>
+</body>
+</html>
