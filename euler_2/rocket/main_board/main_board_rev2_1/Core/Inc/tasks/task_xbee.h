@@ -8,19 +8,16 @@
 #ifndef INC_TASKS_TASK_XBEE_H_
 #define INC_TASKS_TASK_XBEE_H_
 
-
 /* includes */
 
 #include "main.h"
 #include "Util/util.h"
-#include "cmsis_os.h"
 #include "Sim_Con/env.h"
 #include "Util/mutex.h"
 
 /* defines */
 #define XBEE_SAMPLING_FREQ 10
 #define XBEE_SAMPLING_FREQ_HIGH 100
-
 
 /* extern */
 
@@ -49,10 +46,7 @@ extern command_e global_telemetry_command;
 extern gps_data_t globalGPS;
 extern telemetry_battery_data_t global_battery_data;
 
-
-
 extern UART_HandleTypeDef huart7;
-
 
 /* functions */
 void vTaskXbee(void *argument);

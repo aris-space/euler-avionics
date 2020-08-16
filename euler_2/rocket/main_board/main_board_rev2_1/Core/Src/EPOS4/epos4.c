@@ -16,20 +16,22 @@ uint16_t calculateCRC(uint8_t *data, uint8_t len) {
 		if (i == len) {
 			c = 0;
 		} else {
-			c = data[i+1] << 8 | data[i];
+			c = data[i + 1] << 8 | data[i];
 		}
 		do {
 			carry = crc & 0x8000;
 			crc <<= 1;
-			if(c & shifter) crc++;
-			if(carry) crc ^= 0x1021;
+			if (c & shifter)
+				crc++;
+			if (carry)
+				crc ^= 0x1021;
 			shifter >>= 1;
-		} while(shifter);
+		} while (shifter);
 	}
 	return crc;
 }
 
-osStatus_t EnableMotor(){
+osStatus_t EnableMotor() {
 
 	osStatus_t status = osError;
 
@@ -60,7 +62,6 @@ osStatus_t EnableMotor(){
 
 	status = WriteCommand(command, data, rx_buffer_write);
 
-
 	/* Check if Motor is enabled */
 	uint8_t rx_buffer_read[20];
 
@@ -69,14 +70,14 @@ osStatus_t EnableMotor(){
 
 	status = ReadCommand(command, rx_buffer_read);
 
-	if(rx_buffer_read[8] == 0x37 && rx_buffer_read[9] == 0x04 ){
+	if (rx_buffer_read[8] == 0x37 && rx_buffer_read[9] == 0x04) {
 		status = osOK;
 	}
 
 	return status;
 }
 
-osStatus_t DisableMotor(){
+osStatus_t DisableMotor() {
 
 	osStatus_t status = osError;
 
@@ -98,18 +99,16 @@ osStatus_t DisableMotor(){
 	return status;
 }
 
-osStatus_t SetPositionMode(int8_t position_mode){
+osStatus_t SetPositionMode(int8_t position_mode) {
 	osStatus_t status = osError;
 
 	uint8_t command[2];
 	uint8_t data[4];
 	uint8_t rx_buffer_write[20];
 
-
 	/* Position Mode Register */
 	command[0] = 0x60;
 	command[1] = 0x60;
-
 
 	/* Enable Cyclic Sync Position Mode */
 	data[0] = 0x00;
@@ -122,7 +121,7 @@ osStatus_t SetPositionMode(int8_t position_mode){
 	return status;
 }
 
-osStatus_t MoveToPosition(int32_t position){
+osStatus_t MoveToPosition(int32_t position) {
 	osStatus_t status = osError;
 
 	uint8_t command[2];
@@ -138,14 +137,13 @@ osStatus_t MoveToPosition(int32_t position){
 	data[2] = (position >> 8) & 0xFF;
 	data[3] = position & 0xFF;
 
-
 	status = WriteCommand(command, data, rx_buffer_write);
 
 	return status;
 
 }
 
-osStatus_t MoveToPositionPPM(int32_t position){
+osStatus_t MoveToPositionPPM(int32_t position) {
 	osStatus_t status = osError;
 
 	uint8_t command[2];
@@ -161,7 +159,6 @@ osStatus_t MoveToPositionPPM(int32_t position){
 	data[2] = (position >> 8) & 0xFF;
 	data[3] = position & 0xFF;
 
-
 	status = WriteCommand(command, data, rx_buffer_write);
 
 	/* Goto Position */
@@ -172,7 +169,6 @@ osStatus_t MoveToPositionPPM(int32_t position){
 	data[1] = 0x00;
 	data[2] = 0x00;
 	data[3] = 0x3F;
-
 
 	status = WriteCommand(command, data, rx_buffer_write);
 
@@ -188,12 +184,12 @@ osStatus_t MoveToPositionPPM(int32_t position){
 	/* Goto Position */
 	status = WriteCommand(command, data, rx_buffer_write);
 
-
 	return status;
 
 }
 
-osStatus_t ConfigurePPM(int32_t velocity, int32_t acceleration, int32_t deceleration){
+osStatus_t ConfigurePPM(int32_t velocity, int32_t acceleration,
+		int32_t deceleration) {
 
 	osStatus_t status = osError;
 
@@ -237,7 +233,7 @@ osStatus_t ConfigurePPM(int32_t velocity, int32_t acceleration, int32_t decelera
 	return status;
 }
 
-osStatus_t GetPosition(int32_t *position){
+osStatus_t GetPosition(int32_t *position) {
 
 	osStatus_t status = osError;
 
@@ -250,17 +246,14 @@ osStatus_t GetPosition(int32_t *position){
 
 	status = ReadCommand(command, rx_buffer_read);
 
-	*position = rx_buffer_read[8] +
-			(rx_buffer_read[9] << 8) +
-			(rx_buffer_read[10] << 16) +
-			(rx_buffer_read[11] << 24);
+	*position = rx_buffer_read[8] + (rx_buffer_read[9] << 8)
+			+ (rx_buffer_read[10] << 16) + (rx_buffer_read[11] << 24);
 
 	return status;
 
-
 }
 
-osStatus_t WriteCommand(uint8_t *command, uint8_t *data, uint8_t *rx_buffer){
+osStatus_t WriteCommand(uint8_t *command, uint8_t *data, uint8_t *rx_buffer) {
 	osStatus_t status = osError;
 
 	uint8_t byte_stream_write[14] = { 0 };
@@ -282,16 +275,18 @@ osStatus_t WriteCommand(uint8_t *command, uint8_t *data, uint8_t *rx_buffer){
 
 	/* CRC Calculation */
 	uint8_t crc_data_array[10] = { 0 };
-	memcpy(crc_data_array, &byte_stream_write[2], 10*sizeof(*byte_stream_write));
+	memcpy(crc_data_array, &byte_stream_write[2],
+			10 * sizeof(*byte_stream_write));
 
 	uint16_t crc_calc = 0;
 	crc_calc = calculateCRC(crc_data_array, 10);
 
-	byte_stream_write[12] = crc_calc & 0xFF;;				// CRC low byte
-	byte_stream_write[13] = (crc_calc >> 8) & 0xFF;;		// CRC high byte
+	byte_stream_write[12] = crc_calc & 0xFF;
+	;				// CRC low byte
+	byte_stream_write[13] = (crc_calc >> 8) & 0xFF;
+	;		// CRC high byte
 
-
-	HAL_UART_Transmit(&huart4, byte_stream_write, 14, 20);
+	HAL_UART_Transmit_DMA(&huart4, byte_stream_write, 14);
 
 	HAL_UART_DMAResume(&huart4);
 	HAL_UART_Receive_DMA(&huart4, dma_buffer, 20);
@@ -300,7 +295,7 @@ osStatus_t WriteCommand(uint8_t *command, uint8_t *data, uint8_t *rx_buffer){
 	memcpy(rx_buffer, dma_buffer, 20);
 
 	/* Check if we have an error code */
-	if((rx_buffer[7] | rx_buffer[6] | rx_buffer[5] | rx_buffer[4]) == 0){
+	if ((rx_buffer[7] | rx_buffer[6] | rx_buffer[5] | rx_buffer[4]) == 0) {
 		status = osOK;
 	}
 
@@ -308,7 +303,7 @@ osStatus_t WriteCommand(uint8_t *command, uint8_t *data, uint8_t *rx_buffer){
 
 }
 
-osStatus_t ReadCommand(uint8_t *command, uint8_t *rx_buffer){
+osStatus_t ReadCommand(uint8_t *command, uint8_t *rx_buffer) {
 	osStatus_t status = osError;
 
 	uint8_t byte_stream_read[10];
@@ -326,16 +321,17 @@ osStatus_t ReadCommand(uint8_t *command, uint8_t *rx_buffer){
 
 	/* CRC data array */
 	uint8_t crc_data_array[6] = { 0 };
-	memcpy(crc_data_array, &byte_stream_read[2], 6*sizeof(*byte_stream_read));
+	memcpy(crc_data_array, &byte_stream_read[2], 6 * sizeof(*byte_stream_read));
 
 	uint16_t crc_calc = 0;
 	crc_calc = calculateCRC(crc_data_array, 6);
 
-	byte_stream_read[8] = crc_calc & 0xFF;;				// CRC low byte
-	byte_stream_read[9] = (crc_calc >> 8) & 0xFF;;		// CRC high byte
+	byte_stream_read[8] = crc_calc & 0xFF;
+	;				// CRC low byte
+	byte_stream_read[9] = (crc_calc >> 8) & 0xFF;
+	;		// CRC high byte
 
-
-	HAL_UART_Transmit(&huart4, byte_stream_read, 10, 10);
+	HAL_UART_Transmit_DMA(&huart4, byte_stream_read, 10);
 
 	HAL_UART_DMAResume(&huart4);
 	HAL_UART_Receive_DMA(&huart4, dma_buffer, 20);
@@ -343,9 +339,8 @@ osStatus_t ReadCommand(uint8_t *command, uint8_t *rx_buffer){
 	HAL_UART_DMAStop(&huart4);
 	memcpy(rx_buffer, dma_buffer, 20);
 
-
 	/* check if we have an error code */
-	if((rx_buffer[7] | rx_buffer[6] | rx_buffer[5] | rx_buffer[4]) == 0){
+	if ((rx_buffer[7] | rx_buffer[6] | rx_buffer[5] | rx_buffer[4]) == 0) {
 		status = osOK;
 	}
 	return status;

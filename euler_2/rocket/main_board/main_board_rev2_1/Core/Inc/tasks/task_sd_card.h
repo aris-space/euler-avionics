@@ -12,7 +12,6 @@
 
 #define SYNC_AFTER_COUNT 128
 
-
 extern custom_mutex_t fsm_mutex;
 extern flight_phase_detection_t global_flight_phase_detection;
 

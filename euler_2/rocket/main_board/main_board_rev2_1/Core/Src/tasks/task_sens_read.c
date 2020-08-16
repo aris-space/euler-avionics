@@ -49,7 +49,6 @@ void vTaskSensRead(void *argument) {
 				sb2_data.imu.gyro_z, sb2_data.imu.acc_x, sb2_data.imu.acc_y,
 				sb2_data.imu.acc_z, sb2_data.imu.ts);
 
-		//vTracePrintF(xTraceRegisterString("SENS_READ_TASK"), "Hello there <3");
 		/* Log Data */
 		logSensor(tick_count, 1, BARO, &sb1_data.baro);
 		logSensor(tick_count, 1, IMU, &sb1_data.imu);
@@ -69,7 +68,6 @@ void vTaskSensRead(void *argument) {
 //void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi) {
 //	//HAL_SPIEx_FlushRxFifo(hspi);
 //}
-
 /* Read Data from Sensor Boards */
 void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
 

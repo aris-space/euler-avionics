@@ -12,7 +12,6 @@
 #include <stdio.h>
 
 #include "Util/util.h"
-#include "cmsis_os.h"
 #include "main.h"
 #include "Util/mutex.h"
 
@@ -47,10 +46,6 @@ extern sb_data_t sb3_data;
 /* USB Sensor Read In */
 extern custom_mutex_t usb_data_mutex;
 extern char usb_data_buffer[256];
-
-/* Xbee Command */
-extern custom_mutex_t command_mutex;
-extern command_e global_telemetry_command;
 
 /* Tasks */
 void vTaskSensRead(void *argument);

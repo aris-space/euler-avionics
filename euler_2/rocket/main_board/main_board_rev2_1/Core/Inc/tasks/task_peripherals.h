@@ -13,7 +13,6 @@
 
 #include "main.h"
 #include "Util/util.h"
-#include "cmsis_os.h"
 #include "Sim_Con/flight_phase_detection.h"
 #include "Util/mutex.h"
 

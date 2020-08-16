@@ -13,8 +13,6 @@
 #include "Sim_Con/flight_phase_detection.h"
 #include "Util/util.h"
 #include "Util/mutex.h"
-#include "stm32h7xx_hal.h"
-#include "cmsis_os.h"
 #include "main.h"
 
 /* Constants */
@@ -25,7 +23,6 @@
 /* Commands */
 
 /* Extern */
-
 
 /** MUTEXES **/
 extern custom_mutex_t fsm_mutex;
@@ -41,6 +38,5 @@ extern command_e global_telemetry_command;
 
 /* Tasks */
 void vTaskFsm(void *argument);
-
 
 #endif /* INC_TASKS_TASK_FSM_H_ */

@@ -10,7 +10,6 @@
 
 /* Includes */
 #include "stm32h7xx_hal.h"
-#include "cmsis_os.h"
 #include "main.h"
 #include <math.h>
 #include <stdio.h>

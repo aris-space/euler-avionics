@@ -11,10 +11,8 @@
 /* Includes */
 #include "Util/util.h"
 #include "Util/mutex.h"
-#include "cmsis_os.h"
 #include "main.h"
 #include "EPOS4/epos4.h"
-
 
 #define MOTOR_TASK_FREQUENCY 25
 
@@ -30,8 +28,6 @@ extern int32_t global_airbrake_extension;
 
 extern custom_mutex_t fsm_mutex;
 extern flight_phase_detection_t global_flight_phase_detection;
-
-
 
 void vTaskMotorCont(void *argument);
 

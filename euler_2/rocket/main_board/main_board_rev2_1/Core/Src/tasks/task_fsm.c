@@ -7,7 +7,6 @@
 
 #include "tasks/task_fsm.h"
 
-
 void vTaskFsm(void *argument) {
 	/* For periodic update */
 	uint32_t tick_count, tick_update;
@@ -30,7 +29,6 @@ void vTaskFsm(void *argument) {
 
 	osDelay(1000);
 
-
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();
 	tick_update = osKernelGetTickFreq() / FSM_SAMPLING_FREQ;
@@ -40,28 +38,29 @@ void vTaskFsm(void *argument) {
 		tick_count += tick_update;
 
 		/* Read Telemetry Command */
-		ReadMutex(&command_mutex, &global_telemetry_command, &telemetry_command, sizeof(global_telemetry_command));
+		ReadMutex(&command_mutex, &global_telemetry_command, &telemetry_command,
+				sizeof(global_telemetry_command));
 
 		/* Reset Flight Phase if Telemetry asks to */
-		if(telemetry_command == CALIBRATE_SENSORS && flight_phase_detection.flight_phase == IDLE){
+		if (telemetry_command == CALIBRATE_SENSORS
+				&& flight_phase_detection.flight_phase == IDLE) {
 			reset_flight_phase_detection(&flight_phase_detection);
 			telemetry_command = IDLE_COMMAND;
 		}
 
-
 		/* Update Local State Estimation Data */
-		ReadMutex(&state_est_mutex, &state_est_data_global, &state_est_data_fsm, sizeof(state_est_data_global));
-
+		ReadMutex(&state_est_mutex, &state_est_data_global, &state_est_data_fsm,
+				sizeof(state_est_data_global));
 
 		/* Update Local Environment Data */
 		ReadMutex(&env_mutex, &global_env, &environment, sizeof(global_env));
 
 		/* get Flight Phase update */
-		detect_flight_phase(&flight_phase_detection, &state_est_data_fsm, &environment);
-
+		detect_flight_phase(&flight_phase_detection, &state_est_data_fsm,
+				&environment);
 
 		/* Write updated flight Phase detection */
-		if(AcquireMutex(&fsm_mutex) == osOK){
+		if (AcquireMutex(&fsm_mutex) == osOK) {
 			global_flight_phase_detection = flight_phase_detection;
 			ReleaseMutex(&fsm_mutex);
 		}

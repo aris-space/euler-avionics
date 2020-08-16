@@ -14,7 +14,6 @@
 #include "Sim_Con/flight_phase_detection.h"
 #include "Sim_Con/state_est_settings.h"
 #include "Sim_Con/state_est.h"
-#include "cmsis_os.h"
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
@@ -23,7 +22,6 @@
 #include "Util/mutex.h"
 /* Constants */
 /* -> Are in state_est_settings */
-
 
 /* Commands */
 
@@ -56,9 +54,6 @@ extern env_t global_env;
 /* Command Mutex */
 extern custom_mutex_t command_mutex;
 extern command_e global_telemetry_command;
-
-
-
 
 /* Tasks */
 void vTaskStateEst(void *argument);

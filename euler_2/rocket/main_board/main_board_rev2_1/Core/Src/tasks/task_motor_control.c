@@ -9,7 +9,6 @@
 
 void testairbrakes(int32_t position);
 
-
 void vTaskMotorCont(void *argument) {
 
 	/* For periodic update */
@@ -23,7 +22,6 @@ void vTaskMotorCont(void *argument) {
 	flight_phase_detection.flight_phase = IDLE;
 	flight_phase_detection.mach_number = SUBSONIC;
 
-
 	/* Initialisation */
 	//int8_t position_mode = 0x08;
 	/* Profile Position Mode */
@@ -34,7 +32,6 @@ void vTaskMotorCont(void *argument) {
 
 	osDelay(3000);
 
-
 	/* Controller Variables */
 	int32_t controller_actuation = 0;
 
@@ -42,21 +39,21 @@ void vTaskMotorCont(void *argument) {
 	int32_t desired_motor_position = 0;
 	int32_t measured_motor_position = 0;
 
-	while(EnableMotor() != osOK){
+	while (EnableMotor() != osOK) {
 		osDelay(1000);
-	};
+	}
+	;
 
 	SetPositionMode(position_mode);
-	while(SetPositionMode(position_mode) != osOK){
+	while (SetPositionMode(position_mode) != osOK) {
 		osDelay(1000);
-	};
+	}
+	;
 
 	if (position_mode == 0x01) {
-		motor_status = ConfigurePPM(PPM_velocity, PPM_acceleration, PPM_deceleration);
+		motor_status = ConfigurePPM(PPM_velocity, PPM_acceleration,
+				PPM_deceleration);
 	}
-
-
-
 
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();
@@ -69,71 +66,74 @@ void vTaskMotorCont(void *argument) {
 		motor_status = GetPosition(&measured_motor_position);
 
 		/* Read Telemetry Command */
-		ReadMutex(&command_mutex, &global_telemetry_command, &telemetry_command, sizeof(global_telemetry_command));
+		ReadMutex(&command_mutex, &global_telemetry_command, &telemetry_command,
+				sizeof(global_telemetry_command));
 
 		UsbPrint("[MOTOR] Read Position:%d\n", measured_motor_position);
 
 		/* Read FSM State */
-		ReadMutex(&fsm_mutex, &global_flight_phase_detection, &flight_phase_detection, sizeof(global_flight_phase_detection));
+		ReadMutex(&fsm_mutex, &global_flight_phase_detection,
+				&flight_phase_detection, sizeof(global_flight_phase_detection));
 
 		/* Read in Current Controller Output */
-		ReadMutex(&controller_mutex, &controller_output_global, &controller_actuation, sizeof(controller_actuation));
+		ReadMutex(&controller_mutex, &controller_output_global,
+				&controller_actuation, sizeof(controller_actuation));
 
 		/* Transform 0-1 Controller output to controller output of motor */
-		desired_motor_position = (int32_t)(((float)controller_actuation)/1000*(-150));
+		desired_motor_position = (int32_t) (((float) controller_actuation)
+				/ 1000 * (-150));
 
 		/* Check Bounds */
-		if(desired_motor_position > 2){
+		if (desired_motor_position > 2) {
 			desired_motor_position = 2;
 		}
 
-		if(desired_motor_position < -150){
+		if (desired_motor_position < -150) {
 			desired_motor_position = -150;
 		}
 
 		/* If we are in IDLE, THRUSTING or DESCENDING
 		 * the Motor is not allowed to Move!
 		 */
-		if(flight_phase_detection.flight_phase == COASTING){
+		if (flight_phase_detection.flight_phase == COASTING) {
 			/* Move the Motor */
 			motor_status = MoveToPositionPPM(desired_motor_position);
-		}
-		else{
+		} else {
 			motor_status = MoveToPositionPPM(2);
 		}
 
 		/* Airbrake Test if telemetry command is given and we are in idle state */
-		if(flight_phase_detection.flight_phase == IDLE && telemetry_command == AIRBRAKE_TEST_COMMAND
-				&& osKernelGetTickCount() < 60000){
+		if (flight_phase_detection.flight_phase == IDLE
+				&& telemetry_command == AIRBRAKE_TEST_COMMAND
+				&& osKernelGetTickCount() < 60000) {
 			testairbrakes(-140);
 			telemetry_command = IDLE_COMMAND;
 		}
 
-
 		/* Log Motor Position and Desired Motor Position */
-		logMotor(osKernelGetTickCount(), desired_motor_position, measured_motor_position);
+		logMotor(osKernelGetTickCount(), desired_motor_position,
+				measured_motor_position);
 
-		if(motor_status != osOK && flight_phase_detection.flight_phase == IDLE){
+		if (motor_status != osOK
+				&& flight_phase_detection.flight_phase == IDLE) {
 			DisableMotor();
 			osDelay(1000);
 			EnableMotor();
 		}
 
 		/* Write To global airbrake extension */
-		if(AcquireMutex(&motor_mutex) == osOK){
+		if (AcquireMutex(&motor_mutex) == osOK) {
 			global_airbrake_extension = measured_motor_position;
 			ReleaseMutex(&motor_mutex);
 		}
-
 
 		osDelayUntil(tick_count);
 	}
 }
 
-void testairbrakes(int32_t position){
+void testairbrakes(int32_t position) {
 	MoveToPositionPPM(position);
 	osDelay(100);
 	MoveToPositionPPM(2);
 }
-
 
