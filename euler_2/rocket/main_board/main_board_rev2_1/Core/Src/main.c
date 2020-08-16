@@ -315,7 +315,9 @@ int main(void) {
 	MX_SPI4_Init();
 	/* USER CODE BEGIN 2 */
 	MX_USB_DEVICE_Init();
+#if ( configUSE_TRACE_FACILITY == 1 )
 	vTraceEnable(TRC_START);
+#endif
 	/* USER CODE END 2 */
 
 	/* Init scheduler */
@@ -600,7 +602,7 @@ void SystemClock_Config(void) {
 	PeriphClkInitStruct.Spi123ClockSelection = RCC_SPI123CLKSOURCE_PLL;
 	PeriphClkInitStruct.Spi45ClockSelection = RCC_SPI45CLKSOURCE_D2PCLK1;
 	PeriphClkInitStruct.Usart234578ClockSelection =
-			RCC_USART234578CLKSOURCE_D2PCLK1;
+	RCC_USART234578CLKSOURCE_D2PCLK1;
 	PeriphClkInitStruct.Usart16ClockSelection = RCC_USART16CLKSOURCE_D2PCLK2;
 	PeriphClkInitStruct.UsbClockSelection = RCC_USBCLKSOURCE_PLL;
 	PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLL2;
@@ -751,9 +753,9 @@ static void MX_SPI1_Init(void) {
 	hspi1.Init.NSSPolarity = SPI_NSS_POLARITY_LOW;
 	hspi1.Init.FifoThreshold = SPI_FIFO_THRESHOLD_01DATA;
 	hspi1.Init.TxCRCInitializationPattern =
-			SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
+	SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
 	hspi1.Init.RxCRCInitializationPattern =
-			SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
+	SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
 	hspi1.Init.MasterSSIdleness = SPI_MASTER_SS_IDLENESS_00CYCLE;
 	hspi1.Init.MasterInterDataIdleness = SPI_MASTER_INTERDATA_IDLENESS_00CYCLE;
 	hspi1.Init.MasterReceiverAutoSusp = SPI_MASTER_RX_AUTOSUSP_DISABLE;
@@ -798,9 +800,9 @@ static void MX_SPI2_Init(void) {
 	hspi2.Init.NSSPolarity = SPI_NSS_POLARITY_LOW;
 	hspi2.Init.FifoThreshold = SPI_FIFO_THRESHOLD_01DATA;
 	hspi2.Init.TxCRCInitializationPattern =
-			SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
+	SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
 	hspi2.Init.RxCRCInitializationPattern =
-			SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
+	SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
 	hspi2.Init.MasterSSIdleness = SPI_MASTER_SS_IDLENESS_00CYCLE;
 	hspi2.Init.MasterInterDataIdleness = SPI_MASTER_INTERDATA_IDLENESS_00CYCLE;
 	hspi2.Init.MasterReceiverAutoSusp = SPI_MASTER_RX_AUTOSUSP_DISABLE;
@@ -845,9 +847,9 @@ static void MX_SPI3_Init(void) {
 	hspi3.Init.NSSPolarity = SPI_NSS_POLARITY_LOW;
 	hspi3.Init.FifoThreshold = SPI_FIFO_THRESHOLD_01DATA;
 	hspi3.Init.TxCRCInitializationPattern =
-			SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
+	SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
 	hspi3.Init.RxCRCInitializationPattern =
-			SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
+	SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
 	hspi3.Init.MasterSSIdleness = SPI_MASTER_SS_IDLENESS_00CYCLE;
 	hspi3.Init.MasterInterDataIdleness = SPI_MASTER_INTERDATA_IDLENESS_00CYCLE;
 	hspi3.Init.MasterReceiverAutoSusp = SPI_MASTER_RX_AUTOSUSP_DISABLE;
@@ -893,9 +895,9 @@ static void MX_SPI4_Init(void) {
 	hspi4.Init.NSSPolarity = SPI_NSS_POLARITY_LOW;
 	hspi4.Init.FifoThreshold = SPI_FIFO_THRESHOLD_01DATA;
 	hspi4.Init.TxCRCInitializationPattern =
-			SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
+	SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
 	hspi4.Init.RxCRCInitializationPattern =
-			SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
+	SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
 	hspi4.Init.MasterSSIdleness = SPI_MASTER_SS_IDLENESS_00CYCLE;
 	hspi4.Init.MasterInterDataIdleness = SPI_MASTER_INTERDATA_IDLENESS_00CYCLE;
 	hspi4.Init.MasterReceiverAutoSusp = SPI_MASTER_RX_AUTOSUSP_DISABLE;
@@ -1205,8 +1207,7 @@ static void MX_GPIO_Init(void) {
 
 	/*Configure GPIO pin Output Level */
 	HAL_GPIO_WritePin(GPIOD,
-			LED3_Pin | LED4_Pin | BUZZER_Pin | LED1_Pin | LED2_Pin,
-			GPIO_PIN_RESET);
+	LED3_Pin | LED4_Pin | BUZZER_Pin | LED1_Pin | LED2_Pin, GPIO_PIN_RESET);
 
 	/*Configure GPIO pin : SD_DET_Pin */
 	GPIO_InitStruct.Pin = SD_DET_Pin;
@@ -1231,7 +1232,7 @@ static void MX_GPIO_Init(void) {
 	/*Configure GPIO pins : LED3_Pin LED4_Pin BUZZER_Pin LED1_Pin
 	 LED2_Pin */
 	GPIO_InitStruct.Pin =
-			LED3_Pin | LED4_Pin | BUZZER_Pin | LED1_Pin | LED2_Pin;
+	LED3_Pin | LED4_Pin | BUZZER_Pin | LED1_Pin | LED2_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

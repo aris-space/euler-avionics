@@ -107,14 +107,14 @@
  * Resource Usage -> Object Table.
  ******************************************************************************/
 #define TRC_CFG_NTASK			15
-#define TRC_CFG_NISR			10
-#define TRC_CFG_NQUEUE			20
-#define TRC_CFG_NSEMAPHORE		20
+#define TRC_CFG_NISR			5
+#define TRC_CFG_NQUEUE			10
+#define TRC_CFG_NSEMAPHORE		10
 #define TRC_CFG_NMUTEX			20
-#define TRC_CFG_NTIMER			10
-#define TRC_CFG_NEVENTGROUP		10
-#define TRC_CFG_NSTREAMBUFFER	10
-#define TRC_CFG_NMESSAGEBUFFER	10
+#define TRC_CFG_NTIMER			5
+#define TRC_CFG_NEVENTGROUP		5
+#define TRC_CFG_NSTREAMBUFFER	5
+#define TRC_CFG_NMESSAGEBUFFER	5
 
 /******************************************************************************
  * TRC_CFG_INCLUDE_FLOAT_SUPPORT

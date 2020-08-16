@@ -25,7 +25,6 @@
 "Core/Src/tasks/task_sens_read.o"
 "Core/Src/tasks/task_state_est.o"
 "Core/Src/tasks/task_xbee.o"
-"Core/Src/tracing/streamports/trcStreamingPort.o"
 "Core/Src/tracing/trcKernelPort.o"
 "Core/Src/tracing/trcSnapshotRecorder.o"
 "Core/Src/tracing/trcStreamingRecorder.o"

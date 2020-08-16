@@ -56,7 +56,7 @@ extern "C" {
 #define TRC_ACKNOWLEDGED (0xABC99123)
 
 #include "tracing/config/trcConfig.h"
-#include "trcPortDefines.h"
+#include "tracing/trcPortDefines.h"
 
 #if (TRC_CFG_RECORDER_MODE == TRC_RECORDER_MODE_SNAPSHOT)
 
@@ -90,7 +90,7 @@ typedef const char* traceString;
 typedef const void* traceHandle;
 
 #include "trcHardwarePort.h"
-#include "tracing/streamports/trcStreamingPort.h"
+#include "trcStreamingPort.h"
 #include "trcKernelPort.h"
 
 #endif /* (TRC_CFG_RECORDER_MODE == TRC_RECORDER_MODE_STREAMING) */
