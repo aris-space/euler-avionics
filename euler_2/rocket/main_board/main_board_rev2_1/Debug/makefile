@@ -22,6 +22,8 @@ RM := rm -rf
 -include FATFS/App/subdir.mk
 -include Drivers/STM32H7xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
+-include Core/Src/tracing/streamports/subdir.mk
+-include Core/Src/tracing/subdir.mk
 -include Core/Src/tasks/subdir.mk
 -include Core/Src/Util/subdir.mk
 -include Core/Src/Sim_Con/subdir.mk
