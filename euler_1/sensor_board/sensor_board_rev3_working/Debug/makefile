@@ -25,6 +25,12 @@ RM := rm -rf
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(strip $(S_DEPS)),)
+-include $(S_DEPS)
+endif
+ifneq ($(strip $(S_UPPER_DEPS)),)
+-include $(S_UPPER_DEPS)
+endif
 ifneq ($(strip $(C_DEPS)),)
 -include $(C_DEPS)
 endif
@@ -50,8 +56,8 @@ sensor_board_rev3_working.bin \
 all: sensor_board_rev3_working.elf secondary-outputs
 
 # Tool invocations
-sensor_board_rev3_working.elf: $(OBJS) $(USER_OBJS) C:\Users\Jonas\Desktop\Git\aris-euler-avionics\sensor_board\sensor_board_rev3_working\STM32L433CBTX_FLASH.ld
-	arm-none-eabi-gcc -o "sensor_board_rev3_working.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Jonas\Desktop\Git\aris-euler-avionics\sensor_board\sensor_board_rev3_working\STM32L433CBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="sensor_board_rev3_working.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+sensor_board_rev3_working.elf: $(OBJS) $(USER_OBJS) C:\Users\Jonas\Desktop\Git\aris-euler-avionics\euler_1\sensor_board\sensor_board_rev3_working\STM32L433CBTX_FLASH.ld
+	arm-none-eabi-gcc -o "sensor_board_rev3_working.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Jonas\Desktop\Git\aris-euler-avionics\euler_1\sensor_board\sensor_board_rev3_working\STM32L433CBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="sensor_board_rev3_working.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
