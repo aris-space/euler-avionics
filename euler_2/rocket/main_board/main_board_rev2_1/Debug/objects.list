@@ -21,6 +21,7 @@
 "Core/Src/tasks/task_fsm.o"
 "Core/Src/tasks/task_gps.o"
 "Core/Src/tasks/task_motor_control.o"
+"Core/Src/tasks/task_peripherals.o"
 "Core/Src/tasks/task_sd_card.o"
 "Core/Src/tasks/task_sens_read.o"
 "Core/Src/tasks/task_state_est.o"

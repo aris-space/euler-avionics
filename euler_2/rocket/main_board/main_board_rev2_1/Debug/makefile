@@ -64,8 +64,8 @@ main_board_rev2_1.bin \
 all: main_board_rev2_1.elf secondary-outputs
 
 # Tool invocations
-main_board_rev2_1.elf: $(OBJS) $(USER_OBJS) D:\ARIS\EULER\ II\aris-euler-avionics\euler_2\rocket\main_board\main_board_rev2_1\STM32H750VBTX_FLASH.ld
-	arm-none-eabi-gcc -o "main_board_rev2_1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"D:\ARIS\EULER II\aris-euler-avionics\euler_2\rocket\main_board\main_board_rev2_1\STM32H750VBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="main_board_rev2_1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+main_board_rev2_1.elf: $(OBJS) $(USER_OBJS) C:\Users\Jonas\Desktop\Git\aris-euler-avionics\euler_2\rocket\main_board\main_board_rev2_1\STM32H750VBTX_FLASH.ld
+	arm-none-eabi-gcc -o "main_board_rev2_1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\Jonas\Desktop\Git\aris-euler-avionics\euler_2\rocket\main_board\main_board_rev2_1\STM32H750VBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="main_board_rev2_1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

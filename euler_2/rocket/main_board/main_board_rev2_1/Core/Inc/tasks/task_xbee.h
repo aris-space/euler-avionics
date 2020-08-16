@@ -19,11 +19,8 @@
 
 /* defines */
 #define XBEE_SAMPLING_FREQ 10
-
 #define XBEE_SAMPLING_FREQ_HIGH 100
-#define CAMERA_ON 3500
-#define CAMERA_WAIT 1000
-#define CAMERA_TRIGGER 200
+
 
 /* extern */
 
