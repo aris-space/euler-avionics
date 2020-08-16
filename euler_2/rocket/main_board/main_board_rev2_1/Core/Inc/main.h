@@ -58,6 +58,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define SD_DET_Pin GPIO_PIN_13
+#define SD_DET_GPIO_Port GPIOC
 #define VSENS3V3_Pin GPIO_PIN_0
 #define VSENS3V3_GPIO_Port GPIOC
 #define VSENSBAT_Pin GPIO_PIN_1
@@ -66,6 +68,22 @@ void Error_Handler(void);
 #define CURRBAT1_GPIO_Port GPIOC
 #define CURRBAT2_Pin GPIO_PIN_0
 #define CURRBAT2_GPIO_Port GPIOB
+#define PW_HOLD_Pin GPIO_PIN_1
+#define PW_HOLD_GPIO_Port GPIOB
+#define CAMERA1_Pin GPIO_PIN_11
+#define CAMERA1_GPIO_Port GPIOE
+#define CAMERA2_Pin GPIO_PIN_12
+#define CAMERA2_GPIO_Port GPIOE
+#define LED3_Pin GPIO_PIN_11
+#define LED3_GPIO_Port GPIOD
+#define LED4_Pin GPIO_PIN_12
+#define LED4_GPIO_Port GPIOD
+#define BUZZER_Pin GPIO_PIN_13
+#define BUZZER_GPIO_Port GPIOD
+#define LED1_Pin GPIO_PIN_0
+#define LED1_GPIO_Port GPIOD
+#define LED2_Pin GPIO_PIN_1
+#define LED2_GPIO_Port GPIOD
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

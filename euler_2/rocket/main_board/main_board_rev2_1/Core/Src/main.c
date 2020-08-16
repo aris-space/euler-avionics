@@ -1,32 +1,41 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under Ultimate Liberty license
+ * SLA0044, the "License"; You may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at:
+ *                             www.st.com/SLA0044
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
 #include "fatfs.h"
 #include "usb_device.h"
-#include "Util/util.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "Util/util.h"
+#include "Util/mutex.h"
+#include "tasks/task_controller.h"
+#include "tasks/task_sens_read.h"
+#include "tasks/task_state_est.h"
+#include "tasks/task_motor_control.h"
+#include "tasks/task_fsm.h"
+#include "tasks/task_gps.h"
+#include "tasks/task_battery.h"
+#include "tasks/task_sd_card.h"
+#include "tasks/task_xbee.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -187,7 +196,74 @@ const osThreadAttr_t task_xbee_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
+/** SENSOR BOARD VARIABLES **/
 
+baro_data_t sb1_baro = { 0 };
+imu_data_t sb1_imu = { 0 };
+baro_data_t sb2_baro = { 0 };
+imu_data_t sb2_imu = { 0 };
+baro_data_t sb3_baro = { 0 };
+imu_data_t sb3_imu = { 0 };
+
+/** CONTROL VARIABLES **/
+
+state_est_data_t state_est_data_global = { 0 };
+int32_t controller_output_global = 0;
+env_t global_env = { 0 };
+flight_phase_detection_t global_flight_phase_detection = { 0 };
+
+/** TELEMETRY COMMAND **/
+command_e global_telemetry_command;
+
+/** MUTEXES **/
+
+/* Sensor Board */
+osMutexId_t sb1_mutex_only;
+custom_mutex_t sb1_mutex;
+osMutexId_t sb2_mutex_only;
+custom_mutex_t sb2_mutex;
+osMutexId_t sb3_mutex_only;
+custom_mutex_t sb3_mutex;
+
+/* Control */
+osMutexId_t environment_mutex_only;
+custom_mutex_t env_mutex;
+osMutexId_t state_est_mutex_only;
+custom_mutex_t state_est_mutex;
+osMutexId_t controller_mutex_only;
+custom_mutex_t controller_mutex;
+
+/* FSM */
+osMutexId_t fsm_mutex_only;
+custom_mutex_t fsm_mutex;
+
+/* GPS */
+gps_data_t globalGPS;
+
+osMutexId_t gps_mutex_only;
+custom_mutex_t gps_mutex;
+
+/* Motor Controller */
+osMutexId_t motor_mutex_only;
+custom_mutex_t motor_mutex;
+
+/* Battery */
+osMutexId_t battery_mutex_only;
+telemetry_battery_data_t global_battery_data;
+custom_mutex_t battery_mutex;
+
+/* Telemetry Command */
+osMutexId_t command_mutex_only;
+custom_mutex_t command_mutex;
+int32_t global_airbrake_extension;
+
+/* USB debugging */
+osMutexId_t usb_data_mutex_only;
+custom_mutex_t usb_data_mutex;
+char usb_data_buffer[256] = { 0 };
+
+/** Logging Queue **/
+osMessageQueueId_t log_queue;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -206,15 +282,15 @@ static void MX_USART2_UART_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_SPI4_Init(void);
 void StartDefaultTask(void *argument);
-//extern void vTaskStateEst(void *argument);
-//extern void vTaskController(void *argument);
-//extern void vTaskSensRead(void *argument);
-//extern void vTaskSdCard(void *argument);
-//extern void vTaskMotorCont(void *argument);
-//extern void vTaskFsm(void *argument);
-//extern void vTaskGps(void *argument);
-//extern void vTaskBattery(void *argument);
-//extern void vTaskXbee(void *argument);
+extern void vTaskStateEst(void *argument);
+extern void vTaskController(void *argument);
+extern void vTaskSensRead(void *argument);
+extern void vTaskSdCard(void *argument);
+extern void vTaskMotorCont(void *argument);
+extern void vTaskFsm(void *argument);
+extern void vTaskGps(void *argument);
+extern void vTaskBattery(void *argument);
+extern void vTaskXbee(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -248,7 +324,8 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+	init_env(&global_env);
+	reset_flight_phase_detection(&global_flight_phase_detection);
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -267,49 +344,175 @@ int main(void)
   MX_FATFS_Init();
   MX_SPI4_Init();
   /* USER CODE BEGIN 2 */
-
+  //MX_USB_DEVICE_Init();
   /* USER CODE END 2 */
 
   /* Init scheduler */
   osKernelInitialize();
 
   /* USER CODE BEGIN RTOS_MUTEX */
-#ifdef DEBUG
-	const osMutexAttr_t print_mutex_attr = {
-			"print_mutex",                            // human readable mutex name
-			osMutexPrioInherit,    					  // attr_bits
-			NULL,                                     // memory for control block
+	/* Sensor Board 1 Mutex */
+	const osMutexAttr_t sb1_mutex_attr = { "sb1_mutex_only", // human readable mutex name
+			osMutexPrioInherit,                       // attr_bits
+			NULL,                                    // memory for control block
 			0U                                        // size for control block
-	};
+			};
+
+	sb1_mutex_only = osMutexNew(&sb1_mutex_attr);
+
+	/* Sensor Board 2 Mutex */
+	const osMutexAttr_t sb2_mutex_attr = { "sb2_mutex_only", // human readable mutex name
+			osMutexPrioInherit,                       // attr_bits
+			NULL,                                    // memory for control block
+			0U                                        // size for control block
+			};
+
+	sb2_mutex_only = osMutexNew(&sb2_mutex_attr);
+
+	/* Sensor Board 3 Mutex */
+	const osMutexAttr_t sb3_mutex_attr = { "sb3_mutex_only", // human readable mutex name
+			osMutexPrioInherit,    					 // attr_bits
+			NULL,                                    // memory for control block
+			0U                                        // size for control block
+			};
+
+	sb3_mutex_only = osMutexNew(&sb3_mutex_attr);
+
+	/* State Estimation Output Mutex */
+	const osMutexAttr_t state_est_mutex_attr = { "state_est_mutex_only", // human readable mutex name
+			osMutexPrioInherit,    					 // attr_bits
+			NULL,                                    // memory for control block
+			0U                                        // size for control block
+			};
+
+	state_est_mutex_only = osMutexNew(&state_est_mutex_attr);
+
+	/* Controller Output Mutex */
+	const osMutexAttr_t controller_mutex_attr = { "controller_mutex_only", // human readable mutex name
+			osMutexPrioInherit,    					 // attr_bits
+			NULL,                                    // memory for control block
+			0U                                        // size for control block
+			};
+
+	controller_mutex_only = osMutexNew(&controller_mutex_attr);
+
+	/* FSM Output Mutex */
+	const osMutexAttr_t fsm_mutex_attr = { "fsm_mutex_only", // human readable mutex name
+			osMutexPrioInherit,    					 // attr_bits
+			NULL,                                    // memory for control block
+			0U                                        // size for control block
+			};
+
+	fsm_mutex_only = osMutexNew(&fsm_mutex_attr);
+
+	/* Environment Mutex */
+	const osMutexAttr_t environment_mutex_attr = { "environment_mutex_only", // human readable mutex name
+			osMutexPrioInherit,    					 // attr_bits
+			NULL,                                    // memory for control block
+			0U                                        // size for control block
+			};
+
+	environment_mutex_only = osMutexNew(&environment_mutex_attr);
+
+	/* USB Data Mutex */
+	const osMutexAttr_t usb_data_mutex_attr = { "usb_data_mutex_only", // human readable mutex name
+			osMutexPrioInherit,    					 // attr_bits
+			NULL,                                    // memory for control block
+			0U                                        // size for control block
+			};
+
+	usb_data_mutex_only = osMutexNew(&usb_data_mutex_attr);
+
+	/* Command Mutex */
+	const osMutexAttr_t command_mutex_attr = { "command_mutex_only", // human readable mutex name
+			osMutexPrioInherit,    					 // attr_bits
+			NULL,                                    // memory for control block
+			0U                                        // size for control block
+			};
+
+	command_mutex_only = osMutexNew(&command_mutex_attr);
+
+	/* GPS Mutex */
+	const osMutexAttr_t gps_mutex_attr = { "gps_mutex_only", // human readable mutex name
+			osMutexPrioInherit,    					 // attr_bits
+			NULL,                                    // memory for control block
+			0U                                        // size for control block
+			};
+
+	gps_mutex_only = osMutexNew(&gps_mutex_attr);
+
+	/* Battery Mutex */
+	const osMutexAttr_t battery_mutex_attr = { "battery_mutex_only", // human readable mutex name
+			osMutexPrioInherit,    					 // attr_bits
+			NULL,                                    // memory for control block
+			0U                                        // size for control block
+			};
+
+	battery_mutex_only = osMutexNew(&battery_mutex_attr);
+
+	/* Motor Mutex */
+	const osMutexAttr_t motor_mutex_attr = { "motor_mutex_only", // human readable mutex name
+			osMutexPrioInherit,    					 // attr_bits
+			NULL,                                    // memory for control block
+			0U                                        // size for control block
+			};
+
+	motor_mutex_only = osMutexNew(&motor_mutex_attr);
+
+	/** Initialise Mutexes **/
+
+	sb1_mutex.mutex = sb1_mutex_only;
+	sb2_mutex.mutex = sb2_mutex_only;
+	sb3_mutex.mutex = sb3_mutex_only;
+	env_mutex.mutex = environment_mutex_only;
+	fsm_mutex.mutex = fsm_mutex_only;
+	controller_mutex.mutex = controller_mutex_only;
+	state_est_mutex.mutex = state_est_mutex_only;
+	usb_data_mutex.mutex = usb_data_mutex_only;
+	command_mutex.mutex = command_mutex_only;
+	gps_mutex.mutex = gps_mutex_only;
+	battery_mutex.mutex = battery_mutex_only;
+	motor_mutex.mutex = motor_mutex_only;
+
+	global_flight_phase_detection.flight_phase = IDLE;
+	global_flight_phase_detection.mach_regime = SUBSONIC;
+	global_telemetry_command = IDLE_COMMAND;
+
+#ifdef DEBUG
+	const osMutexAttr_t print_mutex_attr = { "print_mutex", // human readable mutex name
+			osMutexPrioInherit,    					  // attr_bits
+			NULL,                                    // memory for control block
+			0U                                        // size for control block
+			};
 
 	print_mutex = osMutexNew(&print_mutex_attr);
 #endif
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
-  /* add semaphores, ... */
+	/* add semaphores, ... */
   /* USER CODE END RTOS_SEMAPHORES */
 
   /* USER CODE BEGIN RTOS_TIMERS */
-  /* start timers, add new ones, ... */
+	/* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
+	log_queue = osMessageQueueNew(LOG_QUEUE_SIZE, sizeof(log_entry_t), NULL);
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-//  /* creation of task_state_est */
+  /* creation of task_state_est */
 //  task_state_estHandle = osThreadNew(vTaskStateEst, NULL, &task_state_est_attributes);
 //
 //  /* creation of task_controller */
 //  task_controllerHandle = osThreadNew(vTaskController, NULL, &task_controller_attributes);
 //
 //  /* creation of task_sens_read */
-//  task_sens_readHandle = osThreadNew(vTaskSensRead, NULL, &task_sens_read_attributes);
+  task_sens_readHandle = osThreadNew(vTaskSensRead, NULL, &task_sens_read_attributes);
 //
 //  /* creation of task_sd_card */
 //  task_sd_cardHandle = osThreadNew(vTaskSdCard, NULL, &task_sd_card_attributes);
@@ -330,7 +533,7 @@ int main(void)
 //  task_xbeeHandle = osThreadNew(vTaskXbee, NULL, &task_xbee_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
+	/* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
@@ -339,12 +542,11 @@ int main(void)
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+	while (1) {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+	}
   /* USER CODE END 3 */
 }
 
@@ -412,7 +614,7 @@ void SystemClock_Config(void)
                               |RCC_PERIPHCLK_SPI2|RCC_PERIPHCLK_SDMMC
                               |RCC_PERIPHCLK_ADC|RCC_PERIPHCLK_USB;
   PeriphClkInitStruct.PLL2.PLL2M = 1;
-  PeriphClkInitStruct.PLL2.PLL2N = 18;
+  PeriphClkInitStruct.PLL2.PLL2N = 19;
   PeriphClkInitStruct.PLL2.PLL2P = 1;
   PeriphClkInitStruct.PLL2.PLL2Q = 2;
   PeriphClkInitStruct.PLL2.PLL2R = 2;
@@ -993,37 +1195,37 @@ static void MX_DMA_Init(void)
 
   /* DMA interrupt init */
   /* DMA1_Stream0_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
   /* DMA1_Stream1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
   /* DMA1_Stream2_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream2_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA1_Stream2_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream2_IRQn);
   /* DMA1_Stream3_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream3_IRQn);
   /* DMA1_Stream4_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream4_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA1_Stream4_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream4_IRQn);
   /* DMA1_Stream5_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
   /* DMA1_Stream6_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);
   /* DMA1_Stream7_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Stream7_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream7_IRQn);
   /* DMA2_Stream0_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
   /* DMA2_Stream1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA2_Stream1_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA2_Stream1_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream1_IRQn);
   /* DMA2_Stream4_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA2_Stream4_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA2_Stream4_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream4_IRQn);
 
 }
@@ -1045,11 +1247,44 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
-  /*Configure GPIO pin : PC13 */
-  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(PW_HOLD_GPIO_Port, PW_HOLD_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOE, CAMERA1_Pin|CAMERA2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOD, LED3_Pin|LED4_Pin|BUZZER_Pin|LED1_Pin
+                          |LED2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : SD_DET_Pin */
+  GPIO_InitStruct.Pin = SD_DET_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HAL_GPIO_Init(SD_DET_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PW_HOLD_Pin */
+  GPIO_InitStruct.Pin = PW_HOLD_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(PW_HOLD_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : CAMERA1_Pin CAMERA2_Pin */
+  GPIO_InitStruct.Pin = CAMERA1_Pin|CAMERA2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : LED3_Pin LED4_Pin BUZZER_Pin LED1_Pin
+                           LED2_Pin */
+  GPIO_InitStruct.Pin = LED3_Pin|LED4_Pin|BUZZER_Pin|LED1_Pin
+                          |LED2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
 }
 
@@ -1059,22 +1294,21 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN Header_StartDefaultTask */
 /**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used
-  * @retval None
-  */
+ * @brief  Function implementing the defaultTask thread.
+ * @param  argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument)
 {
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 5 */
-  /* Infinite loop */
-  for(;;)
-  {
-	UsbPrint("asdf");
-    osDelay(100);
-  }
+	/* Infinite loop */
+	for (;;) {
+		UsbPrint("Asdf");
+		osDelay(1000);
+	}
   /* USER CODE END 5 */
 }
 
@@ -1106,7 +1340,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
+	/* User can add his own implementation to report the HAL error return state */
 
   /* USER CODE END Error_Handler_Debug */
 }

@@ -193,7 +193,7 @@ osStatus_t logMsg(timestamp_t ts, char *msg);
 
 #ifdef DEBUG
 osMutexId_t print_mutex;
-#define PRINT_BUFFER_LEN 200
+#define PRINT_BUFFER_LEN 300
 char print_buffer[PRINT_BUFFER_LEN];
 #endif
 
