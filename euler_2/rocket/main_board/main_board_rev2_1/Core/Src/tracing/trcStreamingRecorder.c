@@ -52,7 +52,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "trcExtensions.h"
+#include "tracing/trcExtensions.h"
 
 uint32_t trcHeapCounter = 0;
 

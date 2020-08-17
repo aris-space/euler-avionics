@@ -97,7 +97,7 @@ extern "C" {
  * TRC_RECORDER_MODE_SNAPSHOT
  * TRC_RECORDER_MODE_STREAMING
  ******************************************************************************/
-#define TRC_CFG_RECORDER_MODE TRC_RECORDER_MODE_SNAPSHOT
+#define TRC_CFG_RECORDER_MODE TRC_RECORDER_MODE_STREAMING
 
 /******************************************************************************
  * TRC_CFG_FREERTOS_VERSION
@@ -292,7 +292,7 @@ extern "C" {
  *
  * Default value is 10.
  *****************************************************************************/
-#define TRC_CFG_STACK_MONITOR_MAX_TASKS 10
+#define TRC_CFG_STACK_MONITOR_MAX_TASKS 15
 
  /******************************************************************************
  * TRC_CFG_STACK_MONITOR_MAX_REPORTS

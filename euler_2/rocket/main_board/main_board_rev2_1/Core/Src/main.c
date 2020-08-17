@@ -327,7 +327,7 @@ int main(void) {
 	/* USER CODE BEGIN 2 */
 	MX_USB_DEVICE_Init();
 #if ( configUSE_TRACE_FACILITY == 1 )
-	vTraceEnable(TRC_START);
+	vTraceEnable(TRC_INIT);
 #endif
 	/* USER CODE END 2 */
 
@@ -1272,6 +1272,8 @@ void StartDefaultTask(void *argument) {
 	MX_USB_DEVICE_Init();
 	/* USER CODE BEGIN 5 */
 	/* Infinite loop */
+	osDelay(5000);
+	vTraceEnable(TRC_START);
 	for (;;) {
 		osDelay(1000);
 	}

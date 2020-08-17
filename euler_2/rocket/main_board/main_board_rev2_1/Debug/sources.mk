@@ -25,6 +25,7 @@ Core/Src/Sim_Con \
 Core/Src/Util \
 Core/Src \
 Core/Src/tasks \
+Core/Src/tracing/streamports \
 Core/Src/tracing \
 Core/Startup \
 Drivers/STM32H7xx_HAL_Driver/Src \

@@ -90,7 +90,7 @@ typedef const char* traceString;
 typedef const void* traceHandle;
 
 #include "trcHardwarePort.h"
-#include "trcStreamingPort.h"
+#include "tracing/streamports/trcStreamingPort.h"
 #include "trcKernelPort.h"
 
 #endif /* (TRC_CFG_RECORDER_MODE == TRC_RECORDER_MODE_STREAMING) */
