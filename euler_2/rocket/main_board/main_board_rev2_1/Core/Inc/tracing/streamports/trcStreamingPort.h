@@ -54,31 +54,13 @@ extern "C" {
 /* Include files as needed, in this case it is files from STM32Cube FW_F7 V1.4.1 */
 #include "usb_device.h"
 #include "usbd_cdc.h"
-#include "usbd_CDC_if.h"
-#include "usb_device.h"
-
-
-#define BUFSIZE 64
-
-#define APP_RX_DATA_SIZE  2048
-#define APP_TX_DATA_SIZE  2048
-
-typedef struct{
-	uint32_t idx;
-	uint8_t data[BUFSIZE];
-}recBuf;
-
+#include "usbd_cdc_if.h"
 
 /* Tested on STM32 devices using Keil/CMSIS USB stack */
 
-extern USBD_CDC_ItfTypeDef  USBD_Interface_fops_FS;
+int32_t trcCDCReceive(void *data, uint32_t size, int32_t *NumBytes);
 
-//uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
-int8_t CDC_Receive_FS  (uint8_t* pbuf, uint32_t *Len);
-
-int32_t trcCDCReceive(void *data, uint32_t size, int32_t* NumBytes);
-
-int32_t trcCDCTransmit(void* data, uint32_t size, int32_t * noOfBytesSent );
+int32_t trcCDCTransmit(void *data, uint32_t size, int32_t *noOfBytesSent);
 
 #define TRC_STREAM_PORT_INIT() \
         MX_USB_DEVICE_Init(); \
@@ -87,7 +69,6 @@ int32_t trcCDCTransmit(void* data, uint32_t size, int32_t * noOfBytesSent );
 #define TRC_STREAM_PORT_READ_DATA(_ptrData, _size, _ptrBytesRead) trcCDCReceive(_ptrData, _size, _ptrBytesRead)
 
 #define TRC_STREAM_PORT_WRITE_DATA(_ptrData, _size, _ptrBytesSent) trcCDCTransmit(_ptrData, _size, _ptrBytesSent)
-
 
 #ifdef __cplusplus
 }
