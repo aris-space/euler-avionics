@@ -1,4 +1,5 @@
 "Core/Src/EPOS4/epos4.o"
+"Core/Src/Flash/flash_driver.o"
 "Core/Src/GPS/gps.o"
 "Core/Src/Sim_Con/controller.o"
 "Core/Src/Sim_Con/env.o"
@@ -18,6 +19,7 @@
 "Core/Src/system_stm32h7xx.o"
 "Core/Src/tasks/task_battery.o"
 "Core/Src/tasks/task_controller.o"
+"Core/Src/tasks/task_flash.o"
 "Core/Src/tasks/task_fsm.o"
 "Core/Src/tasks/task_gps.o"
 "Core/Src/tasks/task_motor_control.o"

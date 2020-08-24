@@ -24,6 +24,7 @@
 
 /* USER CODE BEGIN INCLUDE */
 #include "cmsis_os2.h"
+#include "FreeRTOSConfig.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -281,7 +282,9 @@ uint8_t CDC_Transmit_FS(uint8_t *Buf, uint16_t Len) {
 	}
 	USBD_CDC_SetTxBuffer(&hUsbDeviceFS, Buf, Len);
 	result = USBD_CDC_TransmitPacket(&hUsbDeviceFS);
+#if ( configUSE_TRACE_FACILITY == 1 )
 	osDelay(2);
+#endif
 	/* USER CODE END 7 */
 	return result;
 }

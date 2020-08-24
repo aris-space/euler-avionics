@@ -35,19 +35,19 @@ void vTaskSensRead(void *argument) {
 		} else {
 			ReadDataSB(&sb1_data, &sb2_data, &sb3_data);
 		}
-		UsbPrint(
-				"[SB1] P: %ld,T: %ld,Ts: %ld;Gx: %hd,Gy: %hd,Gz: %hd, Ax: %hd,Ay: %hd,Az: %hd,Ts: %ld\n",
-				sb1_data.baro.pressure, sb1_data.baro.temperature,
-				sb1_data.baro.ts, sb1_data.imu.gyro_x, sb1_data.imu.gyro_y,
-				sb1_data.imu.gyro_z, sb1_data.imu.acc_x, sb1_data.imu.acc_y,
-				sb1_data.imu.acc_z, sb1_data.imu.ts);
-
-		UsbPrint(
-				"[SB2] P: %ld,T: %ld,Ts: %ld;Gx: %hd,Gy: %hd,Gz: %hd, Ax: %hd,Ay: %hd,Az: %hd,Ts: %ld\n",
-				sb2_data.baro.pressure, sb2_data.baro.temperature,
-				sb2_data.baro.ts, sb2_data.imu.gyro_x, sb2_data.imu.gyro_y,
-				sb2_data.imu.gyro_z, sb2_data.imu.acc_x, sb2_data.imu.acc_y,
-				sb2_data.imu.acc_z, sb2_data.imu.ts);
+//		UsbPrint(
+//				"[SB1] P: %ld,T: %ld,Ts: %ld;Gx: %hd,Gy: %hd,Gz: %hd, Ax: %hd,Ay: %hd,Az: %hd,Ts: %ld\n",
+//				sb1_data.baro.pressure, sb1_data.baro.temperature,
+//				sb1_data.baro.ts, sb1_data.imu.gyro_x, sb1_data.imu.gyro_y,
+//				sb1_data.imu.gyro_z, sb1_data.imu.acc_x, sb1_data.imu.acc_y,
+//				sb1_data.imu.acc_z, sb1_data.imu.ts);
+//
+//		UsbPrint(
+//				"[SB2] P: %ld,T: %ld,Ts: %ld;Gx: %hd,Gy: %hd,Gz: %hd, Ax: %hd,Ay: %hd,Az: %hd,Ts: %ld\n",
+//				sb2_data.baro.pressure, sb2_data.baro.temperature,
+//				sb2_data.baro.ts, sb2_data.imu.gyro_x, sb2_data.imu.gyro_y,
+//				sb2_data.imu.gyro_z, sb2_data.imu.acc_x, sb2_data.imu.acc_y,
+//				sb2_data.imu.acc_z, sb2_data.imu.ts);
 
 		/* Log Data */
 		logSensor(tick_count, 1, BARO, &sb1_data.baro);

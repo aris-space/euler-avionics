@@ -20,6 +20,7 @@ OBJCOPY_BIN :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 Core/Src/EPOS4 \
+Core/Src/Flash \
 Core/Src/GPS \
 Core/Src/Sim_Con \
 Core/Src/Util \

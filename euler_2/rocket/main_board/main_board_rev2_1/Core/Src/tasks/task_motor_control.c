@@ -69,7 +69,7 @@ void vTaskMotorCont(void *argument) {
 		ReadMutex(&command_mutex, &global_telemetry_command, &telemetry_command,
 				sizeof(global_telemetry_command));
 
-		UsbPrint("[MOTOR] Read Position:%d\n", measured_motor_position);
+		//UsbPrint("[MOTOR] Read Position:%d\n", measured_motor_position);
 
 		/* Read FSM State */
 		ReadMutex(&fsm_mutex, &global_flight_phase_detection,

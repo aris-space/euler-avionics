@@ -146,9 +146,9 @@ void vTaskStateEst(void *argument) {
 			ReleaseMutex(&state_est_mutex);
 		}
 
-		UsbPrint("[DBG] Height: %d; Velocity: %d; t: %lu\n",
-				state_est_data_global.position_world[2],
-				state_est_data_global.velocity_world[2], tick_count);
+//		UsbPrint("[DBG] Height: %d; Velocity: %d; t: %lu\n",
+//				state_est_data_global.position_world[2],
+//				state_est_data_global.velocity_world[2], tick_count);
 
 		/* Update env for FSM */
 		if (AcquireMutex(&fsm_mutex) == osOK) {
