@@ -135,8 +135,8 @@ __pycache__
 Read the Docs
 config.rst
 *.iml
-/.project
-/.pydevproject
+.project
+.pydevproject
 
 package-lock.json
 geckodriver.log
@@ -152,3 +152,9 @@ geckodriver.log
 .vscode
 
 livestreaming/overlays/web/venv
+
+RemoteSystemsTempFiles/
+
+Debug/
+Release/
+
