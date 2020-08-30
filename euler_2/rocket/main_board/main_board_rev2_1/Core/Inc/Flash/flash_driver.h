@@ -18,17 +18,19 @@ typedef enum {
 	flash_BUSY = 1, flash_IDLE
 } flashStatus_t;
 
-typedef struct{
+typedef struct {
+	char s[5];
 	uint32_t data[5];
-}test_data_t;
+} test_data_t;
 
 /* Functions */
 int32_t read_chip_id();
 flashStatus_t check_busy();
-osStatus_t write_data(uint32_t address, void const* data, uint16_t size);
+osStatus_t write_data(uint32_t address, void const *data, uint16_t size);
 osStatus_t write_command(uint8_t *write_data, uint16_t size);
-osStatus_t read_data(uint32_t address, void* const data, uint16_t size);
-osStatus_t write_read_command(uint8_t *write_data, uint8_t *read_data, uint16_t size);
+osStatus_t read_data(uint32_t address, void *const data, uint16_t size);
+osStatus_t write_read_command(uint8_t *write_data, uint8_t *read_data,
+		uint16_t size);
 osStatus_t erase_4KB(uint32_t address);
 osStatus_t erase_32KB(uint32_t address);
 osStatus_t erase_64KB(uint32_t address);
@@ -51,8 +53,5 @@ osStatus_t erase_chip();
 #define DEVICE_ID_REGISTER 0x90
 #define READ_STATUS_REGISTER_2 0x35
 #define READ_STATUS_REGISTER_3 0x15
-
-
-
 
 #endif /* INC_FLASH_FLASH_DRIVER_H_ */

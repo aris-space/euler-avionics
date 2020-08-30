@@ -18,13 +18,12 @@ void vTaskFlash(void *argument) {
 
 //	uint32_t data_write = 0xFFFF0000;
 
-	test_data_t data_write;
-	test_data_t data_read;
+	test_data_t data_write = { .data = { 0 }, .s = { 'a', 'b', 'c' } };
+	test_data_t data_read = { .data = { -1 }, .s = { 'd', 'e', 'f' } };
 
-
-	for(int i = 0; i < 5; i++){
-		data_write.data[i] = i;
-	}
+//	for (int i = 0; i < 5; i++) {
+//		data_write.data[i] = i;
+//	}
 
 //	uint32_t data_read = 0;
 
@@ -40,19 +39,37 @@ void vTaskFlash(void *argument) {
 
 		/* WORK */
 		osDelay(1);
-		chip_id =  read_chip_id();
+		chip_id = read_chip_id();
 		osDelay(1);
 		write_data(address, &data_write, sizeof(data_write));
 		osDelay(1);
-		read_data(address-sizeof(data_write)+4, &data_read, sizeof(data_read));
+		read_data(address - sizeof(data_write) + 4, &data_read,
+				sizeof(data_read));
+//		read_data(address, &data_read, sizeof(data_read));
+		UsbPrint(
+				"[FLASH]: ID: %ld, D0: %ld, D1: %ld, D2: %ld, D3: %ld, D4: %ld, S: %s\n",
+				chip_id, data_read.data[0], data_read.data[1],
+				data_read.data[2], data_read.data[3], data_read.data[4],
+				data_read.s);
+		address += sizeof(data_write) + 4; //0x100
 
-		UsbPrint("[FLASH]: ID: %ld, D0: %ld\n", chip_id, data_read.data[2]);
-		address += 0x100;
+		data_write.data[0]++;
+		data_write.data[1] += 2;
+		data_write.data[2] += 3;
+		data_write.data[3] += 4;
+		data_write.data[4] += 5;
 
-		data_write.data[2]++;
+		if (data_write.data[1] % 10 == 0) {
+			data_write.s[0] = 'x';
+			data_write.s[1] = 'y';
+			data_write.s[2] = 'z';
+		} else {
+			data_write.s[0] = 'a';
+			data_write.s[1] = 'b';
+			data_write.s[2] = 'c';
+		}
 
-		if (counter == 10)
-		{
+		if (counter == 10) {
 			erase_4KB(start_address);
 			counter = 1;
 			address = start_address;
@@ -62,5 +79,3 @@ void vTaskFlash(void *argument) {
 		osDelayUntil(tick_count);
 	}
 }
-
-

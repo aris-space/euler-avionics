@@ -192,7 +192,7 @@ void vTaskSdCard(void *argument) {
 				if (msgCounter >= SYNC_AFTER_COUNT) {
 					msgCounter = 0;
 
-					UsbPrint("[STORAGE TASK] Syncing file..\n");
+					//UsbPrint("[STORAGE TASK] Syncing file..\n");
 					HAL_GPIO_TogglePin(LED4_GPIO_Port, LED4_Pin);
 					res = f_sync(&EULER_LOG_FILE);
 					if (res != FR_OK) {
