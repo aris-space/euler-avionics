@@ -8,14 +8,16 @@
 #include "fatfs.h"
 
 #include "tasks/task_sd_card.h"
+#include "Util/util.h"
+#include "Flash/w25qxx.h"
 
 #include <float.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <Util/util.h>
 
 extern Disk_drvTypeDef disk;
+extern logging_mode_e logging_mode;
 
 FATFS EULER_FatFS;
 FIL EULER_LOG_FILE;
@@ -161,60 +163,183 @@ void vTaskSdCard(void *argument) {
 			UsbPrint("[STORAGE TASK] Failed going to end of file: %d\n", res);
 			goto resetSDCard;
 		}
-
-		volatile int32_t msgCounter = 0;
-		char log_header[32] = "Timestamp;Log Entry Type;Data\n";
-		uint32_t num_bytes = 0;
-		res = f_write(&EULER_LOG_FILE, log_header, strlen(log_header),
-				&EULER_bytesSD);
-		if (res != FR_OK) {
-			UsbPrint("[STORAGE TASK] Failed writing to file: %d\n", res);
-			goto resetSDCard;
-		}
-		log_entry_t log_entry = { 0 };
-		HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
-		for (;;) {
-			if (osMessageQueueGet(log_queue, &log_entry, NULL,
-			osWaitForever) == osOK) {
-				num_bytes = strlen(log_entry.str);
-				if (num_bytes > 0) {
-					res = f_write(&EULER_LOG_FILE, log_entry.str, num_bytes,
-							&EULER_bytesSD);
-					if (res != FR_OK) {
-						UsbPrint("[STORAGE TASK] Failed writing to file: %d\n",
-								res);
-						goto resetSDCard;
+		switch (logging_mode) {
+		case DIRECT: {
+			volatile int32_t msgCounter = 0;
+			char log_header[32] = "Timestamp;Log Entry Type;Data\n";
+			uint32_t num_bytes = 0;
+			res = f_write(&EULER_LOG_FILE, log_header, strlen(log_header),
+					&EULER_bytesSD);
+			if (res != FR_OK) {
+				UsbPrint("[STORAGE TASK] Failed writing to file: %d\n", res);
+				goto resetSDCard;
+			}
+			log_entry_t log_entry = { 0 };
+			HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
+			for (;;) {
+				if (osMessageQueueGet(log_queue, &log_entry, NULL,
+				osWaitForever) == osOK) {
+					num_bytes = strlen(log_entry.str);
+					if (num_bytes > 0) {
+						res = f_write(&EULER_LOG_FILE, log_entry.str, num_bytes,
+								&EULER_bytesSD);
+						if (res != FR_OK) {
+							UsbPrint(
+									"[STORAGE TASK] Failed writing to file: %d\n",
+									res);
+							goto resetSDCard;
+						}
 					}
-				}
-
-				msgCounter++;
-
-				if (msgCounter >= SYNC_AFTER_COUNT) {
-					msgCounter = 0;
-
-					//UsbPrint("[STORAGE TASK] Syncing file..\n");
-					HAL_GPIO_TogglePin(LED4_GPIO_Port, LED4_Pin);
-					res = f_sync(&EULER_LOG_FILE);
-					if (res != FR_OK) {
-						UsbPrint("[STORAGE TASK] Failed syncing file: %d\n",
-								res);
-						goto resetSDCard;
-					}
-
-					;
-
-					// if the rocket landed, create a new file and write to that one
-					if (ReadMutex(&fsm_mutex, &global_flight_phase_detection,
-							&local_flight_phase,
-							sizeof(global_flight_phase_detection)) == osOK
-							&& local_flight_phase.flight_phase == RECOVERY) {
-						f_close(&EULER_LOG_FILE);
-						// "clean" current file name
-						EULER_LOG_FILE_NAME[0] = 0;
-						goto logToNewFile;
+					msgCounter++;
+					if (msgCounter >= SYNC_AFTER_COUNT) {
+						msgCounter = 0;
+						//UsbPrint("[STORAGE TASK] Syncing file..\n");
+						HAL_GPIO_TogglePin(LED4_GPIO_Port, LED4_Pin);
+						res = f_sync(&EULER_LOG_FILE);
+						if (res != FR_OK) {
+							UsbPrint("[STORAGE TASK] Failed syncing file: %d\n",
+									res);
+							goto resetSDCard;
+						}
+						// if the rocket landed, create a new file and write to that one
+						if (ReadMutex(&fsm_mutex,
+								&global_flight_phase_detection,
+								&local_flight_phase,
+								sizeof(global_flight_phase_detection)) == osOK
+								&& local_flight_phase.flight_phase
+										== RECOVERY) {
+							f_close(&EULER_LOG_FILE);
+							// "clean" current file name
+							EULER_LOG_FILE_NAME[0] = 0;
+							goto logToNewFile;
+						}
 					}
 				}
 			}
 		}
+			break;
+		case FLASHY: {
+			uint16_t sector_id = -1;
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			/* TODO [nemanja] - free this thing!!! if we jump with goto we're doomed */
+			uint8_t *logf_buffer_read = (uint8_t*) calloc(4096,
+					sizeof(uint8_t));
+			for (;;) {
+				if (osMessageQueueGet(logf_sector_queue, &sector_id, NULL,
+				osWaitForever) == osOK) {
+					UsbPrint("[STORAGE TASK] Logging sector: %hu\n", sector_id);
+					W25qxx_ReadSector(logf_buffer_read, sector_id, 0, 4096);
+					uint16_t logf_buffer_read_idx = 0;
+					uint16_t log_elem_size = 0;
+					char print_buf[200] = { 0 };
+					while (logf_buffer_read_idx < 4096) {
+						uint8_t log_type_uint8_t =
+								logf_buffer_read[logf_buffer_read_idx++];
+						log_entry_type_e log_type =
+								(log_entry_type_e) log_type_uint8_t;
+						switch (log_type) {
+						case SENSOR: {
+							log_elem_size = sizeof(sensor_log_elem_t);
+							sensor_log_elem_t sensor_log;
+							memcpy(&sensor_log,
+									&logf_buffer_read[logf_buffer_read_idx],
+									log_elem_size);
+							snprintf(print_buf + strlen(print_buf), 200,
+									"[FLASH]: Sector#: %hu, Page#: %hu; Sensor data: %lu;%d;%hi,%d,",
+									sector_id, logf_buffer_read_idx / 256,
+									sensor_log.ts, SENSOR,
+									sensor_log.sensor_board_id,
+									sensor_log.sens_type);
+							switch (sensor_log.sens_type) {
+							case BARO: {
+								baro_data_t *baro_data_ptr =
+										(baro_data_t*) &sensor_log.sensor_data.baro;
+								snprintf(print_buf + strlen(print_buf), 200,
+										"P: %ld,T: %ld,Ts: %lu\n",
+										baro_data_ptr->pressure,
+										baro_data_ptr->temperature,
+										baro_data_ptr->ts);
+							}
+								break;
+							case IMU: {
+								imu_data_t *imu_data_ptr =
+										(imu_data_t*) &sensor_log.sensor_data.imu;
+								snprintf(print_buf + strlen(print_buf), 200,
+										"Ax: %hd, Ay: %hd, Az: %hd,Gx: %hd,Gy: %hd,Gz: %hd,Ts: %lu\n",
+										imu_data_ptr->acc_x,
+										imu_data_ptr->acc_y,
+										imu_data_ptr->acc_z,
+										imu_data_ptr->gyro_x,
+										imu_data_ptr->gyro_y,
+										imu_data_ptr->gyro_z, imu_data_ptr->ts);
+							}
+								break;
+							case BATTERY: {
+								battery_data_t *battery_data_ptr =
+										(battery_data_t*) &sensor_log.sensor_data.bat;
+								snprintf(print_buf + strlen(print_buf), 200,
+										"%hd,%hd,%hd,%hd\n",
+										battery_data_ptr->battery,
+										battery_data_ptr->consumption,
+										battery_data_ptr->current,
+										battery_data_ptr->supply);
+								break;
+							}
+							default: {
+								snprintf(print_buf + strlen(print_buf), 200,
+										"[FLASH] Sensor type not recognized!\n");
+								break;
+							}
+							}
+						}
+							break;
+						case MSG: {
+							/* first elem of log msg is its size */
+							log_elem_size =
+									logf_buffer_read[logf_buffer_read_idx++];
+							char str_log[LOG_BUFFER_LEN];
+							memcpy(&str_log,
+									&logf_buffer_read[logf_buffer_read_idx],
+									log_elem_size);
+							snprintf(print_buf + strlen(print_buf), 200,
+									"[FLASH]: Sector#: %hu, Page#: %hu; Strlen: %d, Msg: %s\n",
+									sector_id, logf_buffer_read_idx / 256,
+									log_elem_size, str_log);
+						}
+							break;
+						default: {
+							logf_buffer_read_idx = 4096;
+							snprintf(print_buf + strlen(print_buf), 200,
+									"[FLASH] Log type not recognized while reading!\n");
+						}
+						}
+						logf_buffer_read_idx += log_elem_size;
+						UsbPrint(print_buf);
+						print_buf[0] = 0;
+					}
+				}
+			}
+		}
+			break;
+		default:
+			break;
+		}
+
 	}
 }

@@ -188,3 +188,5 @@ uint8_t UsbPrint(const char *format, ...) {
 #endif
 	return ret;
 }
+
+logging_mode_e logging_mode = FLASHY;

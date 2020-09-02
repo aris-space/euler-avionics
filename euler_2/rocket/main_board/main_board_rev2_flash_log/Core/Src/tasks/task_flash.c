@@ -18,8 +18,6 @@ void vTaskFlash(void *argument) {
 	uint8_t *logf_buffer = (uint8_t*) calloc(4096, sizeof(uint8_t));
 	uint16_t logf_buffer_idx = 0;
 
-	uint8_t *logf_buffer_read = (uint8_t*) calloc(4096, sizeof(uint8_t));
-
 	tick_update = osKernelGetTickFreq() / FLASH_SAMPLING_FREQ;
 	tick_count = osKernelGetTickCount();
 
@@ -68,7 +66,7 @@ void vTaskFlash(void *argument) {
 		while (logf_buffer_idx <= (4096 - sizeof(flash_log_elem_t))) {
 			if (osMessageQueueGet(logf_queue, &curr_log_elem, NULL,
 			osWaitForever) == osOK) {
-				UsbPrint("Queue size:%d", osMessageQueueGetCount(logf_queue));
+				//UsbPrint("Queue size:%d", osMessageQueueGetCount(logf_queue));
 				uint16_t log_elem_size = 0;
 				uint8_t log_type_uint8_t = (uint8_t) curr_log_elem.log_type;
 				logf_buffer[logf_buffer_idx++] = log_type_uint8_t;
@@ -98,6 +96,8 @@ void vTaskFlash(void *argument) {
 		UsbPrint("[FLASH] logf_buffer_filled.\n");
 		HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
 		W25qxx_WriteSector(logf_buffer, sector_id, 0, 4096);
+		/* TODO [nemanja]: check return value of QueuePut */
+		osMessageQueuePut(logf_sector_queue, &sector_id, 0U, 0U);
 		HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
 		UsbPrint("[FLASH] Sector %hu filled.\n", sector_id);
 
@@ -107,86 +107,6 @@ void vTaskFlash(void *argument) {
 			W25qxx_EraseChip();
 			UsbPrint("[FLASH] Data on chip erased!\n");
 		} else {
-			W25qxx_ReadSector(logf_buffer_read, sector_id, 0, 4096);
-			uint16_t logf_buffer_read_idx = 0;
-			uint16_t log_elem_size = 0;
-			char print_buf[200] = { 0 };
-			while (logf_buffer_read_idx < 4096) {
-				uint8_t log_type_uint8_t =
-						logf_buffer_read[logf_buffer_read_idx++];
-				log_entry_type_e log_type = (log_entry_type_e) log_type_uint8_t;
-				switch (log_type) {
-				case SENSOR: {
-					log_elem_size = sizeof(sensor_log_elem_t);
-					sensor_log_elem_t sensor_log;
-					memcpy(&sensor_log, &logf_buffer_read[logf_buffer_read_idx],
-							log_elem_size);
-					snprintf(print_buf + strlen(print_buf), 200,
-							"[FLASH]: Sector#: %hu, Page#: %hu; Sensor data: %lu;%d;%hi,%d,",
-							sector_id, logf_buffer_read_idx / 256,
-							sensor_log.ts, SENSOR, sensor_log.sensor_board_id,
-							sensor_log.sens_type);
-					switch (sensor_log.sens_type) {
-					case BARO: {
-						baro_data_t *baro_data_ptr =
-								(baro_data_t*) &sensor_log.sensor_data.baro;
-						snprintf(print_buf + strlen(print_buf), 200,
-								"P: %ld,T: %ld,Ts: %lu\n",
-								baro_data_ptr->pressure,
-								baro_data_ptr->temperature, baro_data_ptr->ts);
-					}
-						break;
-					case IMU: {
-						imu_data_t *imu_data_ptr =
-								(imu_data_t*) &sensor_log.sensor_data.imu;
-						snprintf(print_buf + strlen(print_buf), 200,
-								"Ax: %hd, Ay: %hd, Az: %hd,Gx: %hd,Gy: %hd,Gz: %hd,Ts: %lu\n",
-								imu_data_ptr->acc_x, imu_data_ptr->acc_y,
-								imu_data_ptr->acc_z, imu_data_ptr->gyro_x,
-								imu_data_ptr->gyro_y, imu_data_ptr->gyro_z,
-								imu_data_ptr->ts);
-					}
-						break;
-					case BATTERY: {
-						battery_data_t *battery_data_ptr =
-								(battery_data_t*) &sensor_log.sensor_data.bat;
-						snprintf(print_buf + strlen(print_buf), 200,
-								"%hd,%hd,%hd,%hd\n", battery_data_ptr->battery,
-								battery_data_ptr->consumption,
-								battery_data_ptr->current,
-								battery_data_ptr->supply);
-						break;
-					}
-					default: {
-						snprintf(print_buf + strlen(print_buf), 200,
-								"[FLASH] Sensor type not recognized!\n");
-						break;
-					}
-					}
-				}
-					break;
-				case MSG: {
-					/* first elem of log msg is its size */
-					log_elem_size = logf_buffer_read[logf_buffer_read_idx++];
-					char str_log[LOG_BUFFER_LEN];
-					memcpy(&str_log, &logf_buffer_read[logf_buffer_read_idx],
-							log_elem_size);
-					snprintf(print_buf + strlen(print_buf), 200,
-							"[FLASH]: Sector#: %hu, Page#: %hu; Strlen: %d, Msg: %s\n",
-							sector_id, logf_buffer_read_idx / 256,
-							log_elem_size, str_log);
-				}
-					break;
-				default: {
-					logf_buffer_read_idx = 4096;
-					snprintf(print_buf + strlen(print_buf), 200,
-							"[FLASH] Log type not recognized while reading!\n");
-				}
-				}
-				logf_buffer_read_idx += log_elem_size;
-				UsbPrint(print_buf);
-				print_buf[0] = 0;
-			}
 			sector_id++;
 		}
 

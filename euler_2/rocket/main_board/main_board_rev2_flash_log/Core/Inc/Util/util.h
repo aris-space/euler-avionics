@@ -198,10 +198,16 @@ typedef struct {
 
 #define LOGF_QUEUE_SIZE 128
 extern osMessageQueueId_t logf_queue;
+extern osMessageQueueId_t logf_sector_queue;
 
 typedef struct {
 	char str[LOG_BUFFER_LEN];
 } log_entry_t;
+
+/* Logging mode */
+typedef enum {
+	DIRECT = 1, FLASHY
+} logging_mode_e;
 
 osStatus_t logFlash(void *flash_data);
 
