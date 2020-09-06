@@ -195,9 +195,8 @@ custom_mutex_t usb_data_mutex;
 char usb_data_buffer[256] = { 0 };
 
 /** Logging Queue **/
-osMessageQueueId_t log_queue;
-osMessageQueueId_t logf_queue;
-osMessageQueueId_t logf_sector_queue;
+osMessageQueueId_t sd_queue;
+osMessageQueueId_t flash_queue;
 
 /* USER CODE END PV */
 
@@ -429,9 +428,8 @@ int main(void)
   /* USER CODE END RTOS_TIMERS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
-	log_queue = osMessageQueueNew(LOG_QUEUE_SIZE, sizeof(log_entry_t), NULL);
-	logf_queue = osMessageQueueNew(LOGF_QUEUE_SIZE, sizeof(flash_log_elem_t), NULL);
-	logf_sector_queue = osMessageQueueNew(LOGF_QUEUE_SIZE, sizeof(uint16_t), NULL);
+	sd_queue = osMessageQueueNew(SD_QUEUE_SIZE, sizeof(log_elem_t), NULL);
+	flash_queue = osMessageQueueNew(FLASH_QUEUE_SIZE, sizeof(log_elem_t), NULL);
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */

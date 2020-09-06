@@ -75,7 +75,7 @@ void vTaskBattery(void *argument) {
 //					battery_data.power);
 
 			/* Log Battery Power */
-			logSensorF(osKernelGetTickCount(), 1, BATTERY, &battery_data);
+			logSensor(osKernelGetTickCount(), 1, BATTERY, &battery_data);
 			/* Write Data into global Variable */
 			if (AcquireMutex(&battery_mutex) == osOK) {
 				global_battery_data.battery = battery_data.battery;

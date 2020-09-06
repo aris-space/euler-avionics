@@ -26,8 +26,6 @@ void vTaskSensRead(void *argument) {
 	tick_count = osKernelGetTickCount();
 	tick_update = osKernelGetTickFreq() / SENSOR_READ_FREQUENCY;
 
-	flash_data_t flash_write = { .data = { 0 }, .s = { 'A', 'B', 'C' } };
-
 	for (;;) {
 		tick_count += tick_update;
 
@@ -54,26 +52,13 @@ void vTaskSensRead(void *argument) {
 		/* Log Data */
 //		logSensorF(tick_count, 1, BARO, &sb1_data.baro);
 //		logSensorF(tick_count, 1, IMU, &sb1_data.imu);
-		logSensorF(tick_count, 2, BARO, &sb2_data.baro);
-		logSensorF(tick_count, 2, IMU, &sb2_data.imu);
+//		logSensorF(tick_count, 2, BARO, &sb2_data.baro);
+//		logSensorF(tick_count, 2, IMU, &sb2_data.imu);
+		logSensor(tick_count, 2, BARO, &sb2_data.baro);
+		logSensor(tick_count, 2, IMU, &sb2_data.imu);
 //		logSensorF(tick_count, 3, BARO, &sb3_data.baro);
 //		logSensorF(tick_count, 3, IMU, &sb3_data.imu);
-		logMsgF(tick_count, "Hello there!");
-//		logFlash(&flash_write);
-//		flash_write.data[0]++;
-//		flash_write.data[1] += 2;
-//		flash_write.data[2] += 3;
-//		flash_write.data[3] += 4;
-//		flash_write.data[4] += 5;
-//		if (flash_write.s[2] < 125) {
-//			flash_write.s[0]++;
-//			flash_write.s[1]++;
-//			flash_write.s[2]++;
-//		} else {
-//			flash_write.s[0] = 'A';
-//			flash_write.s[1] = 'B';
-//			flash_write.s[2] = 'C';
-//		}
+		logMsg(tick_count, "Hello there!");
 
 		HAL_SPI_Receive_DMA(&hspi1, (uint8_t*) &sb1_data, sizeof(sb1_data));
 		HAL_SPI_Receive_DMA(&hspi2, (uint8_t*) &sb2_data, sizeof(sb2_data));
