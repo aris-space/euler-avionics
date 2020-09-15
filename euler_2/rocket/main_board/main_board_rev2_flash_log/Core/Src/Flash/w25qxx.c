@@ -820,6 +820,8 @@ void W25qxx_ReadSector(uint8_t *pBuffer, uint32_t Sector_Address,
 			+ (OffsetInByte / w25qxx.PageSize);
 	LocalOffset = OffsetInByte % w25qxx.PageSize;
 	do {
+		/* [TODO] This delay needed to be here for some reason */
+		//W25qxx_Delay(1000);
 		W25qxx_ReadPage(pBuffer, StartPage, LocalOffset, BytesToRead);
 		StartPage++;
 		BytesToRead -= w25qxx.PageSize - LocalOffset;

@@ -55,7 +55,7 @@ void vTaskSensRead(void *argument) {
 //		logSensorF(tick_count, 2, BARO, &sb2_data.baro);
 //		logSensorF(tick_count, 2, IMU, &sb2_data.imu);
 		logSensor(tick_count, 2, BARO, &sb2_data.baro);
-		logSensor(tick_count, 2, IMU, &sb2_data.imu);
+		//logSensor(tick_count, 2, IMU, &sb2_data.imu);
 //		logSensorF(tick_count, 3, BARO, &sb3_data.baro);
 //		logSensorF(tick_count, 3, IMU, &sb3_data.imu);
 		logMsg(tick_count, "Hello there!");

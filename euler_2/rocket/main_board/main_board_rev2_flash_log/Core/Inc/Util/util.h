@@ -82,14 +82,14 @@ typedef struct {
 	uint32_t hour;
 	uint32_t minute;
 	uint32_t second;
-	uint8_t satellite;
-	uint8_t lat_deg;
 	uint32_t lat_decimal;
-	uint8_t lon_deg;
 	uint32_t lon_decimal;
-	uint8_t fix;
 	uint16_t HDOP;
 	uint16_t altitude;
+	uint8_t satellite;
+	uint8_t lat_deg;
+	uint8_t lon_deg;
+	uint8_t fix;
 } gps_data_t;
 
 /* Battery Data */
@@ -114,9 +114,9 @@ typedef struct {
 
 /* FSM States */
 typedef struct {
+	float mach_number;
 	flight_phase_e flight_phase;
 	mach_regime_e mach_regime;
-	float mach_number;
 	int8_t num_samples_positive;
 } flight_phase_detection_t;
 
@@ -178,9 +178,9 @@ typedef union {
 } sensor_u;
 
 typedef struct {
-	board_id_t sensor_board_id;
-	sensor_type_e sens_type;
 	sensor_u sensor_data;
+	sensor_type_e sens_type;
+	board_id_t sensor_board_id;
 } sensor_log_elem_t;
 
 typedef struct {
@@ -204,9 +204,9 @@ typedef union {
 } log_elem_u;
 
 typedef struct {
+	log_elem_u u;
 	timestamp_t ts;
 	log_entry_type_e log_type;
-	log_elem_u u;
 } log_elem_t;
 
 #define SD_QUEUE_SIZE 128
@@ -245,8 +245,15 @@ osStatus_t logMsg(timestamp_t ts, char *msg);
 #ifdef DEBUG
 #undef DEBUG
 #endif
-/* Comment the next line in order to disable debug mode */
+/* Comment the next line in order to disable debug mode -- should be disabled during flight */
 #define DEBUG
+
+/* Flash read flag */
+#ifdef FLASH_READ
+#undef FLASH_READ
+#endif
+/* Comment the next line in order to disable flash read -- should be disabled during flight */
+#define FLASH_READ
 
 #ifdef DEBUG
 osMutexId_t print_mutex;
@@ -257,101 +264,3 @@ char print_buffer[PRINT_BUFFER_LEN];
 uint8_t UsbPrint(const char *format, ...);
 
 #endif /* INC_UTIL_UTIL_H_ */
-
-
-
-//for (;;
-//		) {
-//			if (osMessageQueueGet(logf_sector_queue, &sector_id, NULL,
-//					osWaitForever) == osOK) {
-//				UsbPrint("[STORAGE TASK] Logging sector: %hu\n", sector_id);
-//				W25qxx_ReadSector(logf_buffer_read, sector_id, 0, FLASH_BUFFER_LEN);
-//				uint16_t logf_buffer_read_idx = 0;
-//				uint16_t log_elem_size = 0;
-//				char print_buf[200] = {0};
-//				while (logf_buffer_read_idx < FLASH_BUFFER_LEN) {
-//					uint8_t log_type_uint8_t =
-//					logf_buffer_read[logf_buffer_read_idx++];
-//					log_entry_type_e log_type =
-//					(log_entry_type_e) log_type_uint8_t;
-//					switch (log_type) {
-//						case SENSOR: {
-//							log_elem_size = sizeof(sensor_log_elem_t);
-//							sensor_log_elem_t sensor_log;
-//							memcpy(&sensor_log,
-//							&logf_buffer_read[logf_buffer_read_idx],
-//							log_elem_size);
-//							snprintf(print_buf + strlen(print_buf), 200,
-//							"[FLASH]: Sector#: %hu, Page#: %hu; Sensor data: %lu;%d;%hi,%d,",
-//							sector_id, logf_buffer_read_idx / 256,
-//							sensor_log.ts, SENSOR,
-//							sensor_log.sensor_board_id,
-//							sensor_log.sens_type);
-//							switch (sensor_log.sens_type) {
-//								case BARO: {
-//									baro_data_t *baro_data_ptr =
-//									(baro_data_t*) &sensor_log.sensor_data.baro;
-//									snprintf(print_buf + strlen(print_buf), 200,
-//									"P: %ld,T: %ld,Ts: %lu\n",
-//									baro_data_ptr->pressure,
-//									baro_data_ptr->temperature,
-//									baro_data_ptr->ts);
-//								}
-//								break;
-//								case IMU: {
-//									imu_data_t *imu_data_ptr =
-//									(imu_data_t*) &sensor_log.sensor_data.imu;
-//									snprintf(print_buf + strlen(print_buf), 200,
-//									"Ax: %hd, Ay: %hd, Az: %hd,Gx: %hd,Gy: %hd,Gz: %hd,Ts: %lu\n",
-//									imu_data_ptr->acc_x,
-//									imu_data_ptr->acc_y,
-//									imu_data_ptr->acc_z,
-//									imu_data_ptr->gyro_x,
-//									imu_data_ptr->gyro_y,
-//									imu_data_ptr->gyro_z, imu_data_ptr->ts);
-//								}
-//								break;
-//								case BATTERY: {
-//									battery_data_t *battery_data_ptr =
-//									(battery_data_t*) &sensor_log.sensor_data.bat;
-//									snprintf(print_buf + strlen(print_buf), 200,
-//									"%hd,%hd,%hd,%hd\n",
-//									battery_data_ptr->battery,
-//									battery_data_ptr->consumption,
-//									battery_data_ptr->current,
-//									battery_data_ptr->supply);
-//									break;
-//								}
-//								default: {
-//									snprintf(print_buf + strlen(print_buf), 200,
-//									"[FLASH] Sensor type not recognized!\n");
-//									break;
-//								}
-//							}
-//						}
-//						break;
-//						case MSG: {
-//							// first elem of log msg is its size
-//							log_elem_size = logf_buffer_read[logf_buffer_read_idx++];
-//							char str_log[LOG_BUFFER_LEN];
-//							memcpy(&str_log,
-//							&logf_buffer_read[logf_buffer_read_idx],
-//							log_elem_size);
-//							snprintf(print_buf + strlen(print_buf), 200,
-//							"[FLASH]: Sector#: %hu, Page#: %hu; Strlen: %d, Msg: %s\n",
-//							sector_id, logf_buffer_read_idx / 256,
-//							log_elem_size, str_log);
-//						}
-//						break;
-//						default: {
-//							logf_buffer_read_idx = FLASH_BUFFER_LEN;
-//							snprintf(print_buf + strlen(print_buf), 200,
-//							"[FLASH] Log type not recognized while reading!\n");
-//						}
-//					}
-//					logf_buffer_read_idx += log_elem_size;
-//					UsbPrint(print_buf);
-//					print_buf[0] = 0;
-//				}
-//			}
-//		}
