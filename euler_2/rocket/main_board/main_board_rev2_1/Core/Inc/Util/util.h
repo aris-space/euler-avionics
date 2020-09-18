@@ -254,7 +254,6 @@ osStatus_t logMsg(timestamp_t ts, char *msg);
 /* Comment the next line in order to disable flash read -- should be disabled during flight */
 #define FLASH_READ
 
-
 #ifdef DEBUG
 osMutexId_t print_mutex;
 #define PRINT_BUFFER_LEN 300

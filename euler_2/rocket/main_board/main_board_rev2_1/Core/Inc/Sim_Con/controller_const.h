@@ -5,7 +5,6 @@
 #ifndef C_IMPLEMENTATION_CONTROLLER_CONST_H
 #define C_IMPLEMENTATION_CONTROLLER_CONST_H
 
-
 /* Constants */
 #include "controller.h"
 #include <math.h>
@@ -30,26 +29,23 @@
 
 /* Types */
 typedef struct {
-    float control_input;
-    float reference_error;
-    float integrated_error;
+	float control_input;
+	float reference_error;
+	float integrated_error;
 
-    float sf_ref_altitude_AGL;
-    float sf_velocity;
-    float ref_velocity;
+	float sf_ref_altitude_AGL;
+	float sf_velocity;
+	float ref_velocity;
 
-    float lowerboundary_aw;
-    float upperboundary_aw;
+	float lowerboundary_aw;
+	float upperboundary_aw;
 
-    uint16_t safety_counter;
-    bool apogee_approach_phase;
+	uint16_t safety_counter;
+	bool apogee_approach_phase;
 
-    double gains[NUM_POLYFITS-1];
-    double poly_coeff[NUM_POLYFITS][POLY_DEG+1];
+	double gains[NUM_POLYFITS - 1];
+	double poly_coeff[NUM_POLYFITS][POLY_DEG + 1];
 
 } control_data_t;
-
-
-
 
 #endif //C_IMPLEMENTATION_CONTROLLER_CONST_H

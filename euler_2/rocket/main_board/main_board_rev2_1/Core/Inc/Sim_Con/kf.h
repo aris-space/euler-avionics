@@ -14,9 +14,9 @@
 #define NUMBER_MEASUREMENTS NUM_BARO /* NUMBER_MEASUREMENTS x NUMBER_STATES -> H Matrix */
 #define LAMBDA 0.0001		/* Lambda for Moore Penrose Pseudoinverse */
 
-typedef struct{
+typedef struct {
 	/* Fixed Variables */
-    float Ad[NUMBER_STATES][NUMBER_STATES];
+	float Ad[NUMBER_STATES][NUMBER_STATES];
 	float Ad_T[NUMBER_STATES][NUMBER_STATES];
 	float Bd[NUMBER_STATES][NUMBER_INPUTS];
 	float Gd[NUMBER_STATES][NUMBER_PROCESS_NOISE];
@@ -28,13 +28,13 @@ typedef struct{
 	float R_inv[NUMBER_MEASUREMENTS][NUMBER_MEASUREMENTS];
 
 	/* State Variables */
-    float u[NUMBER_INPUTS]; // inputs
+	float u[NUMBER_INPUTS]; // inputs
 	float x_est[NUMBER_STATES]; // estimated state (posteriori)
 	float P_est[NUMBER_STATES][NUMBER_STATES]; // estimated covariance (posteriori)
 	float x_priori[NUMBER_STATES]; // priori state (priori)
 	float P_priori[NUMBER_STATES][NUMBER_STATES]; // priori covariance (priori)
 	float P_priori_inv[NUMBER_STATES][NUMBER_STATES]; // inverted priori covariance
-    float z[NUMBER_MEASUREMENTS]; // measurements
+	float z[NUMBER_MEASUREMENTS]; // measurements
 	float y[NUMBER_MEASUREMENTS]; // state innovation
 	float S[NUMBER_MEASUREMENTS][NUMBER_MEASUREMENTS]; // covariance innovation
 	float S_inv[NUMBER_MEASUREMENTS][NUMBER_MEASUREMENTS];
@@ -44,14 +44,14 @@ typedef struct{
 	bool z_active[NUMBER_MEASUREMENTS];
 	int32_t num_z_active;
 
-    /* Placeholder Variables for increased speed */
+	/* Placeholder Variables for increased speed */
 	float Placeholder_Ad_mult_P_est[NUMBER_STATES][NUMBER_STATES];
-    float Placeholder_Gd_mult_Q[NUMBER_STATES][NUMBER_PROCESS_NOISE];
+	float Placeholder_Gd_mult_Q[NUMBER_STATES][NUMBER_PROCESS_NOISE];
 	float Placeholder_H_mult_P_priori[NUMBER_MEASUREMENTS][NUMBER_MEASUREMENTS];
 	float Placeholder_P_priori_mult_H_T[NUMBER_STATES][NUMBER_MEASUREMENTS];
 	float Placeholder_P_est[NUMBER_STATES][NUMBER_STATES];
-    float Placeholder_eye[NUMBER_STATES][NUMBER_STATES];
-    float Placeholder_K_mult_H[NUMBER_STATES][NUMBER_STATES];
+	float Placeholder_eye[NUMBER_STATES][NUMBER_STATES];
+	float Placeholder_K_mult_H[NUMBER_STATES][NUMBER_STATES];
 	float Placeholder_S_inv_1[NUMBER_STATES][NUMBER_STATES];
 	float Placeholder_S_inv_2[NUMBER_STATES][NUMBER_STATES];
 	float Placeholder_S_inv_3[NUMBER_MEASUREMENTS][NUMBER_STATES];

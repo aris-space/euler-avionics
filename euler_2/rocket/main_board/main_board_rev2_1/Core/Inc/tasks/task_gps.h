@@ -19,10 +19,7 @@
 
 #define GPS_SAMPLE_RATE 2
 
-
-
 void vTaskGps(void *argument);
-
 
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
@@ -31,8 +28,5 @@ extern UART_HandleTypeDef huart3;
 extern gps_data_t globalGPS;
 
 extern custom_mutex_t gps_mutex;
-
-
-
 
 #endif /* INC_TASKS_TASK_GPS_H_ */

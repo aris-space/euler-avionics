@@ -8,9 +8,7 @@
 #ifndef INC_SIM_CON_STATE_EST_SETTINGS_H_
 #define INC_SIM_CON_STATE_EST_SETTINGS_H_
 
-
 #include "Util/util.h"
-
 
 /* CONSTANTS FOR CONFIGURATION OF THE STATE ESTIMATION */
 #define STATE_ESTIMATION_FREQUENCY 100
@@ -30,25 +28,23 @@ typedef struct {
 	float pressure;
 	float temperature;
 	timestamp_t ts;
-}baro_state_est_t;
-
+} baro_state_est_t;
 
 /* State Estimation IMU struct */
 typedef struct {
 	float gyro_x, gyro_y, gyro_z;
 	float acc_x, acc_y, acc_z;
 	timestamp_t ts;
-}imu_state_est_t;
+} imu_state_est_t;
 
 /* State Estimation combined Data struct */
 typedef struct {
-    /* pressure in [Pa] and temperature in [°C] */
+	/* pressure in [Pa] and temperature in [°C] */
 	baro_state_est_t baro_data[NUM_SENSORBOARDS];
-    /* acceleration in [m/s^2] and angular velocity in [rad/s] */
-    /* all in rocket frame where x-dir is along length of rocket */
+	/* acceleration in [m/s^2] and angular velocity in [rad/s] */
+	/* all in rocket frame where x-dir is along length of rocket */
 	imu_state_est_t imu_data[NUM_SENSORBOARDS];
 } state_est_meas_t;
 
 #endif /* INC_SIM_CON_STATE_EST_SETTINGS_H_ */
-
 

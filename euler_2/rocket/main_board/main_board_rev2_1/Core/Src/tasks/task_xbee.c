@@ -54,7 +54,6 @@ void vTaskXbee(void *argument) {
 //		HAL_UART_Receive_IT(&huart7, (uint8_t*) &local_command_rx, 1);
 //		UsbPrint("[Telemetry] ts: %u, Received Commmand: %u, Rx_buffer; %u\n",
 //				telemetry_send.ts, local_command, local_command_rx);
-
 		if (AcquireMutex(&command_mutex) == osOK) {
 			global_telemetry_command = local_command;
 			ReleaseMutex(&command_mutex);
@@ -125,7 +124,6 @@ void vTaskXbee(void *argument) {
 		/* Send to Xbee module */
 //		HAL_UART_Transmit_DMA(&huart7, (uint8_t*) &telemetry_send,
 //				sizeof(telemetry_send));
-
 		telemetry_send.checksum = 0;
 
 		uart_counter = 0;

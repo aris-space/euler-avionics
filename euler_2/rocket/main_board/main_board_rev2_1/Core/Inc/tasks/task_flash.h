@@ -20,7 +20,6 @@
 
 /* extern */
 
-
 /* functions */
 void vTaskFlash(void *argument);
 
