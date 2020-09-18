@@ -286,6 +286,8 @@ char usb_data_buffer[256] = { 0 };
 
 /** Logging Queue **/
 osMessageQueueId_t sd_queue;
+
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -375,6 +377,7 @@ int main(void)
 #if ( configUSE_TRACE_FACILITY == 1 )
 	vTraceEnable(TRC_INIT);
 #endif
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -529,6 +532,9 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_QUEUES */
 	sd_queue = osMessageQueueNew(SD_QUEUE_SIZE, sizeof(log_elem_t), NULL);
+#if ( configUSE_TRACE_FACILITY == 1 )
+	vTraceSetQueueName(sd_queue, "SD Queue");
+#endif
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */

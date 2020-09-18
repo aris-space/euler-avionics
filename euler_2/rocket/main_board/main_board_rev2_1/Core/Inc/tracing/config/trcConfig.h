@@ -370,7 +370,7 @@ extern "C" {
  * The custom mode allows you to control how and where the allocation is made,
  * for details see TRC_ALLOC_CUSTOM_BUFFER and vTraceSetRecorderDataBuffer().
  ******************************************************************************/
-#define TRC_CFG_RECORDER_BUFFER_ALLOCATION TRC_RECORDER_BUFFER_ALLOCATION_STATIC
+#define TRC_CFG_RECORDER_BUFFER_ALLOCATION TRC_RECORDER_BUFFER_ALLOCATION_DYNAMIC
 
 /******************************************************************************
  * TRC_CFG_MAX_ISR_NESTING

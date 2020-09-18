@@ -213,6 +213,10 @@ Stat = STA_NOINIT;
       SDQueueID = osMessageCreate (osMessageQ(SD_Queue), NULL);
 #else
       SDQueueID = osMessageQueueNew(QUEUE_SIZE, 2, NULL);
+#if ( configUSE_TRACE_FACILITY == 1 )
+	vTraceSetQueueName(SDQueueID, "FATFS Queue");
+#endif
+
 #endif
       }
 

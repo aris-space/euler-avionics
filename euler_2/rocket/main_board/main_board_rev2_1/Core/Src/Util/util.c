@@ -96,7 +96,7 @@ osStatus_t logMsg(timestamp_t ts, char *msg) {
 
 /** USB DEBUGGING SECTION **/
 
-uint8_t UsbPrint(const char *format, ...) {
+inline uint8_t UsbPrint(const char *format, ...) {
 	uint8_t ret = 1;
 #ifdef DEBUG
 	if (osMutexAcquire(print_mutex, 0U) == osOK) {

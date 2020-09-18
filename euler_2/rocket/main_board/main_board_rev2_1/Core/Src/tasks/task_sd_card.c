@@ -15,76 +15,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-extern Disk_drvTypeDef disk;
-
 FATFS EULER_FatFS;
 FIL EULER_LOG_FILE;
-
-uint8_t transformFRESULT(FRESULT res) {
-	switch (res) {
-	case FR_OK: /* (0) Succeeded */
-		return 0;
-		break;
-	case FR_DISK_ERR: /* (1) A hard error occurred in the low level disk I/O layer */
-		return 1;
-		break;
-	case FR_INT_ERR: /* (2) Assertion failed */
-		return 2;
-		break;
-	case FR_NOT_READY: /* (3) The physical drive cannot work */
-		return 3;
-		break;
-	case FR_NO_FILE: /* (4) Could not find the file */
-		return 4;
-		break;
-	case FR_NO_PATH: /* (5) Could not find the path */
-		return 5;
-		break;
-	case FR_INVALID_NAME: /* (6) The path name format is invalid */
-		return 6;
-		break;
-	case FR_DENIED: /* (7) Access denied due to prohibited access or directory full */
-		return 7;
-		break;
-	case FR_EXIST: /* (8) Access denied due to prohibited access */
-		return 8;
-		break;
-	case FR_INVALID_OBJECT: /* (9) The file/directory object is invalid */
-		return 9;
-		break;
-	case FR_WRITE_PROTECTED: /* (10) The physical drive is write protected */
-		return 10;
-		break;
-	case FR_INVALID_DRIVE: /* (11) The logical drive number is invalid */
-		return 11;
-		break;
-	case FR_NOT_ENABLED: /* (12) The volume has no work area */
-		return 12;
-		break;
-	case FR_NO_FILESYSTEM: /* (13) There is no valid FAT volume */
-		return 13;
-		break;
-	case FR_MKFS_ABORTED: /* (14) The f_mkfs() aborted due to any problem */
-		return 14;
-		break;
-	case FR_TIMEOUT: /* (15) Could not get a grant to access the volume within defined period */
-		return 15;
-		break;
-	case FR_LOCKED: /* (16) The operation is rejected according to the file sharing policy */
-		return 16;
-		break;
-	case FR_NOT_ENOUGH_CORE: /* (17) LFN working buffer could not be allocated */
-		return 17;
-		break;
-	case FR_TOO_MANY_OPEN_FILES: /* (18) Number of open files > _FS_LOCK */
-		return 18;
-		break;
-	case FR_INVALID_PARAMETER:
-		return 19;
-		break;
-	}
-	return 20;
-}
+traceString sd_channel;
 
 void mountSDCard() {
 	FRESULT res;
@@ -92,9 +25,13 @@ void mountSDCard() {
 		res = f_mount(&EULER_FatFS, "", 1);
 		if (res != FR_OK) {
 			UsbPrint("[STORAGE TASK] Failed mounting SD card: %d\n", res);
+			vTracePrint(sd_channel, "Sd card mounting failed");
+
 			// force sd card to be reinitialized
 			HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
 			osDelay(10);
+		} else {
+			vTracePrint(sd_channel, "SD card mounted");
 		}
 	} while (res != FR_OK);
 }
@@ -112,9 +49,12 @@ void remountSDCard() {
 		res = f_mount(&EULER_FatFS, "", 1);
 		if (res != FR_OK) {
 			UsbPrint("[STORAGE TASK] Failed remounting SD card: %d\n", res);
+			vTracePrint(sd_channel, "Sd card remounting failed");
 			// force sd card to be reinitialized
 			HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
 			osDelay(10);
+		} else {
+			vTracePrint(sd_channel, "SD card remounted");
 		}
 	} while (res != FR_OK);
 }
@@ -168,24 +108,23 @@ int32_t formatLogStr(char *str, log_elem_t *log_entry) {
 		case BARO: {
 			baro_data_t *baro_data_ptr = &(sensor_log_entry->sensor_data.baro);
 			str_len += snprintf(str + str_len,
-					SD_STRFMT_LEN, "%ld,%ld,%lu\n", baro_data_ptr->pressure,
+			SD_STRFMT_LEN, "%ld,%ld,%lu\n", baro_data_ptr->pressure,
 					baro_data_ptr->temperature, baro_data_ptr->ts);
 		}
 			break;
 		case IMU: {
 			imu_data_t *imu_data_ptr = &(sensor_log_entry->sensor_data.imu);
 			str_len += snprintf(str + str_len,
-					SD_STRFMT_LEN, "%hd,%hd,%hd,%hd,%hd,%hd,%lu\n",
-					imu_data_ptr->acc_x, imu_data_ptr->acc_y,
-					imu_data_ptr->acc_z, imu_data_ptr->gyro_x,
-					imu_data_ptr->gyro_y, imu_data_ptr->gyro_z,
-					imu_data_ptr->ts);
+			SD_STRFMT_LEN, "%hd,%hd,%hd,%hd,%hd,%hd,%lu\n", imu_data_ptr->acc_x,
+					imu_data_ptr->acc_y, imu_data_ptr->acc_z,
+					imu_data_ptr->gyro_x, imu_data_ptr->gyro_y,
+					imu_data_ptr->gyro_z, imu_data_ptr->ts);
 		}
 			break;
 		case GPS: {
 			gps_data_t *gps_data = &(sensor_log_entry->sensor_data.gps);
 			str_len += snprintf(str + str_len,
-					SD_STRFMT_LEN, "%ld,%ld,%ld,%d,%ld,%d,%ld,%d,%hd,%hd\n",
+			SD_STRFMT_LEN, "%ld,%ld,%ld,%d,%ld,%d,%ld,%d,%hd,%hd\n",
 					gps_data->hour, gps_data->minute, gps_data->second,
 					gps_data->lat_deg, gps_data->lat_decimal, gps_data->lon_deg,
 					gps_data->lon_decimal, gps_data->satellite,
@@ -195,7 +134,7 @@ int32_t formatLogStr(char *str, log_elem_t *log_entry) {
 		case BATTERY: {
 			battery_data_t *battery_data = &(sensor_log_entry->sensor_data.bat);
 			str_len += snprintf(str + str_len,
-					SD_STRFMT_LEN, "%hd,%hd,%hd,%hd\n", battery_data->battery,
+			SD_STRFMT_LEN, "%hd,%hd,%hd,%hd\n", battery_data->battery,
 					battery_data->consumption, battery_data->current,
 					battery_data->supply);
 		}
@@ -264,6 +203,9 @@ FRESULT openFile(char *file_name) {
 
 void vTaskSdCard(void *argument) {
 	// Try everything forever;
+
+	sd_channel = xTraceRegisterString("SD Channel");
+
 	UsbPrint("[STORAGE TASK] Starting SD Card Task...\n");
 	FRESULT res;
 	char EULER_LOG_FILE_NAME[13] = "";
@@ -274,6 +216,7 @@ void vTaskSdCard(void *argument) {
 	mountSDCard();
 	uint8_t already_entered = 0;
 	for (;;) {
+		vTracePrint(sd_channel, "Starting for loop...");
 		osDelay(100);
 		flight_phase_detection_t local_flight_phase = { .flight_phase = IDLE };
 
@@ -318,31 +261,9 @@ void vTaskSdCard(void *argument) {
 						/* write output */
 						strncpy(sd_str_buffer + sd_str_idx, tmp_str,
 								tmp_str_len);
-//						memcpy(sd_str_buffer + sd_str_idx, tmp_str,
-//								tmp_str_len);
-						//UsbPrint("%s", tmp_str);
 						sd_str_idx += tmp_str_len;
 						tmp_str[0] = 0;
-						//memset(tmp_str, 0, 150);
 					} else {
-						//UsbPrint("[STORAGE TASK] sd_str_idx: %d\n", sd_str_idx);
-//						osDelay(2);
-//						int32_t i = 0;
-//						while (i < sd_str_idx - 300) {
-//							UsbPrint("%s", sd_str_buffer + i);
-//							osDelay(2);
-//							i += 300;
-//						}
-						int32_t j = 0;
-						while (j < sd_str_idx) {
-							if (sd_str_buffer[j] == 0) {
-								UsbPrint(
-										"[STORAGE TASK] TERMINATOR DETECTED BEFORE END: %d\n",
-										j);
-								osDelay(2);
-							}
-							j++;
-						}
 						sd_str_buffer[sd_str_idx++] = '\0';
 						int32_t puts_res = f_puts(sd_str_buffer,
 								&EULER_LOG_FILE);
@@ -350,13 +271,14 @@ void vTaskSdCard(void *argument) {
 							UsbPrint(
 									"[STORAGE TASK] Failed writing to file: %d\n",
 									puts_res);
+							vTracePrint(sd_channel, "Writing to file failed");
 							break; /* breaking out of inner for loop */
+						} else {
+							vTracePrint(sd_channel, "Written to file");
 						}
 						sync_counter++;
 						if (sync_counter >= SD_CARD_SYNC_COUNT) {
 							sync_counter = 0;
-							//UsbPrint("[STORAGE TASK] Syncing file %s\n",
-							//		EULER_LOG_FILE_NAME);
 							HAL_GPIO_TogglePin(LED4_GPIO_Port,
 							LED4_Pin);
 							res = f_sync(&EULER_LOG_FILE);
@@ -364,7 +286,10 @@ void vTaskSdCard(void *argument) {
 								UsbPrint(
 										"[STORAGE TASK] Failed syncing file: %d\n",
 										res);
+								vTracePrint(sd_channel, "File sync failed");
 								break; /* breaking out of inner for loop */
+							} else {
+								vTracePrint(sd_channel, "File synced");
 							}
 							// if the rocket landed, create a new file and write to that one
 							if (ReadMutex(&fsm_mutex,
@@ -377,24 +302,20 @@ void vTaskSdCard(void *argument) {
 								f_close(&EULER_LOG_FILE);
 								// "clean" current file name
 								EULER_LOG_FILE_NAME[0] = 0;
+								vTracePrint(sd_channel, "Logging to new file");
 								goto logToNewFile;
 							}
 						}
 						/* fill buffer with leftover tmp_str */
-
-						//memset(sd_str_buffer, 0, SD_BUFFER_LEN);
 						strncpy(sd_str_buffer, tmp_str, tmp_str_len);
-						//memcpy(sd_str_buffer, tmp_str, tmp_str_len);
 						sd_str_idx = tmp_str_len;
 						tmp_str[0] = 0;
-						//memset(tmp_str, 0, 150);
 					}
 				} else {
 					UsbPrint("[STORAGE TASK] tmp_str_len < 0!!!!!! %d\n",
 							tmp_str_len);
 					tmp_str_len = 0;
 					tmp_str[0] = 0;
-					//memset(tmp_str, 0, 150);
 				}
 			}
 		}
