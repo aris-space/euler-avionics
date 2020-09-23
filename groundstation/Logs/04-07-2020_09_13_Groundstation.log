@@ -1,0 +1,10 @@
+2020-07-04 09:13:51,707 - root - INFO - ==========================================================================
+2020-07-04 09:13:51,707 - root - INFO -                         ARIS Groundstation started                        
+2020-07-04 09:13:51,709 - root - INFO - ==========================================================================
+2020-07-04 09:13:52,022 - root - INFO - Initialised Groundstation
+2020-07-04 09:15:58,791 - root - INFO - Trying to connect to: COM8 at 115200 BAUD.
+2020-07-04 09:15:58,797 - root - INFO - Connected to COM8 at 115200 BAUD.
+2020-07-04 09:16:02,259 - root - INFO - Ready to receive data
+2020-07-04 09:17:07,169 - root - INFO - buzzer command was sent.
+2020-07-04 09:17:12,053 - root - INFO - buzzer command was sent.
+2020-07-04 09:17:18,432 - root - INFO - airbrake command was sent.
