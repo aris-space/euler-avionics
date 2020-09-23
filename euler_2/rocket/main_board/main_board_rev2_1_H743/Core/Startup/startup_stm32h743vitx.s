@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * @file      startup_stm32h750xx.s
+  * @file      startup_stm32h743xx.s
   * @author    MCD Application Team
-  * @brief     STM32H750xx Devices vector table for GCC based toolchain. 
+  * @brief     STM32H743xx Devices vector table for GCC based toolchain. 
   *            This module performs:
   *                - Set the initial SP
   *                - Set the initial PC == Reset_Handler,
@@ -14,7 +14,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2018 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under BSD 3-Clause license,
@@ -222,8 +222,8 @@ g_pfnVectors:
   .word     OTG_HS_WKUP_IRQHandler            /* USB OTG HS Wakeup through EXTI */                         
   .word     OTG_HS_IRQHandler                 /* USB OTG HS                   */                   
   .word     DCMI_IRQHandler                   /* DCMI                         */                   
-  .word     CRYP_IRQHandler                   /* Crypto                       */                   
-  .word     HASH_RNG_IRQHandler               /* Hash and Rng                 */
+  .word     0                                 /* Reserved                     */                   
+  .word     RNG_IRQHandler                    /* Rng                          */
   .word     FPU_IRQHandler                    /* FPU                          */
   .word     UART7_IRQHandler                  /* UART7                        */      
   .word     UART8_IRQHandler                  /* UART8                        */
@@ -550,11 +550,8 @@ g_pfnVectors:
    .weak      DCMI_IRQHandler            
    .thumb_set DCMI_IRQHandler,Default_Handler
 
-   .weak      CRYP_IRQHandler            
-   .thumb_set CRYP_IRQHandler,Default_Handler
-
-   .weak      HASH_RNG_IRQHandler            
-   .thumb_set HASH_RNG_IRQHandler,Default_Handler   
+   .weak      RNG_IRQHandler            
+   .thumb_set RNG_IRQHandler,Default_Handler   
 
    .weak      FPU_IRQHandler                  
    .thumb_set FPU_IRQHandler,Default_Handler

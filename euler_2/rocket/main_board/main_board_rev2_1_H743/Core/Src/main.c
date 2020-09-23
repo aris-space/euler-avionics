@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
- ******************************************************************************
- * @file           : main.c
- * @brief          : Main program body
- ******************************************************************************
- * @attention
- *
- * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
- * All rights reserved.</center></h2>
- *
- * This software component is licensed by ST under Ultimate Liberty license
- * SLA0044, the "License"; You may not use this file except in compliance with
- * the License. You may obtain a copy of the License at:
- *                             www.st.com/SLA0044
- *
- ******************************************************************************
- */
+  ******************************************************************************
+  * @file           : main.c
+  * @brief          : Main program body
+  ******************************************************************************
+  * @attention
+  *
+  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * All rights reserved.</center></h2>
+  *
+  * This software component is licensed by ST under Ultimate Liberty license
+  * SLA0044, the "License"; You may not use this file except in compliance with
+  * the License. You may obtain a copy of the License at:
+  *                             www.st.com/SLA0044
+  *
+  ******************************************************************************
+  */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -218,6 +218,7 @@ const osThreadAttr_t task_flash_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
+
 /** SENSOR BOARD VARIABLES **/
 
 baro_data_t sb1_baro = { 0 };
@@ -353,8 +354,8 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-	init_env(&global_env);
-	reset_flight_phase_detection(&global_flight_phase_detection);
+    init_env(&global_env);
+  	reset_flight_phase_detection(&global_flight_phase_detection);
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -373,161 +374,160 @@ int main(void)
   MX_FATFS_Init();
   MX_SPI4_Init();
   /* USER CODE BEGIN 2 */
-	MX_USB_DEVICE_Init();
-#if ( configUSE_TRACE_FACILITY == 1 )
-	vTraceEnable(TRC_INIT);
-#endif
-
+  MX_USB_DEVICE_Init();
+  #if ( configUSE_TRACE_FACILITY == 1 )
+  	vTraceEnable(TRC_INIT);
+  #endif
   /* USER CODE END 2 */
 
   /* Init scheduler */
   osKernelInitialize();
 
   /* USER CODE BEGIN RTOS_MUTEX */
-	/* Sensor Board 1 Mutex */
-	const osMutexAttr_t sb1_mutex_attr = { "sb1_mutex_only", // human readable mutex name
-			osMutexPrioInherit,                       // attr_bits
-			NULL,                                    // memory for control block
-			0U                                        // size for control block
-			};
+  /* Sensor Board 1 Mutex */
+  	const osMutexAttr_t sb1_mutex_attr = { "sb1_mutex_only", // human readable mutex name
+  			osMutexPrioInherit,                       // attr_bits
+  			NULL,                                    // memory for control block
+  			0U                                        // size for control block
+  			};
 
-	sb1_mutex_only = osMutexNew(&sb1_mutex_attr);
+  	sb1_mutex_only = osMutexNew(&sb1_mutex_attr);
 
-	/* Sensor Board 2 Mutex */
-	const osMutexAttr_t sb2_mutex_attr = { "sb2_mutex_only", // human readable mutex name
-			osMutexPrioInherit,                       // attr_bits
-			NULL,                                    // memory for control block
-			0U                                        // size for control block
-			};
+  	/* Sensor Board 2 Mutex */
+  	const osMutexAttr_t sb2_mutex_attr = { "sb2_mutex_only", // human readable mutex name
+  			osMutexPrioInherit,                       // attr_bits
+  			NULL,                                    // memory for control block
+  			0U                                        // size for control block
+  			};
 
-	sb2_mutex_only = osMutexNew(&sb2_mutex_attr);
+  	sb2_mutex_only = osMutexNew(&sb2_mutex_attr);
 
-	/* Sensor Board 3 Mutex */
-	const osMutexAttr_t sb3_mutex_attr = { "sb3_mutex_only", // human readable mutex name
-			osMutexPrioInherit,    					 // attr_bits
-			NULL,                                    // memory for control block
-			0U                                        // size for control block
-			};
+  	/* Sensor Board 3 Mutex */
+  	const osMutexAttr_t sb3_mutex_attr = { "sb3_mutex_only", // human readable mutex name
+  			osMutexPrioInherit,    					 // attr_bits
+  			NULL,                                    // memory for control block
+  			0U                                        // size for control block
+  			};
 
-	sb3_mutex_only = osMutexNew(&sb3_mutex_attr);
+  	sb3_mutex_only = osMutexNew(&sb3_mutex_attr);
 
-	/* State Estimation Output Mutex */
-	const osMutexAttr_t state_est_mutex_attr = { "state_est_mutex_only", // human readable mutex name
-			osMutexPrioInherit,    					 // attr_bits
-			NULL,                                    // memory for control block
-			0U                                        // size for control block
-			};
+  	/* State Estimation Output Mutex */
+  	const osMutexAttr_t state_est_mutex_attr = { "state_est_mutex_only", // human readable mutex name
+  			osMutexPrioInherit,    					 // attr_bits
+  			NULL,                                    // memory for control block
+  			0U                                        // size for control block
+  			};
 
-	state_est_mutex_only = osMutexNew(&state_est_mutex_attr);
+  	state_est_mutex_only = osMutexNew(&state_est_mutex_attr);
 
-	/* Controller Output Mutex */
-	const osMutexAttr_t controller_mutex_attr = { "controller_mutex_only", // human readable mutex name
-			osMutexPrioInherit,    					 // attr_bits
-			NULL,                                    // memory for control block
-			0U                                        // size for control block
-			};
+  	/* Controller Output Mutex */
+  	const osMutexAttr_t controller_mutex_attr = { "controller_mutex_only", // human readable mutex name
+  			osMutexPrioInherit,    					 // attr_bits
+  			NULL,                                    // memory for control block
+  			0U                                        // size for control block
+  			};
 
-	controller_mutex_only = osMutexNew(&controller_mutex_attr);
+  	controller_mutex_only = osMutexNew(&controller_mutex_attr);
 
-	/* FSM Output Mutex */
-	const osMutexAttr_t fsm_mutex_attr = { "fsm_mutex_only", // human readable mutex name
-			osMutexPrioInherit,    					 // attr_bits
-			NULL,                                    // memory for control block
-			0U                                        // size for control block
-			};
+  	/* FSM Output Mutex */
+  	const osMutexAttr_t fsm_mutex_attr = { "fsm_mutex_only", // human readable mutex name
+  			osMutexPrioInherit,    					 // attr_bits
+  			NULL,                                    // memory for control block
+  			0U                                        // size for control block
+  			};
 
-	fsm_mutex_only = osMutexNew(&fsm_mutex_attr);
+  	fsm_mutex_only = osMutexNew(&fsm_mutex_attr);
 
-	/* Environment Mutex */
-	const osMutexAttr_t environment_mutex_attr = { "environment_mutex_only", // human readable mutex name
-			osMutexPrioInherit,    					 // attr_bits
-			NULL,                                    // memory for control block
-			0U                                        // size for control block
-			};
+  	/* Environment Mutex */
+  	const osMutexAttr_t environment_mutex_attr = { "environment_mutex_only", // human readable mutex name
+  			osMutexPrioInherit,    					 // attr_bits
+  			NULL,                                    // memory for control block
+  			0U                                        // size for control block
+  			};
 
-	environment_mutex_only = osMutexNew(&environment_mutex_attr);
+  	environment_mutex_only = osMutexNew(&environment_mutex_attr);
 
-	/* USB Data Mutex */
-	const osMutexAttr_t usb_data_mutex_attr = { "usb_data_mutex_only", // human readable mutex name
-			osMutexPrioInherit,    					 // attr_bits
-			NULL,                                    // memory for control block
-			0U                                        // size for control block
-			};
+  	/* USB Data Mutex */
+  	const osMutexAttr_t usb_data_mutex_attr = { "usb_data_mutex_only", // human readable mutex name
+  			osMutexPrioInherit,    					 // attr_bits
+  			NULL,                                    // memory for control block
+  			0U                                        // size for control block
+  			};
 
-	usb_data_mutex_only = osMutexNew(&usb_data_mutex_attr);
+  	usb_data_mutex_only = osMutexNew(&usb_data_mutex_attr);
 
-	/* Command Mutex */
-	const osMutexAttr_t command_mutex_attr = { "command_mutex_only", // human readable mutex name
-			osMutexPrioInherit,    					 // attr_bits
-			NULL,                                    // memory for control block
-			0U                                        // size for control block
-			};
+  	/* Command Mutex */
+  	const osMutexAttr_t command_mutex_attr = { "command_mutex_only", // human readable mutex name
+  			osMutexPrioInherit,    					 // attr_bits
+  			NULL,                                    // memory for control block
+  			0U                                        // size for control block
+  			};
 
-	command_mutex_only = osMutexNew(&command_mutex_attr);
+  	command_mutex_only = osMutexNew(&command_mutex_attr);
 
-	/* GPS Mutex */
-	const osMutexAttr_t gps_mutex_attr = { "gps_mutex_only", // human readable mutex name
-			osMutexPrioInherit,    					 // attr_bits
-			NULL,                                    // memory for control block
-			0U                                        // size for control block
-			};
+  	/* GPS Mutex */
+  	const osMutexAttr_t gps_mutex_attr = { "gps_mutex_only", // human readable mutex name
+  			osMutexPrioInherit,    					 // attr_bits
+  			NULL,                                    // memory for control block
+  			0U                                        // size for control block
+  			};
 
-	gps_mutex_only = osMutexNew(&gps_mutex_attr);
+  	gps_mutex_only = osMutexNew(&gps_mutex_attr);
 
-	/* Battery Mutex */
-	const osMutexAttr_t battery_mutex_attr = { "battery_mutex_only", // human readable mutex name
-			osMutexPrioInherit,    					 // attr_bits
-			NULL,                                    // memory for control block
-			0U                                        // size for control block
-			};
+  	/* Battery Mutex */
+  	const osMutexAttr_t battery_mutex_attr = { "battery_mutex_only", // human readable mutex name
+  			osMutexPrioInherit,    					 // attr_bits
+  			NULL,                                    // memory for control block
+  			0U                                        // size for control block
+  			};
 
-	battery_mutex_only = osMutexNew(&battery_mutex_attr);
+  	battery_mutex_only = osMutexNew(&battery_mutex_attr);
 
-	/* Motor Mutex */
-	const osMutexAttr_t motor_mutex_attr = { "motor_mutex_only", // human readable mutex name
-			osMutexPrioInherit,    					 // attr_bits
-			NULL,                                    // memory for control block
-			0U                                        // size for control block
-			};
+  	/* Motor Mutex */
+  	const osMutexAttr_t motor_mutex_attr = { "motor_mutex_only", // human readable mutex name
+  			osMutexPrioInherit,    					 // attr_bits
+  			NULL,                                    // memory for control block
+  			0U                                        // size for control block
+  			};
 
-	motor_mutex_only = osMutexNew(&motor_mutex_attr);
+  	motor_mutex_only = osMutexNew(&motor_mutex_attr);
 
-	/** Initialise Mutexes **/
+  	/** Initialise Mutexes **/
 
-	sb1_mutex.mutex = sb1_mutex_only;
-	sb2_mutex.mutex = sb2_mutex_only;
-	sb3_mutex.mutex = sb3_mutex_only;
-	env_mutex.mutex = environment_mutex_only;
-	fsm_mutex.mutex = fsm_mutex_only;
-	controller_mutex.mutex = controller_mutex_only;
-	state_est_mutex.mutex = state_est_mutex_only;
-	usb_data_mutex.mutex = usb_data_mutex_only;
-	command_mutex.mutex = command_mutex_only;
-	gps_mutex.mutex = gps_mutex_only;
-	battery_mutex.mutex = battery_mutex_only;
-	motor_mutex.mutex = motor_mutex_only;
+  	sb1_mutex.mutex = sb1_mutex_only;
+  	sb2_mutex.mutex = sb2_mutex_only;
+  	sb3_mutex.mutex = sb3_mutex_only;
+  	env_mutex.mutex = environment_mutex_only;
+  	fsm_mutex.mutex = fsm_mutex_only;
+  	controller_mutex.mutex = controller_mutex_only;
+  	state_est_mutex.mutex = state_est_mutex_only;
+  	usb_data_mutex.mutex = usb_data_mutex_only;
+  	command_mutex.mutex = command_mutex_only;
+  	gps_mutex.mutex = gps_mutex_only;
+  	battery_mutex.mutex = battery_mutex_only;
+  	motor_mutex.mutex = motor_mutex_only;
 
-	global_flight_phase_detection.flight_phase = IDLE;
-	global_flight_phase_detection.mach_regime = SUBSONIC;
-	global_telemetry_command = IDLE_COMMAND;
+  	global_flight_phase_detection.flight_phase = IDLE;
+  	global_flight_phase_detection.mach_regime = SUBSONIC;
+  	global_telemetry_command = IDLE_COMMAND;
 
-#ifdef DEBUG
-	const osMutexAttr_t print_mutex_attr = { "print_mutex", // human readable mutex name
-			osMutexPrioInherit,    					  // attr_bits
-			NULL,                                    // memory for control block
-			0U                                        // size for control block
-			};
+  #ifdef DEBUG
+  	const osMutexAttr_t print_mutex_attr = { "print_mutex", // human readable mutex name
+  			osMutexPrioInherit,    					  // attr_bits
+  			NULL,                                    // memory for control block
+  			0U                                        // size for control block
+  			};
 
-	print_mutex = osMutexNew(&print_mutex_attr);
-#endif
+  	print_mutex = osMutexNew(&print_mutex_attr);
+  #endif
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
-	/* add semaphores, ... */
+  /* add semaphores, ... */
   /* USER CODE END RTOS_SEMAPHORES */
 
   /* USER CODE BEGIN RTOS_TIMERS */
-	/* start timers, add new ones, ... */
+  /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
@@ -575,7 +575,7 @@ int main(void)
   task_flashHandle = osThreadNew(vTaskFlash, NULL, &task_flash_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
-	/* add threads, ... */
+  /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
@@ -584,11 +584,12 @@ int main(void)
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	while (1) {
+  while (1)
+  {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	}
+  }
   /* USER CODE END 3 */
 }
 
@@ -607,7 +608,7 @@ void SystemClock_Config(void)
   HAL_PWREx_ConfigSupply(PWR_LDO_SUPPLY);
   /** Configure the main internal regulator output voltage
   */
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
 
   while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
   /** Macro to configure the PLL clock source
@@ -616,16 +617,15 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI48|RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.HSIState = RCC_HSI_DIV1;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 1;
-  RCC_OscInitStruct.PLL.PLLN = 24;
+  RCC_OscInitStruct.PLL.PLLN = 120;
   RCC_OscInitStruct.PLL.PLLP = 2;
-  RCC_OscInitStruct.PLL.PLLQ = 4;
+  RCC_OscInitStruct.PLL.PLLQ = 2;
   RCC_OscInitStruct.PLL.PLLR = 2;
   RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_3;
   RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
@@ -639,15 +639,15 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2
                               |RCC_CLOCKTYPE_D3PCLK1|RCC_CLOCKTYPE_D1PCLK1;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
-  RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV2;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV1;
-  RCC_ClkInitStruct.APB3CLKDivider = RCC_APB3_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV1;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV1;
-  RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV1;
+  RCC_ClkInitStruct.APB3CLKDivider = RCC_APB3_DIV2;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV2;
+  RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
   {
     Error_Handler();
   }
@@ -658,19 +658,19 @@ void SystemClock_Config(void)
                               |RCC_PERIPHCLK_SPI2|RCC_PERIPHCLK_SDMMC
                               |RCC_PERIPHCLK_ADC|RCC_PERIPHCLK_USB;
   PeriphClkInitStruct.PLL2.PLL2M = 1;
-  PeriphClkInitStruct.PLL2.PLL2N = 18;
+  PeriphClkInitStruct.PLL2.PLL2N = 19;
   PeriphClkInitStruct.PLL2.PLL2P = 1;
   PeriphClkInitStruct.PLL2.PLL2Q = 2;
   PeriphClkInitStruct.PLL2.PLL2R = 2;
   PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL2VCIRANGE_3;
   PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOMEDIUM;
-  PeriphClkInitStruct.PLL2.PLL2FRACN = 6144;
+  PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
   PeriphClkInitStruct.SdmmcClockSelection = RCC_SDMMCCLKSOURCE_PLL;
   PeriphClkInitStruct.Spi123ClockSelection = RCC_SPI123CLKSOURCE_PLL;
   PeriphClkInitStruct.Spi45ClockSelection = RCC_SPI45CLKSOURCE_D2PCLK1;
   PeriphClkInitStruct.Usart234578ClockSelection = RCC_USART234578CLKSOURCE_D2PCLK1;
   PeriphClkInitStruct.Usart16ClockSelection = RCC_USART16CLKSOURCE_D2PCLK2;
-  PeriphClkInitStruct.UsbClockSelection = RCC_USBCLKSOURCE_PLL;
+  PeriphClkInitStruct.UsbClockSelection = RCC_USBCLKSOURCE_HSI48;
   PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLL2;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
@@ -1332,14 +1332,14 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN Header_StartDefaultTask */
 /**
- * @brief  Function implementing the defaultTask thread.
- * @param  argument: Not used
- * @retval None
- */
+  * @brief  Function implementing the defaultTask thread.
+  * @param  argument: Not used
+  * @retval None
+  */
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument)
 {
-  /* init code for USB_DEVICE */
+ /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 5 */
 	/* Infinite loop */
@@ -1382,7 +1382,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-	/* User can add his own implementation to report the HAL error return state */
+  /* User can add his own implementation to report the HAL error return state */
 
   /* USER CODE END Error_Handler_Debug */
 }
