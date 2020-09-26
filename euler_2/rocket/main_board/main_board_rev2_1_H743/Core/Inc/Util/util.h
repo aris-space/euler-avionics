@@ -241,6 +241,7 @@ osStatus_t logMsg(timestamp_t ts, char *msg);
 
 /** USB DEBUGGING **/
 
+
 /* Debug flag */
 #ifdef DEBUG
 #undef DEBUG

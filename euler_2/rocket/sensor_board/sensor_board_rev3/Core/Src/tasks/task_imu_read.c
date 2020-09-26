@@ -12,9 +12,10 @@
 
 
 void vInitImu20601();
-void vReadImu20601(int16_t gyroscope_data[], int16_t acceleration[], int16_t offset[]);
+void vReadImu20601(struct icm20601_dev * dev, int16_t gyroscope_data[], int16_t acceleration[], int16_t *temperature);
 
-ICM20601 ICM = ICM20601_INIT();
+ICM20601 ICM1 = ICM20601_INIT1();
+ICM20601 ICM2 = ICM20601_INIT2();
 
 /**
  * @brief Function implementing the task_baro_read thread.
@@ -25,12 +26,19 @@ void vTaskImuRead(void *argument) {
 	uint32_t tick_count, tick_update;
 
 	/* initialize data variables */
-	int16_t gyroscope_data[3] = { 0 }; /* 0 = x, 1 = y, 2 = z */
-	int16_t acceleration[3] = { 0 }; /* 0 = x, 1 = y, 2 = z */
-	int16_t temperature;
+	int16_t gyroscope_data1[3] = { 0 }; /* 0 = x, 1 = y, 2 = z */
+	int16_t acceleration1[3] = { 0 }; /* 0 = x, 1 = y, 2 = z */
+	int16_t temperature1;
+
+	int16_t gyroscope_data2[3] = { 0 }; /* 0 = x, 1 = y, 2 = z */
+	int16_t acceleration2[3] = { 0 }; /* 0 = x, 1 = y, 2 = z */
+	int16_t temperature2;
 
 	/* initialize queue message */
 	imu_data_t queue_data = { 0 };
+
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
 
 
 	vInitImu20601();
@@ -40,22 +48,26 @@ void vTaskImuRead(void *argument) {
 	tick_update = osKernelGetTickFreq() / IMU20601_SAMPLING_FREQ;
 	for (;;) {
 		tick_count += tick_update;
-		vReadImu20601(gyroscope_data, acceleration, &temperature);
+		vReadImu20601(&ICM1, gyroscope_data1, acceleration1, &temperature1);
+		vReadImu20601(&ICM2, gyroscope_data2, acceleration2, &temperature2);
 
 		/* Debugging */
 
-//		UsbPrint("[DBG] RAW Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld, T:%ld; \n",
-//				gyroscope_data[0], gyroscope_data[1], gyroscope_data[2],
-//				acceleration[0], acceleration[1], acceleration[2], temperature);
+		UsbPrint("[DBG] RAW 1 Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld, T:%ld; \n",
+				gyroscope_data1[0], gyroscope_data1[1], gyroscope_data1[2],
+				acceleration1[0], acceleration1[1], acceleration1[2], temperature1);
+		UsbPrint("[DBG] RAW 2 Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld, T:%ld; \n",
+						gyroscope_data2[0], gyroscope_data2[1], gyroscope_data2[2],
+						acceleration2[0], acceleration2[1], acceleration2[2], temperature2);
 
 		//TODO HIE AUE STUFF WO MUES GMACHT WERDE MIT DENE DATE
 
-		queue_data.gyro_x = gyroscope_data[0];
-		queue_data.gyro_y = gyroscope_data[1];
-		queue_data.gyro_z = gyroscope_data[2];
-		queue_data.acc_x = acceleration[0];
-		queue_data.acc_y = acceleration[1];
-		queue_data.acc_z = acceleration[2];
+		queue_data.gyro_x = gyroscope_data1[0];
+		queue_data.gyro_y = gyroscope_data1[1];
+		queue_data.gyro_z = gyroscope_data1[2];
+		queue_data.acc_x = acceleration1[0];
+		queue_data.acc_y = acceleration1[1];
+		queue_data.acc_z = acceleration1[2];
 		queue_data.ts = osKernelGetTickCount();
 
 		/* Send Data to Queue */
@@ -69,15 +81,18 @@ void vInitImu20601() {
 	osDelayUntil(1000);
 	uint8_t r = 0;
 	do {
-		r = icm20601_init(&ICM);
+		r = icm20601_init(&ICM2);
 		HAL_Delay(10);
-	} while(!r);
-
+	} while(r);
+	do {
+		r = icm20601_init(&ICM1);
+		HAL_Delay(10);
+	} while(r);
 }
 
-void vReadImu20601(int16_t gyroscope_data[], int16_t acceleration[], int16_t *temperature) {
-	icm20601_read_accel_raw(&ICM, acceleration);
-	icm20601_read_gyro_raw(&ICM, gyroscope_data);
-	icm20601_read_temp_raw(&ICM, temperature);
+void vReadImu20601(struct icm20601_dev * dev, int16_t gyroscope_data[], int16_t acceleration[], int16_t *temperature) {
+		icm20601_read_accel_raw(dev, acceleration);
+		icm20601_read_gyro_raw(dev, gyroscope_data);
+		icm20601_read_temp_raw(dev, temperature);
 }
 

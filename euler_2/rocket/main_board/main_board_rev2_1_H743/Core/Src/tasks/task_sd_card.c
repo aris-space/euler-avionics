@@ -209,9 +209,9 @@ void vTaskSdCard(void *argument) {
 	UsbPrint("[STORAGE TASK] Starting SD Card Task...\n");
 	FRESULT res;
 	char EULER_LOG_FILE_NAME[13] = "";
-	char *sd_str_buffer = (char*) calloc(SD_BUFFER_LEN, sizeof(char));
+	char *sd_str_buffer = (char*) calloc(SD_BUFFER_LEN, sizeof(char)); // 0x20000000;
 	uint16_t sd_str_idx = 0;
-	osDelay(3000);
+	osDelay(300);
 	UsbPrint("[STORAGE TASK] Mounting SD Card...\n");
 	mountSDCard();
 	uint8_t already_entered = 0;
@@ -266,7 +266,7 @@ void vTaskSdCard(void *argument) {
 					} else {
 						sd_str_buffer[sd_str_idx++] = '\0';
 						int32_t puts_res = f_puts(sd_str_buffer,
-								&EULER_LOG_FILE);
+								 &EULER_LOG_FILE);
 						if (puts_res < 0) {
 							UsbPrint(
 									"[STORAGE TASK] Failed writing to file: %d\n",

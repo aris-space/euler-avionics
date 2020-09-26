@@ -9,10 +9,13 @@
 
 float get_temp(uint16_t adc_value);
 
+uint32_t adc_value[4];
+
 void vTaskBattery(void *argument) {
 
 	/* For periodic update */
 	uint32_t tick_count, tick_update;
+
 
 	/* Initialise Variables */
 	double mah;
@@ -29,27 +32,25 @@ void vTaskBattery(void *argument) {
 	tick_update = osKernelGetTickFreq() / BATTERY_SAMPLE_RATE;
 
 	//ADC init
-	uint32_t adc_value[5];
+
 
 	HAL_ADC_Stop_DMA(&hadc1);
-	HAL_ADC_Start_DMA(&hadc1, adc_value, 5);
+	HAL_ADC_Start_DMA(&hadc1, adc_value, 4);
 
 	osDelay(500);
 
 	for (;;) {
 		tick_count += tick_update;
-
-		double current2 = ((double) adc_value[0] * (2.5 / 4096.0)
+		double current2 = ((double) adc_value[0] * (2.5 / 65536.0)
 				- (3.3 * 0.107)) / 0.264; // CURR2
-		float supply_voltage = adc_value[1] * (2.5 / 4096) * 2; // 3V3
-		float battery_voltage = adc_value[2] * (2.5 / 4096) * 5.2; // BAT
-		double current1 = ((double) adc_value[3] * (2.5 / 4096.0)
+		float supply_voltage = (adc_value[2] / 65536.0) * 5; // 3V3
+		float battery_voltage = adc_value[3] * (2.5 / 65536.0) * 5.2; // BAT
+		double current1 = ((double) adc_value[1] * (2.5 / 65536.0)
 				- (3.3 * 0.107)) / 0.264; // CURR1
-		get_temp(adc_value[4]); // temp
 
 		if ((adc_value[0] | adc_value[1]) == 0) {
 			HAL_ADC_Stop_DMA(&hadc1);
-			HAL_ADC_Start_DMA(&hadc1, adc_value, 5);
+			HAL_ADC_Start_DMA(&hadc1, adc_value, 4);
 		}
 		// Filter adc values
 		if (counter < 50) {
