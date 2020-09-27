@@ -104,7 +104,6 @@
 
 #define TRC_EXT_SOCKETS_VERSION_PATCH 0
 
-
 /******************************************************************************
  * <EXTENSIONPREFIX>_<EVENTCODE>
  * The event codes used in the trace wrapper functions. Important that these
@@ -123,40 +122,46 @@
  *****************************************************************************/
 #define TRC_EXT_SOCKETS_COUNT 2
 
-
 /***** Trace Wrappers *****/
 
 #include "aws_secure_sockets.h" /* Including the original header file, so that custom data types are understood. */
 
-static inline int32_t SOCKETS_Connect__trace( Socket_t xSocket, SocketsSockaddr_t * pxAddress, Socklen_t xAddressLength )
-{
-	int32_t ret = SOCKETS_Connect(xSocket, pxAddress, xAddressLength);
+static inline int32_t SOCKETS_Connect__trace(Socket_t xSocket,
+                                             SocketsSockaddr_t* pxAddress,
+                                             Socklen_t xAddressLength) {
+  int32_t ret = SOCKETS_Connect(xSocket, pxAddress, xAddressLength);
 
-	// Note: The host-side xml file assumes that ret == 0 means OK, otherwise timeout/error.
-	prvTraceStoreEvent3(EVENTCODE_SOCKETS_Connect, (uint32_t)xSocket, (uint32_t)pxAddress->ulAddress, (uint32_t)ret);
+  // Note: The host-side xml file assumes that ret == 0 means OK, otherwise
+  // timeout/error.
+  prvTraceStoreEvent3(EVENTCODE_SOCKETS_Connect, (uint32_t)xSocket,
+                      (uint32_t)pxAddress->ulAddress, (uint32_t)ret);
 
-	return ret;
+  return ret;
 }
 
-static inline int32_t SOCKETS_Send__trace( Socket_t xSocket, const void * pvBuffer, size_t xDataLength, uint32_t ulFlags )
-{
-	int32_t ret = SOCKETS_Send(xSocket, pvBuffer, xDataLength, ulFlags);
+static inline int32_t SOCKETS_Send__trace(Socket_t xSocket,
+                                          const void* pvBuffer,
+                                          size_t xDataLength,
+                                          uint32_t ulFlags) {
+  int32_t ret = SOCKETS_Send(xSocket, pvBuffer, xDataLength, ulFlags);
 
-	// Note: The host-side xml file assumes that ret == 0 means OK, otherwise timeout/error.
-	prvTraceStoreEvent2(EVENTCODE_SOCKETS_Send, (uint32_t)xSocket, (uint32_t)ret);
+  // Note: The host-side xml file assumes that ret == 0 means OK, otherwise
+  // timeout/error.
+  prvTraceStoreEvent2(EVENTCODE_SOCKETS_Send, (uint32_t)xSocket, (uint32_t)ret);
 
-	return ret;
+  return ret;
 }
 
+static inline int32_t SOCKETS_Recv__trace(Socket_t xSocket, void* pvBuffer,
+                                          size_t xBufferLength,
+                                          uint32_t ulFlags) {
+  int32_t ret = SOCKETS_Recv(xSocket, pvBuffer, xBufferLength, ulFlags);
 
-static inline int32_t SOCKETS_Recv__trace( Socket_t xSocket, void * pvBuffer, size_t xBufferLength, uint32_t ulFlags )
-{
-	int32_t ret = SOCKETS_Recv(xSocket, pvBuffer, xBufferLength, ulFlags);
+  // Note: The host-side xml file assumes that ret == 0 means OK, otherwise
+  // timeout/error.
+  prvTraceStoreEvent2(EVENTCODE_SOCKETS_Recv, (uint32_t)xSocket, (uint32_t)ret);
 
-	// Note: The host-side xml file assumes that ret == 0 means OK, otherwise timeout/error.
-	prvTraceStoreEvent2(EVENTCODE_SOCKETS_Recv, (uint32_t)xSocket, (uint32_t)ret);
-
-	return ret;
+  return ret;
 }
 
 /***** Function Redefinitions *****/

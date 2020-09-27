@@ -14,13 +14,11 @@
 
 extern SPI_HandleTypeDef hspi4;
 
-typedef enum {
-	flash_BUSY = 1, flash_IDLE
-} flashStatus_t;
+typedef enum { flash_BUSY = 1, flash_IDLE } flashStatus_t;
 
 typedef struct {
-	char s[5];
-	uint32_t data[5];
+  char s[5];
+  uint32_t data[5];
 } test_data_t;
 
 /* Functions */
@@ -30,7 +28,7 @@ osStatus_t write_data(uint32_t address, void const *data, uint16_t size);
 osStatus_t write_command(uint8_t *write_data, uint16_t size);
 osStatus_t read_data(uint32_t address, void *const data, uint16_t size);
 osStatus_t write_read_command(uint8_t *write_data, uint8_t *read_data,
-		uint16_t size);
+                              uint16_t size);
 osStatus_t erase_4KB(uint32_t address);
 osStatus_t erase_32KB(uint32_t address);
 osStatus_t erase_64KB(uint32_t address);

@@ -8,7 +8,6 @@
 #ifndef INC_TASKS_TASK_XBEE_H_
 #define INC_TASKS_TASK_XBEE_H_
 
-
 /* includes */
 
 #include "main.h"
@@ -28,7 +27,6 @@
 /* Mutexes */
 extern custom_mutex_t fsm_mutex;
 extern custom_mutex_t command_mutex;
-
 
 /* Global Data */
 

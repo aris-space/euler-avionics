@@ -122,41 +122,42 @@
  *****************************************************************************/
 #define TRC_EXT_WIFI_COUNT 3
 
-
 /***** Trace Wrappers *****/
 
 #include "aws_wifi.h" /* Including the original header file, so that custom data types are understood. */
 
-static inline WIFIReturnCode_t WIFI_On__trace( void )
-{
-	 WIFIReturnCode_t ret = WIFI_On();
+static inline WIFIReturnCode_t WIFI_On__trace(void) {
+  WIFIReturnCode_t ret = WIFI_On();
 
-	// Note: The host-side xml file assumes that ret == 0 means OK, otherwise timeout/error.
-	prvTraceStoreEvent1(EVENTCODE_WIFI_On, (uint32_t)ret);
+  // Note: The host-side xml file assumes that ret == 0 means OK, otherwise
+  // timeout/error.
+  prvTraceStoreEvent1(EVENTCODE_WIFI_On, (uint32_t)ret);
 
-	return ret;
+  return ret;
 }
 
- static inline WIFIReturnCode_t WIFI_Off__trace( void )
- {
- 	 WIFIReturnCode_t ret = WIFI_Off();
+static inline WIFIReturnCode_t WIFI_Off__trace(void) {
+  WIFIReturnCode_t ret = WIFI_Off();
 
- 	// Note: The host-side xml file assumes that ret == 0 means OK, otherwise timeout/error.
- 	prvTraceStoreEvent1(EVENTCODE_WIFI_Off, (uint32_t)ret);
+  // Note: The host-side xml file assumes that ret == 0 means OK, otherwise
+  // timeout/error.
+  prvTraceStoreEvent1(EVENTCODE_WIFI_Off, (uint32_t)ret);
 
- 	return ret;
- }
+  return ret;
+}
 
- static inline WIFIReturnCode_t WIFI_ConnectAP__trace( const WIFINetworkParams_t * const pxNetworkParams )
- {
-	 WIFIReturnCode_t ret = WIFI_ConnectAP(pxNetworkParams);
+static inline WIFIReturnCode_t WIFI_ConnectAP__trace(
+    const WIFINetworkParams_t* const pxNetworkParams) {
+  WIFIReturnCode_t ret = WIFI_ConnectAP(pxNetworkParams);
 
-	 // Note: The host-side xml file assumes that ret == 0 means OK, otherwise timeout/error.
+  // Note: The host-side xml file assumes that ret == 0 means OK, otherwise
+  // timeout/error.
 
-	 prvTraceStoreStringEvent(2, EVENTCODE_WIFI_ConnectAP, pxNetworkParams->pcSSID, pxNetworkParams->xSecurity, ret);
+  prvTraceStoreStringEvent(2, EVENTCODE_WIFI_ConnectAP, pxNetworkParams->pcSSID,
+                           pxNetworkParams->xSecurity, ret);
 
-	 return ret;
- }
+  return ret;
+}
 
 /***** Function Redefinitions *****/
 

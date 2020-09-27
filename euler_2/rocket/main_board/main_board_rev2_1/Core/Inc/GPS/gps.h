@@ -29,9 +29,9 @@ uint8_t gps_gga[GPS_NUMBER][DATA_SIZE];
 // *** structs *** //
 
 typedef struct gps_device {
-	uint8_t id;
-	UART_HandleTypeDef *uart_bus;
-	gps_data_t data;
+  uint8_t id;
+  UART_HandleTypeDef *uart_bus;
+  gps_data_t data;
 } UBLOX;
 
 // *** Global Functions *** //

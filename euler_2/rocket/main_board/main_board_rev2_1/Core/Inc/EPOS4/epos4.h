@@ -19,7 +19,7 @@ osStatus_t SetPositionMode(int8_t position_mode);
 osStatus_t MoveToPosition(int32_t position);
 osStatus_t MoveToPositionPPM(int32_t position);
 osStatus_t ConfigurePPM(int32_t velocity, int32_t acceleration,
-		int32_t deceleration);
+                        int32_t deceleration);
 osStatus_t GetPosition(int32_t *position);
 osStatus_t WriteCommand(uint8_t *command, uint8_t *data, uint8_t *rx_buffer);
 osStatus_t ReadCommand(uint8_t *command, uint8_t *rx_buffer);

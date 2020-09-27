@@ -1,9 +1,5 @@
 #include "Telemetry.h"
 
-Telemetry::Telemetry(){
-  
-}
+Telemetry::Telemetry() {}
 
-void Telemetry::update(){
-  ts = millis();
-}
+void Telemetry::update() { ts = millis(); }
