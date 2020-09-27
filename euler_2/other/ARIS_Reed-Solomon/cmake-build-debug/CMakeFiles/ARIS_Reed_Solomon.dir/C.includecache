@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/imrek/CLionProjects/ARIS_Reed-Solomon/RS/RS.h
+stdio.h
+-
+stdint.h
+-
+
+C:/Users/imrek/CLionProjects/ARIS_Reed-Solomon/main.c
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+math.h
+-
+RS/RS.h
+C:/Users/imrek/CLionProjects/ARIS_Reed-Solomon/RS/RS.h
+
