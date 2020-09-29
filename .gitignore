@@ -135,7 +135,6 @@ __pycache__
 Read the Docs
 config.rst
 *.iml
-.project
 .pydevproject
 
 package-lock.json
