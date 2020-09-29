@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include "Util/util.h"
 #include "Util/mutex.h"
+#include "Util/telemetry_util.h"
 
 #define BATTERY_SAMPLE_RATE 50
 

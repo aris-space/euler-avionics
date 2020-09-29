@@ -99,6 +99,10 @@ void vTaskMotorCont(void *argument) {
       motor_status = MoveToPositionPPM(50);
     }
 
+    if(osKernelGetTickCount() < 10000 && osKernelGetTickCount() > 9960){
+    	testairbrakes(-100);
+    }
+
     /* Airbrake Test if telemetry command is given and we are in idle state */
     if (flight_phase_detection.flight_phase == IDLE &&
         telemetry_command == AIRBRAKE_TEST_COMMAND &&

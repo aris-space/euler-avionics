@@ -5,15 +5,8 @@
  *      Author: stoja
  */
 
-#include "fatfs.h"
-
 #include "tasks/task_sd_card.h"
-#include "Util/util.h"
 
-#include <float.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 
 FATFS EULER_FatFS;
 FIL EULER_LOG_FILE;

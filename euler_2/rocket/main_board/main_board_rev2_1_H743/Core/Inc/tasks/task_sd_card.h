@@ -9,6 +9,14 @@
 #define INC_TASKS_TASK_SD_CARD_H_
 
 #include "Util/mutex.h"
+#include "Util/util.h"
+#include "fatfs.h"
+#include "Util/logging_util.h"
+
+#include <float.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 #define SD_CARD_SYNC_COUNT 4
 
