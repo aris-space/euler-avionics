@@ -1,7 +1,6 @@
 //
 // Created by Tun Kapgen on 09.06.20.
 //
-
 #ifndef C_IMPLEMENTATION_CONTROLLER_CONST_H
 #define C_IMPLEMENTATION_CONTROLLER_CONST_H
 

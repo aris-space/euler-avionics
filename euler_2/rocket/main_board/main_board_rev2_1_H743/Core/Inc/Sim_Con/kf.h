@@ -1,11 +1,7 @@
-#include "../Util/math_utils.h"
-#include "state_est_const.h"
-#include <string.h>
-#include <stdbool.h>
-#include <math.h>
-
 #ifndef EKF_H_
 #define EKF_H_
+
+#include "state_est_const.h"
 
 /* Matrix Sizes */
 #define NUMBER_STATES 3	/* NUMBER_STATES x NUMBER_STATES -> A Matrix */

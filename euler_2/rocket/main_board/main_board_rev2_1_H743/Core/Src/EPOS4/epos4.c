@@ -5,6 +5,7 @@
  *      Author: Jonas
  */
 #include "EPOS4/epos4.h"
+#include <string.h>
 
 uint16_t calculateCRC(uint8_t *data, uint8_t len) {
   uint16_t shifter, c;

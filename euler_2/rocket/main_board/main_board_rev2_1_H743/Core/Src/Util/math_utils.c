@@ -1,4 +1,6 @@
 #include "Util/math_utils.h"
+#include <string.h>
+#include <math.h>
 
 void eye(int32_t dim, float A[dim][dim]) {
   for (int i = 0; i < dim; i++) {

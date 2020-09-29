@@ -1,15 +1,11 @@
-#include "../Util/math_utils.h"
-#include "env.h"
-#include "state_est_const.h"
-#include "kf.h"
-#include "flight_phase_detection.h"
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-#include <stdbool.h>
-
 #ifndef STATE_EST_H_
 #define STATE_EST_H_
+
+#include "kf.h"
+#include "env.h"
+#include "state_est_const.h"
+#include "flight_phase_detection.h"
+#include <stdbool.h>
 
 typedef struct extrapolation_rolling_memory_t {
     int memory_length;

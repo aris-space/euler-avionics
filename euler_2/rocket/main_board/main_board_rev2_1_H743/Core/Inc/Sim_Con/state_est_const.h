@@ -1,9 +1,7 @@
-#include "Sim_Con/state_est_config_av.h"
-#include <stdbool.h>
-
 #ifndef STATE_EST_CONST_H
 #define STATE_EST_CONST_H
 
+#include "Sim_Con/state_est_config_av.h"
 /** BASIC TYPES **/
 #ifdef EULER_REC
 #include "main.h"
@@ -13,6 +11,8 @@ typedef uint32_t timestamp_t;
 #ifdef EULER_AV
 #include "Util/util.h"
 #endif
+
+#include <stdbool.h>
 
 #ifdef EULER_SIMCON
 /* as we don't include cmsis_os.h, we need to define some datatypes ourselves */

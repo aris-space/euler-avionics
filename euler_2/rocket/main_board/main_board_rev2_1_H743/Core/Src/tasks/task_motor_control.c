@@ -6,6 +6,8 @@
  */
 
 #include "tasks/task_motor_control.h"
+#include "EPOS4/epos4.h"
+#include "Util/logging_util.h"
 
 void testairbrakes(int32_t position);
 

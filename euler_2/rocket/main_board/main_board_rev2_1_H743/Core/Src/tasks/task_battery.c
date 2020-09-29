@@ -6,6 +6,7 @@
  */
 
 #include "tasks/task_battery.h"
+#include "Util/logging_util.h"
 
 float get_temp(uint16_t adc_value);
 

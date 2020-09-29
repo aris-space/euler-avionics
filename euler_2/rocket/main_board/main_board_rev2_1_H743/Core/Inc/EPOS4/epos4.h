@@ -8,9 +8,8 @@
 #ifndef INC_EPOS4_EPOS4_H_
 #define INC_EPOS4_EPOS4_H_
 
-#include "cmsis_os.h"
 #include "main.h"
-#include <string.h>
+#include "cmsis_os.h"
 
 uint16_t calculateCRC(uint8_t *data, uint8_t len);
 osStatus_t EnableMotor();

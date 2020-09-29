@@ -10,10 +10,8 @@
 
 /* Includes */
 #include "Sim_Con/env.h"
-#include "Sim_Con/flight_phase_detection.h"
 #include "Util/util.h"
 #include "Util/mutex.h"
-#include "main.h"
 
 /* Constants */
 #define FSM_SAMPLING_FREQ 100

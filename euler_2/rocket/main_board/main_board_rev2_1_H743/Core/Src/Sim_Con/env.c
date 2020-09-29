@@ -1,4 +1,6 @@
-#include "../../Inc/Sim_Con/env.h"
+#include "Sim_Con/env.h"
+#include <math.h>
+#include <string.h>
 
 void init_env(env_t *env) {
 	/* init constants */

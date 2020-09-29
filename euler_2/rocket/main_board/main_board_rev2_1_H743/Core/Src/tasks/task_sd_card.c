@@ -6,7 +6,12 @@
  */
 
 #include "tasks/task_sd_card.h"
+#include "Util/logging_util.h"
+#include "fatfs.h"
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 FATFS EULER_FatFS;
 FIL EULER_LOG_FILE;
@@ -22,7 +27,7 @@ void mountSDCard() {
     if (res != FR_OK) {
       UsbPrint("[STORAGE TASK] Failed mounting SD card: %d\n", res);
 #if (configUSE_TRACE_FACILITY == 1)
-      vTracePrint(sd_channel, "Sd card mounting failed");
+      vTracePrint(sd_channel, "SD card mounting failed");
 #endif
 
       // force sd card to be reinitialized

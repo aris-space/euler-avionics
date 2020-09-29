@@ -5,6 +5,7 @@
  *      Author: Jonas
  */
 #include "tasks/task_flash.h"
+#include "Util/logging_util.h"
 
 void vTaskFlash(void *argument) {
   /* For periodic update */

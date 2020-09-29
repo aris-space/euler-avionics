@@ -6,6 +6,8 @@
  */
 
 #include "tasks/task_fsm.h"
+#include "Sim_Con/flight_phase_detection.h"
+#include "Util/logging_util.h"
 
 void vTaskFsm(void *argument) {
   /* For periodic update */

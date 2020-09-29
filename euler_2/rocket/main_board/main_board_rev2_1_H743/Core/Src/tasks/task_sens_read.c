@@ -6,6 +6,7 @@
  */
 
 #include "tasks/task_sens_read.h"
+#include "Util/logging_util.h"
 
 void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3);
 void ReadDataUSB();

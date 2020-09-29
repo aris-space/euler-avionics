@@ -9,14 +9,6 @@
 #define INC_TASKS_TASK_STATE_EST_H_
 
 /* Includes */
-#include "Sim_Con/env.h"
-#include "Sim_Con/flight_phase_detection.h"
-#include "Sim_Con/state_est_const.h"
-#include "Sim_Con/state_est.h"
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-#include "Util/math_utils.h"
 #include "Util/util.h"
 #include "Util/mutex.h"
 /* Constants */

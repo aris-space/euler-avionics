@@ -9,14 +9,8 @@
 #define INC_TASKS_TASK_CONTROLLER_H_
 
 /* Includes */
-#include "stm32h7xx_hal.h"
-#include "main.h"
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
 #include "Util/util.h"
 #include "Util/mutex.h"
-#include "Sim_Con/controller.h"
 
 /* Constants */
 

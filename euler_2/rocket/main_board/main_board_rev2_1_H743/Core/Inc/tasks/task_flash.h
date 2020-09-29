@@ -10,10 +10,10 @@
 
 /* includes */
 
-#include "main.h"
 #include "Util/util.h"
 #include "Util/mutex.h"
 #include "Flash/flash_driver.h"
+#include "main.h"
 
 /* defines */
 #define FLASH_SAMPLING_FREQ 10

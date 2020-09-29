@@ -10,13 +10,6 @@
 
 #include "Util/mutex.h"
 #include "Util/util.h"
-#include "fatfs.h"
-#include "Util/logging_util.h"
-
-#include <float.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 
 #define SD_CARD_SYNC_COUNT 4
 

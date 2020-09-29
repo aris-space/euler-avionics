@@ -1,4 +1,7 @@
-#include "../../Inc/Sim_Con/kf.h"
+#include "Sim_Con/kf.h"
+#include "Util/math_utils.h"
+#include <string.h>
+#include <math.h>
 
 void reset_kf_state(kf_state_t *kf_state){
     if (STATE_ESTIMATION_FREQUENCY == 1000) {

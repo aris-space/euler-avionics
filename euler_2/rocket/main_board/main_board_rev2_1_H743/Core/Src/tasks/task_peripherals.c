@@ -6,6 +6,7 @@
  */
 
 #include "tasks/task_peripherals.h"
+#include "main.h"
 
 void vTaskPeripherals(void *argument) {
   /* For periodic update */

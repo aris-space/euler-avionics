@@ -5,13 +5,8 @@
 #ifndef _GPS
 #define _GPS
 
+#include "Util/util.h"
 #include "stm32h7xx_hal.h"
-
-#include <float.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <Util/util.h>
 
 #define HEADER_SIZE 3
 #define BUFFER_SIZE 1000

@@ -10,11 +10,10 @@
 
 /* includes */
 
-#include "main.h"
 #include "Util/util.h"
-#include "Sim_Con/env.h"
 #include "Util/mutex.h"
 #include "Util/telemetry_util.h"
+#include "main.h"
 
 /* defines */
 #define XBEE_SAMPLING_FREQ 10

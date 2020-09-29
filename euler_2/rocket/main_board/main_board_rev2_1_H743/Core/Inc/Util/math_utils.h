@@ -1,10 +1,8 @@
-#include <string.h>
-#include <stdbool.h>
-#include <math.h>
-#include <stdio.h>
-
 #ifndef MATH_UTILS_H_
 #define MATH_UTILS_H_
+
+#include <stdint.h>
+#include <stdbool.h>
 
 #define max(x, y) ((x) >= (y)) ? (x) : (y)
 #define min(x, y) ((x) <= (y)) ? (x) : (y)

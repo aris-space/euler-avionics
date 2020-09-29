@@ -9,11 +9,10 @@
 #define INC_TASKS_TASK_SENS_READ_H_
 
 /* Includes */
-#include <stdio.h>
 
 #include "Util/util.h"
-#include "main.h"
 #include "Util/mutex.h"
+#include "main.h"
 
 /* Constants */
 #define SENSOR_READ_FREQUENCY 100

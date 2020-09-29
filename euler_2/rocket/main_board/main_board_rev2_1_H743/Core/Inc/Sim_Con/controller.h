@@ -5,10 +5,6 @@
 #ifndef C_IMPLEMENTATION_CONTROLLER_H
 #define C_IMPLEMENTATION_CONTROLLER_H
 
-#include <stdint.h>
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
 #include "Sim_Con/flight_phase_detection.h"
 #include "Sim_Con/controller_const.h"
 

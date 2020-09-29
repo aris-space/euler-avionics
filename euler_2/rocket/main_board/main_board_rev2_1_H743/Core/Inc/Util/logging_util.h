@@ -8,10 +8,8 @@
 #ifndef INC_UTIL_LOGGING_UTIL_H_
 #define INC_UTIL_LOGGING_UTIL_H_
 
-#include "Util/util.h"
 #include "cmsis_os.h"
 #include "Sim_Con/state_est_const.h"
-
 
 #define LOG_BUFFER_LEN 30
 

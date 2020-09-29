@@ -11,8 +11,6 @@
 /* Includes */
 #include "Util/util.h"
 #include "Util/mutex.h"
-#include "main.h"
-#include "EPOS4/epos4.h"
 
 #define MOTOR_TASK_FREQUENCY 25
 

@@ -1,5 +1,3 @@
-#include <stdbool.h>
-
 #ifndef STATE_EST_CONFIG_H_
 #define STATE_EST_CONFIG_H_
 

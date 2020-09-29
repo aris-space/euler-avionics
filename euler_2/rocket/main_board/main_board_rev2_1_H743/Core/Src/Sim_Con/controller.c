@@ -3,6 +3,7 @@
 //
 
 #include "Sim_Con/controller.h"
+#include <string.h>
 
 /* In this file, all the controller related function as the controller itself
  * will be defined */

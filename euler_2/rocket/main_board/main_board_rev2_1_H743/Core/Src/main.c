@@ -26,7 +26,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Util/util.h"
+#include "Util/logging_util.h"
 #include "Util/mutex.h"
+#include "Sim_Con/state_est.h"
 #include "tasks/task_controller.h"
 #include "tasks/task_sens_read.h"
 #include "tasks/task_state_est.h"

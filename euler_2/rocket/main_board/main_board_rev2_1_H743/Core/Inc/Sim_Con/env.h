@@ -1,10 +1,7 @@
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-#include <stdbool.h>
-
 #ifndef ENV_H_
 #define ENV_H_
+
+#include <stdbool.h>
 
 #define GRAVITATION 9.81
 #define GAMMA 1.4

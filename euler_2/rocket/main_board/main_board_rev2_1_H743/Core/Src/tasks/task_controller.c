@@ -6,6 +6,8 @@
  */
 
 #include "tasks/task_controller.h"
+#include "Sim_Con/controller.h"
+#include "Util/logging_util.h"
 
 /* Abbreviation 'aw' is used to described everything related to the antiwindup
  */

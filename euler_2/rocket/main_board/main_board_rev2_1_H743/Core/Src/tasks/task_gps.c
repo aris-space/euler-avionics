@@ -6,6 +6,8 @@
  */
 
 #include "tasks/task_gps.h"
+#include "GPS/gps.h"
+#include "Util/logging_util.h"
 
 void vTaskGps(void *argument) {
   UBLOX GPS1 = {0, &huart1};

@@ -1,4 +1,7 @@
-#include "../../Inc/Sim_Con/state_est.h"
+#include "Sim_Con/state_est.h"
+#include "Util/math_utils.h"
+#include <math.h>
+#include <string.h>
 
 void reset_state_est_state(float p_g, float T_g, state_est_state_t *state_est_state) {
     reset_flight_phase_detection(&state_est_state->flight_phase_detection);
