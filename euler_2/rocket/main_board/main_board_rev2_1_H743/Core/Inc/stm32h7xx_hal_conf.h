@@ -164,9 +164,8 @@ extern "C" {
  * source frequency, this source is inserted directly through I2S_CKIN pad.
  */
 #if !defined(EXTERNAL_CLOCK_VALUE)
-#define EXTERNAL_CLOCK_VALUE                    \
-  12288000U /*!< Value of the External clock in \
-               Hz*/
+#define EXTERNAL_CLOCK_VALUE 12288000U /*!< Value of the External clock in \
+                                          Hz*/
 #endif /* EXTERNAL_CLOCK_VALUE */
 
 /* Tip: To avoid modifying this file each time you need to use different HSE,
@@ -176,11 +175,11 @@ extern "C" {
 /**
  * @brief This is the HAL system configuration section
  */
-#define VDD_VALUE ((uint32_t)3300U) /*!< Value of VDD in mv */
-#define TICK_INT_PRIORITY ((uint32_t)0U) /*!< tick interrupt priority */
-#define USE_RTOS 0U
+#define VDD_VALUE          ((uint32_t)3300U) /*!< Value of VDD in mv */
+#define TICK_INT_PRIORITY  ((uint32_t)0U) /*!< tick interrupt priority */
+#define USE_RTOS           0U
 #define USE_SD_TRANSCEIVER 1U /*!< use uSD Transceiver */
-#define USE_SPI_CRC 0U /*!< use CRC in SPI */
+#define USE_SPI_CRC        0U /*!< use CRC in SPI */
 
 #define USE_HAL_ADC_REGISTER_CALLBACKS \
   0U /* ADC register callback disabled     */
