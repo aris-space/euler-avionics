@@ -9,11 +9,12 @@
 #define INC_UTIL_UTIL_H_
 
 #include "cmsis_os.h"
+#include "Sim_Con/state_est_const.h"
 
 /** BASIC TYPES **/
 
 /* Timestamp */
-typedef uint32_t timestamp_t;
+//typedef uint32_t timestamp_t;
 
 /* Board ID */
 typedef uint8_t board_id_t;
@@ -34,19 +35,6 @@ typedef enum {
 typedef struct {
   command_e command[4];
 } command_xbee_t;
-
-/* Rocket state */
-typedef enum {
-  IDLE = 1,
-  AIRBRAKE_TEST,
-  THRUSTING,
-  COASTING,
-  DESCENT,
-  RECOVERY
-} flight_phase_e;
-
-/* Mach Regime */
-typedef enum { SUBSONIC = 1, TRANSONIC, SUPERSONIC } mach_regime_e;
 
 /* Sensor type */
 typedef enum { BARO = 1, IMU, GPS, BATTERY } sensor_type_e;
@@ -109,22 +97,7 @@ typedef struct {
 
 /** CONTROL DATA TYPES **/
 
-/* State Estimation Output */
-typedef struct {
-  int32_t position_world[3];
-  int32_t velocity_rocket[3];
-  int32_t acceleration_rocket[3];
-  int32_t velocity_world[3];
-  int32_t acceleration_world[3];
-} state_est_data_t;
-
-/* FSM States */
-typedef struct {
-  float mach_number;
-  flight_phase_e flight_phase;
-  mach_regime_e mach_regime;
-  int8_t num_samples_positive;
-} flight_phase_detection_t;
+/* ARE FOUND IN STATE_EST_CONST.h */
 
 /** XBEE SUPER STRUCT **/
 

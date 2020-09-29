@@ -56,7 +56,7 @@ void vTaskPeripherals(void *argument) {
     }
 
     /* Enable Buzzer Trough FSM */
-    if (flight_phase_detection.flight_phase == RECOVERY) {
+    if (flight_phase_detection.flight_phase == TOUCHDOWN) {
       buzzer_on_fsm = true;
     }
 

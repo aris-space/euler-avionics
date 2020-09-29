@@ -279,7 +279,7 @@ void vTaskSdCard(void *argument) {
               if (ReadMutex(&fsm_mutex, &global_flight_phase_detection,
                             &local_flight_phase,
                             sizeof(global_flight_phase_detection)) == osOK &&
-                  local_flight_phase.flight_phase == RECOVERY) {
+                  local_flight_phase.flight_phase == TOUCHDOWN) {
                 f_close(&EULER_LOG_FILE);
                 // "clean" current file name
                 EULER_LOG_FILE_NAME[0] = 0;

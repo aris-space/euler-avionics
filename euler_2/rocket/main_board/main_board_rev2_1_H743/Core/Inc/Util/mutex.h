@@ -10,7 +10,7 @@
 
 #include "Util/util.h"
 #include <string.h>
-#include "Sim_Con/state_est_settings.h"
+#include "Sim_Con/state_est_const.h"
 #include "Sim_Con/env.h"
 
 osStatus_t AcquireMutex(custom_mutex_t *custom_mutex);

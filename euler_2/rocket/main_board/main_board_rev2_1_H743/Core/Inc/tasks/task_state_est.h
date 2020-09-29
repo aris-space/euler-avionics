@@ -10,9 +10,8 @@
 
 /* Includes */
 #include "Sim_Con/env.h"
-#include "Sim_Con/kf.h"
 #include "Sim_Con/flight_phase_detection.h"
-#include "Sim_Con/state_est_settings.h"
+#include "Sim_Con/state_est_const.h"
 #include "Sim_Con/state_est.h"
 #include <stdio.h>
 #include <math.h>

@@ -71,7 +71,7 @@ void vTaskXbee(void *argument) {
     }
 
     /* Go Back to Low Sampling if we are in Recovery */
-    if (telemetry_send.flight_phase == RECOVERY) {
+    if (telemetry_send.flight_phase == TOUCHDOWN) {
       fast_sampling = false;
     }
 
