@@ -6,7 +6,7 @@
  */
 
 #include "tasks/task_sd_card.h"
-#include "Util/logging_util.h"
+#include "util/logging_util.h"
 #include "fatfs.h"
 
 #include <stdio.h>
@@ -19,185 +19,11 @@ FIL EULER_LOG_FILE;
 	traceString sd_channel;
 #endif
 
-
-void mountSDCard() {
-  FRESULT res;
-  do {
-    res = f_mount(&EULER_FatFS, "", 1);
-    if (res != FR_OK) {
-      UsbPrint("[STORAGE TASK] Failed mounting SD card: %d\n", res);
-#if (configUSE_TRACE_FACILITY == 1)
-      vTracePrint(sd_channel, "SD card mounting failed");
-#endif
-
-      // force sd card to be reinitialized
-      HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
-      osDelay(10);
-    } else {
-#if (configUSE_TRACE_FACILITY == 1)
-      vTracePrint(sd_channel, "SD card mounted");
-#endif
-    }
-  } while (res != FR_OK);
-}
-
-void remountSDCard() {
-  FRESULT res;
-  // f_close(&EULER_LOG_FILE);
-  do {
-    MX_FATFS_DeInit();
-    osDelay(50);
-    MX_FATFS_Init();
-    osDelay(50);
-    //		f_mount(0, "", 0);
-    //		memset(&EULER_FatFS, 0, sizeof(EULER_FatFS));
-    res = f_mount(&EULER_FatFS, "", 1);
-    if (res != FR_OK) {
-      UsbPrint("[STORAGE TASK] Failed remounting SD card: %d\n", res);
-#if (configUSE_TRACE_FACILITY == 1)
-      vTracePrint(sd_channel, "Sd card remounting failed");
-#endif
-      // force sd card to be reinitialized
-      HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
-      osDelay(10);
-    } else {
-#if (configUSE_TRACE_FACILITY == 1)
-      vTracePrint(sd_channel, "SD card remounted");
-#endif
-    }
-  } while (res != FR_OK);
-}
-
-FRESULT findNextFileName(char *file_name) {
-  FRESULT res;
-  UsbPrint("[STORAGE TASK] Creating file name\n");
-  uint16_t file_number = 1;
-
-  DIR dj;
-  FILINFO fno;
-  res = f_findfirst(&dj, &fno, "", "LOG_???.CSV");
-  while (res == FR_OK && fno.fname[0]) {
-    uint16_t current_file_number = (fno.fname[4] - '0') * 100 +
-                                   (fno.fname[5] - '0') * 10 +
-                                   (fno.fname[6] - '0');
-    if (current_file_number + 1 > file_number) {
-      file_number = current_file_number + 1;
-    }
-    res = f_findnext(&dj, &fno);
-  }
-  file_number = file_number <= 999 ? file_number : 999;
-
-  if (res == FR_OK) {
-    strcpy(file_name, "LOG_000.CSV");
-    file_name[6] = '0' + file_number % 10;
-    file_name[5] = '0' + (file_number / 10) % 10;
-    file_name[4] = '0' + (file_number / 100) % 10;
-
-    UsbPrint("[STORAGE TASK] Using file name: %s\n", file_name);
-
-    res = f_closedir(&dj);
-    if (res != FR_OK) {
-      UsbPrint("[STORAGE TASK] Failed closing directory: %d\n", res);
-    }
-  } else {
-    UsbPrint("[STORAGE TASK] Failed finding first or next file: %d\n", res);
-  }
-
-  return res;
-}
-
-int32_t formatLogStr(char *str, log_elem_t *log_entry) {
-  int32_t str_len = 0;
-  switch (log_entry->log_type) {
-    case SENSOR: {
-      sensor_log_elem_t *sensor_log_entry = &(log_entry->u.sensor_log);
-      sensor_type_e sensor_type = sensor_log_entry->sens_type;
-      str_len =
-          snprintf(str, SD_STRFMT_LEN, "%lu;%d;%hi,%d,", log_entry->ts, SENSOR,
-                   sensor_log_entry->sensor_board_id, sensor_type);
-      switch (sensor_type) {
-        case BARO: {
-          baro_data_t *baro_data_ptr = &(sensor_log_entry->sensor_data.baro);
-          str_len += snprintf(str + str_len, SD_STRFMT_LEN, "%ld,%ld,%lu\n",
-                              baro_data_ptr->pressure,
-                              baro_data_ptr->temperature, baro_data_ptr->ts);
-        } break;
-        case IMU: {
-          imu_data_t *imu_data_ptr = &(sensor_log_entry->sensor_data.imu);
-          str_len += snprintf(
-              str + str_len, SD_STRFMT_LEN, "%hd,%hd,%hd,%hd,%hd,%hd,%lu\n",
-              imu_data_ptr->acc_x, imu_data_ptr->acc_y, imu_data_ptr->acc_z,
-              imu_data_ptr->gyro_x, imu_data_ptr->gyro_y, imu_data_ptr->gyro_z,
-              imu_data_ptr->ts);
-        } break;
-        case GPS: {
-          gps_data_t *gps_data = &(sensor_log_entry->sensor_data.gps);
-          str_len += snprintf(
-              str + str_len, SD_STRFMT_LEN,
-              "%ld,%ld,%ld,%d,%ld,%d,%ld,%d,%hd,%hd\n", gps_data->hour,
-              gps_data->minute, gps_data->second, gps_data->lat_deg,
-              gps_data->lat_decimal, gps_data->lon_deg, gps_data->lon_decimal,
-              gps_data->satellite, gps_data->altitude, gps_data->HDOP);
-        } break;
-        case BATTERY: {
-          battery_data_t *battery_data = &(sensor_log_entry->sensor_data.bat);
-          str_len += snprintf(str + str_len, SD_STRFMT_LEN, "%hd,%hd,%hd,%hd\n",
-                              battery_data->battery, battery_data->consumption,
-                              battery_data->current, battery_data->supply);
-        } break;
-        default:
-          break;
-      }
-    } break;
-    case STATE: {
-      str_len = snprintf(str, SD_STRFMT_LEN, "%lu;%d;%d\n", log_entry->ts,
-                         STATE, log_entry->u.state.flight_phase);
-    } break;
-    case ESTIMATOR_VAR: {
-      str_len =
-          snprintf(str, SD_STRFMT_LEN, "%lu;%d;%ld,%ld,%ld\n", log_entry->ts,
-                   ESTIMATOR_VAR, log_entry->u.est_var.position_world[2],
-                   log_entry->u.est_var.velocity_rocket[0],
-                   log_entry->u.est_var.acceleration_rocket[0]);
-    } break;
-    case CONTROLLER_OUTPUT: {
-      str_len =
-          snprintf(str, SD_STRFMT_LEN, "%lu;%d;%ld,%ld,%ld\n", log_entry->ts,
-                   CONTROLLER_OUTPUT, log_entry->u.cont_out.controller_output,
-                   log_entry->u.cont_out.reference_error,
-                   log_entry->u.cont_out.integrated_error);
-    } break;
-    case MOTOR_POSITION: {
-      str_len = snprintf(str, SD_STRFMT_LEN, "%lu;%d;%ld,%ld\n", log_entry->ts,
-                         MOTOR_POSITION, log_entry->u.motor.desired_position,
-                         log_entry->u.motor.actual_position);
-    } break;
-    case MSG: {
-      str_len = snprintf(str, SD_STRFMT_LEN, "%lu;%d;%s\n", log_entry->ts, MSG,
-                         log_entry->u.msg);
-    } break;
-  }
-  return str_len;
-}
-
-FRESULT openFile(char *file_name) {
-  FRESULT res;
-  UsbPrint("[STORAGE TASK] Opening log file\n");
-  res = f_open(&EULER_LOG_FILE, file_name, FA_OPEN_ALWAYS | FA_WRITE);
-  if (res != FR_OK) {
-    UsbPrint("[STORAGE TASK] Failed opening log file \"%s\": %d\n", file_name,
-             res);
-    return res;
-  }
-
-  UsbPrint("[STORAGE TASK] Going to end of file\n");
-  res = f_lseek(&EULER_LOG_FILE, f_size(&EULER_LOG_FILE));
-  if (res != FR_OK) {
-    UsbPrint("[STORAGE TASK] Failed going to end of file: %d\n", res);
-    return res;
-  }
-  return res;
-}
+static void mountSDCard();
+static void remountSDCard();
+static FRESULT findNextFileName(char *file_name);
+static int32_t formatLogStr(char *str, log_elem_t *log_entry);
+static FRESULT openFile(char *file_name);
 
 void vTaskSdCard(void *argument) {
   // Try everything forever;
@@ -324,4 +150,184 @@ void vTaskSdCard(void *argument) {
     }
   }
   free(sd_str_buffer);
+}
+
+
+static void mountSDCard() {
+  FRESULT res;
+  do {
+    res = f_mount(&EULER_FatFS, "", 1);
+    if (res != FR_OK) {
+      UsbPrint("[STORAGE TASK] Failed mounting SD card: %d\n", res);
+#if (configUSE_TRACE_FACILITY == 1)
+      vTracePrint(sd_channel, "SD card mounting failed");
+#endif
+
+      // force sd card to be reinitialized
+      HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
+      osDelay(10);
+    } else {
+#if (configUSE_TRACE_FACILITY == 1)
+      vTracePrint(sd_channel, "SD card mounted");
+#endif
+    }
+  } while (res != FR_OK);
+}
+
+static void remountSDCard() {
+  FRESULT res;
+  // f_close(&EULER_LOG_FILE);
+  do {
+    MX_FATFS_DeInit();
+    osDelay(50);
+    MX_FATFS_Init();
+    osDelay(50);
+    //		f_mount(0, "", 0);
+    //		memset(&EULER_FatFS, 0, sizeof(EULER_FatFS));
+    res = f_mount(&EULER_FatFS, "", 1);
+    if (res != FR_OK) {
+      UsbPrint("[STORAGE TASK] Failed remounting SD card: %d\n", res);
+#if (configUSE_TRACE_FACILITY == 1)
+      vTracePrint(sd_channel, "Sd card remounting failed");
+#endif
+      // force sd card to be reinitialized
+      HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
+      osDelay(10);
+    } else {
+#if (configUSE_TRACE_FACILITY == 1)
+      vTracePrint(sd_channel, "SD card remounted");
+#endif
+    }
+  } while (res != FR_OK);
+}
+
+static FRESULT findNextFileName(char *file_name) {
+  FRESULT res;
+  UsbPrint("[STORAGE TASK] Creating file name\n");
+  uint16_t file_number = 1;
+
+  DIR dj;
+  FILINFO fno;
+  res = f_findfirst(&dj, &fno, "", "LOG_???.CSV");
+  while (res == FR_OK && fno.fname[0]) {
+    uint16_t current_file_number = (fno.fname[4] - '0') * 100 +
+                                   (fno.fname[5] - '0') * 10 +
+                                   (fno.fname[6] - '0');
+    if (current_file_number + 1 > file_number) {
+      file_number = current_file_number + 1;
+    }
+    res = f_findnext(&dj, &fno);
+  }
+  file_number = file_number <= 999 ? file_number : 999;
+
+  if (res == FR_OK) {
+    strcpy(file_name, "LOG_000.CSV");
+    file_name[6] = '0' + file_number % 10;
+    file_name[5] = '0' + (file_number / 10) % 10;
+    file_name[4] = '0' + (file_number / 100) % 10;
+
+    UsbPrint("[STORAGE TASK] Using file name: %s\n", file_name);
+
+    res = f_closedir(&dj);
+    if (res != FR_OK) {
+      UsbPrint("[STORAGE TASK] Failed closing directory: %d\n", res);
+    }
+  } else {
+    UsbPrint("[STORAGE TASK] Failed finding first or next file: %d\n", res);
+  }
+
+  return res;
+}
+
+static int32_t formatLogStr(char *str, log_elem_t *log_entry) {
+  int32_t str_len = 0;
+  switch (log_entry->log_type) {
+    case SENSOR: {
+      sensor_log_elem_t *sensor_log_entry = &(log_entry->u.sensor_log);
+      sensor_type_e sensor_type = sensor_log_entry->sens_type;
+      str_len =
+          snprintf(str, SD_STRFMT_LEN, "%lu;%d;%hi,%d,", log_entry->ts, SENSOR,
+                   sensor_log_entry->sensor_board_id, sensor_type);
+      switch (sensor_type) {
+        case BARO: {
+          baro_data_t *baro_data_ptr = &(sensor_log_entry->sensor_data.baro);
+          str_len += snprintf(str + str_len, SD_STRFMT_LEN, "%ld,%ld,%lu\n",
+                              baro_data_ptr->pressure,
+                              baro_data_ptr->temperature, baro_data_ptr->ts);
+        } break;
+        case IMU: {
+          imu_data_t *imu_data_ptr = &(sensor_log_entry->sensor_data.imu);
+          str_len += snprintf(
+              str + str_len, SD_STRFMT_LEN, "%hd,%hd,%hd,%hd,%hd,%hd,%lu\n",
+              imu_data_ptr->acc_x, imu_data_ptr->acc_y, imu_data_ptr->acc_z,
+              imu_data_ptr->gyro_x, imu_data_ptr->gyro_y, imu_data_ptr->gyro_z,
+              imu_data_ptr->ts);
+        } break;
+        case GPS: {
+          gps_data_t *gps_data = &(sensor_log_entry->sensor_data.gps);
+          str_len += snprintf(
+              str + str_len, SD_STRFMT_LEN,
+              "%ld,%ld,%ld,%d,%ld,%d,%ld,%d,%hd,%hd\n", gps_data->hour,
+              gps_data->minute, gps_data->second, gps_data->lat_deg,
+              gps_data->lat_decimal, gps_data->lon_deg, gps_data->lon_decimal,
+              gps_data->satellite, gps_data->altitude, gps_data->HDOP);
+        } break;
+        case BATTERY: {
+          battery_data_t *battery_data = &(sensor_log_entry->sensor_data.bat);
+          str_len += snprintf(str + str_len, SD_STRFMT_LEN, "%hd,%hd,%hd,%hd\n",
+                              battery_data->battery, battery_data->consumption,
+                              battery_data->current, battery_data->supply);
+        } break;
+        default:
+          break;
+      }
+    } break;
+    case STATE: {
+      str_len = snprintf(str, SD_STRFMT_LEN, "%lu;%d;%d\n", log_entry->ts,
+                         STATE, log_entry->u.state.flight_phase);
+    } break;
+    case ESTIMATOR_VAR: {
+      str_len =
+          snprintf(str, SD_STRFMT_LEN, "%lu;%d;%ld,%ld,%ld\n", log_entry->ts,
+                   ESTIMATOR_VAR, log_entry->u.est_var.position_world[2],
+                   log_entry->u.est_var.velocity_rocket[0],
+                   log_entry->u.est_var.acceleration_rocket[0]);
+    } break;
+    case CONTROLLER_OUTPUT: {
+      str_len =
+          snprintf(str, SD_STRFMT_LEN, "%lu;%d;%ld,%ld,%ld\n", log_entry->ts,
+                   CONTROLLER_OUTPUT, log_entry->u.cont_out.controller_output,
+                   log_entry->u.cont_out.reference_error,
+                   log_entry->u.cont_out.integrated_error);
+    } break;
+    case MOTOR_POSITION: {
+      str_len = snprintf(str, SD_STRFMT_LEN, "%lu;%d;%ld,%ld\n", log_entry->ts,
+                         MOTOR_POSITION, log_entry->u.motor.desired_position,
+                         log_entry->u.motor.actual_position);
+    } break;
+    case MSG: {
+      str_len = snprintf(str, SD_STRFMT_LEN, "%lu;%d;%s\n", log_entry->ts, MSG,
+                         log_entry->u.msg);
+    } break;
+  }
+  return str_len;
+}
+
+static FRESULT openFile(char *file_name) {
+  FRESULT res;
+  UsbPrint("[STORAGE TASK] Opening log file\n");
+  res = f_open(&EULER_LOG_FILE, file_name, FA_OPEN_ALWAYS | FA_WRITE);
+  if (res != FR_OK) {
+    UsbPrint("[STORAGE TASK] Failed opening log file \"%s\": %d\n", file_name,
+             res);
+    return res;
+  }
+
+  UsbPrint("[STORAGE TASK] Going to end of file\n");
+  res = f_lseek(&EULER_LOG_FILE, f_size(&EULER_LOG_FILE));
+  if (res != FR_OK) {
+    UsbPrint("[STORAGE TASK] Failed going to end of file: %d\n", res);
+    return res;
+  }
+  return res;
 }

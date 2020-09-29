@@ -4,9 +4,9 @@
  *  Created on: Nov 29, 2019
  *      Author: Jonas
  */
+#include "sim_con/state_est.h"
+#include "util/logging_util.h"
 #include "tasks/task_state_est.h"
-#include "Sim_Con/state_est.h"
-#include "Util/logging_util.h"
 
 void vTaskStateEst(void *argument) {
   /* For periodic update */

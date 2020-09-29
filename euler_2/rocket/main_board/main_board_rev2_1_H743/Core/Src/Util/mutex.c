@@ -4,8 +4,8 @@
  *  Created on: Jun 19, 2020
  *      Author: Jonas
  */
-#include "Util/mutex.h"
-#include "Sim_Con/env.h"
+#include "sim_con/env.h"
+#include "util/mutex.h"
 
 osStatus_t AcquireMutex(custom_mutex_t *custom_mutex) {
   osStatus_t status = osOK;

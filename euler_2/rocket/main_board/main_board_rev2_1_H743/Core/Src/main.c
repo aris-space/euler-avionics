@@ -19,16 +19,16 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "sim_con/state_est.h"
+#include "util/logging_util.h"
+#include "util/mutex.h"
+#include "util/util.h"
 #include "cmsis_os.h"
 #include "fatfs.h"
 #include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "Util/util.h"
-#include "Util/logging_util.h"
-#include "Util/mutex.h"
-#include "Sim_Con/state_est.h"
 #include "tasks/task_controller.h"
 #include "tasks/task_sens_read.h"
 #include "tasks/task_state_est.h"

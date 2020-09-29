@@ -8,10 +8,10 @@
 #ifndef INC_UTIL_MUTEX_H_
 #define INC_UTIL_MUTEX_H_
 
-#include "Util/util.h"
+#include "sim_con/env.h"
+#include "sim_con/state_est_const.h"
+#include "util/util.h"
 #include <string.h>
-#include "Sim_Con/state_est_const.h"
-#include "Sim_Con/env.h"
 
 osStatus_t AcquireMutex(custom_mutex_t *custom_mutex);
 

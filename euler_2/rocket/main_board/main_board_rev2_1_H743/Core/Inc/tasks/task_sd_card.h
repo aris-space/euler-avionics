@@ -8,8 +8,8 @@
 #ifndef INC_TASKS_TASK_SD_CARD_H_
 #define INC_TASKS_TASK_SD_CARD_H_
 
-#include "Util/mutex.h"
-#include "Util/util.h"
+#include "util/mutex.h"
+#include "util/util.h"
 
 #define SD_CARD_SYNC_COUNT 4
 

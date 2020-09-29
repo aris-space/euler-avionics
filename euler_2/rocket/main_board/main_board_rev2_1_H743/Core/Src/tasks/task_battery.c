@@ -5,10 +5,10 @@
  *      Author: Luca Jost
  */
 
+#include "util/logging_util.h"
 #include "tasks/task_battery.h"
-#include "Util/logging_util.h"
 
-float get_temp(uint16_t adc_value);
+static float get_temp(uint16_t adc_value);
 
 uint32_t adc_value[4];
 
@@ -89,7 +89,7 @@ void vTaskBattery(void *argument) {
   }
 }
 
-float get_temp(uint16_t adc_value) {
+static float get_temp(uint16_t adc_value) {
   float VSENSE;
   VSENSE = 2.5 / 4096 * adc_value;
   return ((V25 - VSENSE) / AVG_SLOPE + 25);

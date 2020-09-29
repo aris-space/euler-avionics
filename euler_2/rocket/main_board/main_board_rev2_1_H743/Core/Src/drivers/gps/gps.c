@@ -1,4 +1,4 @@
-#include "GPS/gps.h"
+#include "drivers/gps/gps.h"
 #include <string.h>
 
 const uint8_t ubxgga[HEADER_SIZE] = {'G', 'G', 'A'};

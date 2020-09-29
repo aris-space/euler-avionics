@@ -5,8 +5,10 @@
 #define C_IMPLEMENTATION_CONTROLLER_CONST_H
 
 /* Constants */
-#include "controller.h"
+#include "sim_con/controller.h"
 #include <math.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 #define LQR_ACTIVE true                                       //
 #define CONTROLLER_SAMPLING_FREQ 100                          // Hz

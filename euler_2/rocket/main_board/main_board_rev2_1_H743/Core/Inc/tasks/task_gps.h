@@ -8,8 +8,8 @@
 #ifndef INC_TASKS_TASK_GPS_H_
 #define INC_TASKS_TASK_GPS_H_
 
-#include "Util/util.h"
-#include "Util/mutex.h"
+#include "util/mutex.h"
+#include "util/util.h"
 #include "stm32h7xx_hal.h"
 
 #define GPS_SAMPLE_RATE 2

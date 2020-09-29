@@ -10,9 +10,9 @@
 
 /* includes */
 
-#include "Util/util.h"
-#include "Util/mutex.h"
-#include "Flash/flash_driver.h"
+#include "util/mutex.h"
+#include "util/util.h"
+#include "drivers/flash/flash_driver.h"
 #include "main.h"
 
 /* defines */

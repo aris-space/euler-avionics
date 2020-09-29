@@ -1,7 +1,7 @@
 #ifndef EKF_H_
 #define EKF_H_
 
-#include "state_est_const.h"
+#include "sim_con/state_est_const.h"
 
 /* Matrix Sizes */
 #define NUMBER_STATES 3	/* NUMBER_STATES x NUMBER_STATES -> A Matrix */

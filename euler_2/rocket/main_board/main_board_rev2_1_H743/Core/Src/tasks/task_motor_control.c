@@ -5,11 +5,11 @@
  *      Author: Jonas
  */
 
+#include "util/logging_util.h"
 #include "tasks/task_motor_control.h"
-#include "EPOS4/epos4.h"
-#include "Util/logging_util.h"
+#include "drivers/epos4/epos4.h"
 
-void testairbrakes(int32_t position);
+static void testairbrakes(int32_t position);
 
 void vTaskMotorCont(void *argument) {
   /* For periodic update */
@@ -133,7 +133,7 @@ void vTaskMotorCont(void *argument) {
   }
 }
 
-void testairbrakes(int32_t position) {
+static void testairbrakes(int32_t position) {
   MoveToPositionPPM(position);
   osDelay(100);
   MoveToPositionPPM(2);

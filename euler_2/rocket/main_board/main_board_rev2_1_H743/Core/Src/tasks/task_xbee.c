@@ -15,7 +15,7 @@ bool new_command = false;
 
 int uart_counter = 0;
 
-uint8_t calculate_checksum(telemetry_t *cnf);
+static uint8_t calculate_checksum(telemetry_t *cnf);
 
 void vTaskXbee(void *argument) {
   /* For periodic update */
@@ -153,7 +153,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
   }
 }
 
-uint8_t calculate_checksum(telemetry_t *cnf) {
+static uint8_t calculate_checksum(telemetry_t *cnf) {
   uint8_t cs = 0;
   uint8_t *data;
   data = (uint8_t *)cnf;

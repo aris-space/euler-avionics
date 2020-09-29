@@ -9,9 +9,9 @@
 #define INC_TASKS_TASK_FSM_H_
 
 /* Includes */
-#include "Sim_Con/env.h"
-#include "Util/util.h"
-#include "Util/mutex.h"
+#include "sim_con/env.h"
+#include "util/mutex.h"
+#include "util/util.h"
 
 /* Constants */
 #define FSM_SAMPLING_FREQ 100

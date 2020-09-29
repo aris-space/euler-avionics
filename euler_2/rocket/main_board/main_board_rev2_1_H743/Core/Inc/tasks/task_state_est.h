@@ -9,8 +9,8 @@
 #define INC_TASKS_TASK_STATE_EST_H_
 
 /* Includes */
-#include "Util/util.h"
-#include "Util/mutex.h"
+#include "util/mutex.h"
+#include "util/util.h"
 /* Constants */
 /* -> Are in state_est_settings */
 

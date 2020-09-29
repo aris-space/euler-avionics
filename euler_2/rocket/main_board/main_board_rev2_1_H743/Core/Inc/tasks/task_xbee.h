@@ -10,9 +10,9 @@
 
 /* includes */
 
-#include "Util/util.h"
-#include "Util/mutex.h"
-#include "Util/telemetry_util.h"
+#include "util/mutex.h"
+#include "util/telemetry_util.h"
+#include "util/util.h"
 #include "main.h"
 
 /* defines */

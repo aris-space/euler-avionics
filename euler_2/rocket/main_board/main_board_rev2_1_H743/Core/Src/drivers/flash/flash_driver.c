@@ -5,7 +5,7 @@
  *      Author: Jonas
  */
 
-#include "Flash/flash_driver.h"
+#include "drivers/flash/flash_driver.h"
 
 int32_t read_chip_id() {
   int32_t chip_id = 0;

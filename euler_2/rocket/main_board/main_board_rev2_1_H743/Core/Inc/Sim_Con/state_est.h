@@ -1,10 +1,10 @@
 #ifndef STATE_EST_H_
 #define STATE_EST_H_
 
-#include "kf.h"
-#include "env.h"
-#include "state_est_const.h"
-#include "flight_phase_detection.h"
+#include "sim_con/env.h"
+#include "sim_con/flight_phase_detection.h"
+#include "sim_con/kf.h"
+#include "sim_con/state_est_const.h"
 #include <stdbool.h>
 
 typedef struct extrapolation_rolling_memory_t {

@@ -5,12 +5,12 @@
  *      Author: Jonas
  */
 
+#include "util/logging_util.h"
 #include "tasks/task_sens_read.h"
-#include "Util/logging_util.h"
 
-void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3);
-void ReadDataUSB();
-uint8_t calculate_checksum_sb(sb_data_t *sb_data);
+static void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3);
+static void ReadDataUSB();
+static uint8_t calculate_checksum_sb(sb_data_t *sb_data);
 
 /* SPI Read Data */
 sb_data_t sb1_data = {0};
@@ -74,7 +74,7 @@ void vTaskSensRead(void *argument) {
 //	//HAL_SPIEx_FlushRxFifo(hspi);
 //}
 /* Read Data from Sensor Boards */
-void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
+static void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
   /* Read SB 1, Write SB 1 Global Variable */
   uint8_t checksum;
   checksum = calculate_checksum_sb(sb1);
@@ -117,7 +117,7 @@ void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
 }
 
 /* Read Data from USB */
-void ReadDataUSB() {
+static void ReadDataUSB() {
   if (osMutexAcquire(usb_data_mutex.mutex, 10)) {
 //    sscanf(usb_data_buffer,
 //           "%ld,%ld,%ld;%hd,%hd,%hd,%hd,%hd,%hd,%ld|%ld,%ld,%ld;%hd,%hd,%hd,%"
@@ -135,7 +135,7 @@ void ReadDataUSB() {
   }
 }
 
-uint8_t calculate_checksum_sb(sb_data_t *sb_data) {
+static uint8_t calculate_checksum_sb(sb_data_t *sb_data) {
   return sb_data->baro.pressure + sb_data->baro.temperature +
          sb_data->imu_1.gyro_x + sb_data->imu_1.gyro_y + sb_data->imu_1.gyro_z +
          sb_data->imu_1.acc_x + sb_data->imu_1.acc_y + sb_data->imu_1.acc_z +

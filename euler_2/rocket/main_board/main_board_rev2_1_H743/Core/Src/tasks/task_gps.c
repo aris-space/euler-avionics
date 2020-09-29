@@ -5,9 +5,9 @@
  *      Author: Luca Jost
  */
 
+#include "util/logging_util.h"
 #include "tasks/task_gps.h"
-#include "GPS/gps.h"
-#include "Util/logging_util.h"
+#include "drivers/gps/gps.h"
 
 void vTaskGps(void *argument) {
   UBLOX GPS1 = {0, &huart1};

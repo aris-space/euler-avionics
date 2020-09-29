@@ -5,7 +5,7 @@
 #ifndef _GPS
 #define _GPS
 
-#include "Util/util.h"
+#include <util/util.h>
 #include "stm32h7xx_hal.h"
 
 #define HEADER_SIZE 3

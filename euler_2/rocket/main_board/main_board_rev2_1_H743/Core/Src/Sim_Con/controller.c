@@ -2,7 +2,7 @@
 // Created by Tun Kapgen on 05.06.20.
 //
 
-#include "Sim_Con/controller.h"
+#include "sim_con/controller.h"
 #include <string.h>
 
 /* In this file, all the controller related function as the controller itself

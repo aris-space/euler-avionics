@@ -8,8 +8,8 @@
 #ifndef INC_TASKS_TASK_BATTERY_H_
 #define INC_TASKS_TASK_BATTERY_H_
 
-#include "Util/mutex.h"
-#include "Util/telemetry_util.h"
+#include "util/mutex.h"
+#include "util/telemetry_util.h"
 #include "stm32h7xx_hal.h"
 
 #define BATTERY_SAMPLE_RATE 50

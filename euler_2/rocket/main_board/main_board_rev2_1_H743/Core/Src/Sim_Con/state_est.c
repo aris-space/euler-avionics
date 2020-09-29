@@ -1,5 +1,5 @@
-#include "Sim_Con/state_est.h"
-#include "Util/math_utils.h"
+#include "sim_con/state_est.h"
+#include "util/math_utils.h"
 #include <math.h>
 #include <string.h>
 

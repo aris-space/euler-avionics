@@ -4,7 +4,7 @@
  *  Created on: Jun 12, 2020
  *      Author: Jonas
  */
-#include "EPOS4/epos4.h"
+#include "drivers/epos4/epos4.h"
 #include <string.h>
 
 uint16_t calculateCRC(uint8_t *data, uint8_t len) {

@@ -5,9 +5,9 @@
  *      Author: Jonas
  */
 
+#include "sim_con/flight_phase_detection.h"
+#include "util/logging_util.h"
 #include "tasks/task_fsm.h"
-#include "Sim_Con/flight_phase_detection.h"
-#include "Util/logging_util.h"
 
 void vTaskFsm(void *argument) {
   /* For periodic update */

@@ -10,9 +10,9 @@
 
 /* includes */
 
-#include "Sim_Con/flight_phase_detection.h"
-#include "Util/util.h"
-#include "Util/mutex.h"
+#include "sim_con/flight_phase_detection.h"
+#include "util/mutex.h"
+#include "util/util.h"
 
 /* defines */
 #define PERIPHERALS_SAMPLING_FREQ 10

@@ -5,6 +5,7 @@
  *      Author: stoja
  */
 
+#include "util/util.h"
 #include "usbd_cdc_if.h"
 #include "cmsis_os.h"
 
@@ -12,7 +13,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include <Util/util.h>
 
 /** USB DEBUGGING SECTION **/
 

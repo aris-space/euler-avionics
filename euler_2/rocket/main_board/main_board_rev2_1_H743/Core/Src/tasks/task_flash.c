@@ -4,8 +4,8 @@
  *  Created on: Aug 20, 2020
  *      Author: Jonas
  */
+#include "util/logging_util.h"
 #include "tasks/task_flash.h"
-#include "Util/logging_util.h"
 
 void vTaskFlash(void *argument) {
   /* For periodic update */

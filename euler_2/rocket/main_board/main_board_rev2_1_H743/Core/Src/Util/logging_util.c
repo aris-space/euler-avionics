@@ -5,13 +5,13 @@
  *      Author: Jonas
  */
 
+#include "util/logging_util.h"
 #include "usbd_cdc_if.h"
 
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include "Util/logging_util.h"
 
 /*
  *  %c	character
