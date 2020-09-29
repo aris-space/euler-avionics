@@ -65,13 +65,13 @@ void vTaskStateEst(void *argument) {
     /* Acquire the Sensor data */
 
     /* Sensor Board 1 */
-    ReadMutexStateEst(&sb1_mutex, &sb1_baro, &sb1_imu, &state_est_state.state_est_meas, 1);
+    ReadMutexStateEst(&sb1_mutex, &sb1_baro, &sb1_imu_1, &state_est_state.state_est_meas, 1);
 
     /* Sensor Board 2 */
-    ReadMutexStateEst(&sb2_mutex, &sb2_baro, &sb2_imu, &state_est_state.state_est_meas, 2);
+    ReadMutexStateEst(&sb2_mutex, &sb2_baro, &sb2_imu_1, &state_est_state.state_est_meas, 2);
 
     /* Sensor Board 3 */
-    ReadMutexStateEst(&sb3_mutex, &sb3_baro, &sb3_imu, &state_est_state.state_est_meas, 3);
+    ReadMutexStateEst(&sb3_mutex, &sb3_baro, &sb3_imu_1, &state_est_state.state_est_meas, 3);
 
     /* calculate averaging */
     if (state_est_state.flight_phase_detection.flight_phase == IDLE) {

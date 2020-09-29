@@ -83,16 +83,16 @@ void vTaskXbee(void *argument) {
 
     /* Read Sensor Board Data */
     ReadMutex(&sb1_mutex, &sb1_baro, &local_sb_data.baro, sizeof(sb1_baro));
-    ReadMutex(&sb1_mutex, &sb1_imu, &local_sb_data.imu, sizeof(sb1_imu));
+    ReadMutex(&sb1_mutex, &sb1_imu_1, &local_sb_data.imu_1, sizeof(sb1_imu_1));
 
     telemetry_send.sb_data.pressure = local_sb_data.baro.pressure;
     telemetry_send.sb_data.temperature = local_sb_data.baro.temperature;
-    telemetry_send.sb_data.acc_x = local_sb_data.imu.acc_x;
-    telemetry_send.sb_data.acc_y = local_sb_data.imu.acc_y;
-    telemetry_send.sb_data.acc_z = local_sb_data.imu.acc_z;
-    telemetry_send.sb_data.gyro_x = local_sb_data.imu.gyro_x;
-    telemetry_send.sb_data.gyro_y = local_sb_data.imu.gyro_y;
-    telemetry_send.sb_data.gyro_z = local_sb_data.imu.gyro_z;
+    telemetry_send.sb_data.acc_x = local_sb_data.imu_1.acc_x;
+    telemetry_send.sb_data.acc_y = local_sb_data.imu_1.acc_y;
+    telemetry_send.sb_data.acc_z = local_sb_data.imu_1.acc_z;
+    telemetry_send.sb_data.gyro_x = local_sb_data.imu_1.gyro_x;
+    telemetry_send.sb_data.gyro_y = local_sb_data.imu_1.gyro_y;
+    telemetry_send.sb_data.gyro_z = local_sb_data.imu_1.gyro_z;
 
     /* Read Control Data*/
     ReadMutex(&state_est_mutex, &state_est_data_global, &state_est_data,

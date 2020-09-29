@@ -176,7 +176,6 @@ osStatus_t MoveToPositionPPM(int32_t position) {
   data[2] = 0x00;
   data[3] = 0x0F;
 
-  /* Goto Position */
   status = WriteCommand(command, data, rx_buffer_write);
 
   return status;
@@ -249,7 +248,7 @@ osStatus_t WriteCommand(uint8_t *command, uint8_t *data, uint8_t *rx_buffer) {
 
   uint8_t byte_stream_write[14] = {0};
 
-  uint8_t dma_buffer[20] = {0};
+  uint8_t dma_buffer[10] = {0};
 
   byte_stream_write[0] = 0x90;        // DLE
   byte_stream_write[1] = 0x02;        // STX
@@ -277,13 +276,14 @@ osStatus_t WriteCommand(uint8_t *command, uint8_t *data, uint8_t *rx_buffer) {
   byte_stream_write[13] = (crc_calc >> 8) & 0xFF;
   ;  // CRC high byte
 
+  HAL_UART_DMAResume(&huart4);
   HAL_UART_Transmit_DMA(&huart4, byte_stream_write, 14);
 
-  HAL_UART_DMAResume(&huart4);
-  HAL_UART_Receive_DMA(&huart4, dma_buffer, 20);
+  HAL_UART_Receive_DMA(&huart4, dma_buffer, 10);
   osDelay(5);
   HAL_UART_DMAStop(&huart4);
-  memcpy(rx_buffer, dma_buffer, 20);
+  memcpy(rx_buffer, dma_buffer, 10);
+
 
   /* Check if we have an error code */
   if ((rx_buffer[7] | rx_buffer[6] | rx_buffer[5] | rx_buffer[4]) == 0) {
@@ -298,7 +298,7 @@ osStatus_t ReadCommand(uint8_t *command, uint8_t *rx_buffer) {
 
   uint8_t byte_stream_read[10];
 
-  uint8_t dma_buffer[30] = {0};
+  uint8_t dma_buffer[14] = {0};
 
   byte_stream_read[0] = 0x90;        // DLE
   byte_stream_read[1] = 0x02;        // STX
@@ -321,13 +321,13 @@ osStatus_t ReadCommand(uint8_t *command, uint8_t *rx_buffer) {
   byte_stream_read[9] = (crc_calc >> 8) & 0xFF;
   ;  // CRC high byte
 
+  HAL_UART_DMAResume(&huart4);
   HAL_UART_Transmit_DMA(&huart4, byte_stream_read, 10);
 
-  HAL_UART_DMAResume(&huart4);
-  HAL_UART_Receive_DMA(&huart4, dma_buffer, 20);
+  HAL_UART_Receive_DMA(&huart4, dma_buffer, 14);
   osDelay(5);
   HAL_UART_DMAStop(&huart4);
-  memcpy(rx_buffer, dma_buffer, 20);
+  memcpy(rx_buffer, dma_buffer, 14);
 
   /* check if we have an error code */
   if ((rx_buffer[7] | rx_buffer[6] | rx_buffer[5] | rx_buffer[4]) == 0) {

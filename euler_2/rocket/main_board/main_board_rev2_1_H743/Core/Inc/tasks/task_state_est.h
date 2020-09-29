@@ -27,17 +27,20 @@
 /* Extern */
 /* Sensor Board 1 */
 extern custom_mutex_t sb1_mutex;
-extern imu_data_t sb1_imu;
+extern imu_data_t sb1_imu_1;
+extern imu_data_t sb1_imu_2;
 extern baro_data_t sb1_baro;
 
 /* Sensor Board 2 */
 extern custom_mutex_t sb2_mutex;
-extern imu_data_t sb2_imu;
+extern imu_data_t sb2_imu_1;
+extern imu_data_t sb2_imu_2;
 extern baro_data_t sb2_baro;
 
 /* Sensor Board 3 */
 extern custom_mutex_t sb3_mutex;
-extern imu_data_t sb3_imu;
+extern imu_data_t sb3_imu_1;
+extern imu_data_t sb3_imu_2;
 extern baro_data_t sb3_baro;
 
 /* State Estimation Mutex */

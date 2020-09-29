@@ -56,8 +56,7 @@ void vTaskFsm(void *argument) {
     ReadMutex(&env_mutex, &global_env, &environment, sizeof(global_env));
 
     /* get Flight Phase update */
-    detect_flight_phase(&flight_phase_detection, &state_est_data_fsm,
-                        &environment);
+    detect_flight_phase(tick_count, &flight_phase_detection, &state_est_data_fsm);
 
     /* Write updated flight Phase detection */
     if (AcquireMutex(&fsm_mutex) == osOK) {

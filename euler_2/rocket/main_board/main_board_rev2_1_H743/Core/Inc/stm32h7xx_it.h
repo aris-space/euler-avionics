@@ -23,7 +23,7 @@
 #define __STM32H7xx_IT_H
 
 #ifdef __cplusplus
-extern "C" {
+ extern "C" {
 #endif
 
 /* Private includes ----------------------------------------------------------*/
@@ -66,6 +66,8 @@ void SPI2_IRQHandler(void);
 void DMA1_Stream7_IRQHandler(void);
 void SDMMC1_IRQHandler(void);
 void SPI3_IRQHandler(void);
+void UART4_IRQHandler(void);
+void DMA2_Stream0_IRQHandler(void);
 void DMA2_Stream4_IRQHandler(void);
 void OTG_FS_IRQHandler(void);
 /* USER CODE BEGIN EFP */

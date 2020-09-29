@@ -17,7 +17,10 @@
 
 FATFS EULER_FatFS;
 FIL EULER_LOG_FILE;
-traceString sd_channel;
+#if (configUSE_TRACE_FACILITY == 1)
+	traceString sd_channel;
+#endif
+
 
 void mountSDCard() {
   FRESULT res;
@@ -25,13 +28,17 @@ void mountSDCard() {
     res = f_mount(&EULER_FatFS, "", 1);
     if (res != FR_OK) {
       UsbPrint("[STORAGE TASK] Failed mounting SD card: %d\n", res);
+#if (configUSE_TRACE_FACILITY == 1)
       vTracePrint(sd_channel, "Sd card mounting failed");
+#endif
 
       // force sd card to be reinitialized
       HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
       osDelay(10);
     } else {
+#if (configUSE_TRACE_FACILITY == 1)
       vTracePrint(sd_channel, "SD card mounted");
+#endif
     }
   } while (res != FR_OK);
 }
@@ -49,12 +56,16 @@ void remountSDCard() {
     res = f_mount(&EULER_FatFS, "", 1);
     if (res != FR_OK) {
       UsbPrint("[STORAGE TASK] Failed remounting SD card: %d\n", res);
+#if (configUSE_TRACE_FACILITY == 1)
       vTracePrint(sd_channel, "Sd card remounting failed");
+#endif
       // force sd card to be reinitialized
       HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
       osDelay(10);
     } else {
+#if (configUSE_TRACE_FACILITY == 1)
       vTracePrint(sd_channel, "SD card remounted");
+#endif
     }
   } while (res != FR_OK);
 }
@@ -193,7 +204,9 @@ FRESULT openFile(char *file_name) {
 void vTaskSdCard(void *argument) {
   // Try everything forever;
 
+#if (configUSE_TRACE_FACILITY == 1)
   sd_channel = xTraceRegisterString("SD Channel");
+#endif
 
   UsbPrint("[STORAGE TASK] Starting SD Card Task...\n");
   FRESULT res;
@@ -206,7 +219,9 @@ void vTaskSdCard(void *argument) {
   mountSDCard();
   uint8_t already_entered = 0;
   for (;;) {
+#if (configUSE_TRACE_FACILITY == 1)
     vTracePrint(sd_channel, "Starting for loop...");
+#endif
     osDelay(100);
     flight_phase_detection_t local_flight_phase = {.flight_phase = IDLE};
 
@@ -258,10 +273,14 @@ void vTaskSdCard(void *argument) {
             int32_t puts_res = f_puts(sd_str_buffer, &EULER_LOG_FILE);
             if (puts_res < 0) {
               UsbPrint("[STORAGE TASK] Failed writing to file: %d\n", puts_res);
+#if (configUSE_TRACE_FACILITY == 1)
               vTracePrint(sd_channel, "Writing to file failed");
+#endif
               break; /* breaking out of inner for loop */
             } else {
+#if (configUSE_TRACE_FACILITY == 1)
               vTracePrint(sd_channel, "Written to file");
+#endif
             }
             sync_counter++;
             if (sync_counter >= SD_CARD_SYNC_COUNT) {
@@ -270,10 +289,14 @@ void vTaskSdCard(void *argument) {
               res = f_sync(&EULER_LOG_FILE);
               if (res != FR_OK) {
                 UsbPrint("[STORAGE TASK] Failed syncing file: %d\n", res);
+#if (configUSE_TRACE_FACILITY == 1)
                 vTracePrint(sd_channel, "File sync failed");
+#endif
                 break; /* breaking out of inner for loop */
               } else {
+#if (configUSE_TRACE_FACILITY == 1)
                 vTracePrint(sd_channel, "File synced");
+#endif
               }
               // if the rocket landed, create a new file and write to that one
               if (ReadMutex(&fsm_mutex, &global_flight_phase_detection,
@@ -283,7 +306,9 @@ void vTaskSdCard(void *argument) {
                 f_close(&EULER_LOG_FILE);
                 // "clean" current file name
                 EULER_LOG_FILE_NAME[0] = 0;
+#if (configUSE_TRACE_FACILITY == 1)
                 vTracePrint(sd_channel, "Logging to new file");
+#endif
                 goto logToNewFile;
               }
             }

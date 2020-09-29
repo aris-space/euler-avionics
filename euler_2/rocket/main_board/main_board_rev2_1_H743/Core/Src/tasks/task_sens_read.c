@@ -34,31 +34,32 @@ void vTaskSensRead(void *argument) {
     } else {
       ReadDataSB(&sb1_data, &sb2_data, &sb3_data);
     }
-    //		UsbPrint(
-    //				"[SB1] P: %ld,T: %ld,Ts: %ld;Gx: %hd,Gy: %hd,Gz:
-    //%hd, Ax: %hd,Ay: %hd,Az: %hd,Ts: %ld\n", sb1_data.baro.pressure,
-    // sb1_data.baro.temperature,
-    // sb1_data.baro.ts, sb1_data.imu.gyro_x,
-    // sb1_data.imu.gyro_y, 				sb1_data.imu.gyro_z,
-    // sb1_data.imu.acc_x, sb1_data.imu.acc_y,
-    // sb1_data.imu.acc_z, sb1_data.imu.ts);
-    //
-    //		UsbPrint(
-    //				"[SB2] P: %ld,T: %ld,Ts: %ld;Gx: %hd,Gy: %hd,Gz:
-    //%hd, Ax: %hd,Ay: %hd,Az: %hd,Ts: %ld\n", sb2_data.baro.pressure,
-    // sb2_data.baro.temperature,
-    // sb2_data.baro.ts, sb2_data.imu.gyro_x,
-    // sb2_data.imu.gyro_y, 				sb2_data.imu.gyro_z,
-    // sb2_data.imu.acc_x, sb2_data.imu.acc_y,
-    // sb2_data.imu.acc_z, sb2_data.imu.ts);
+//    UsbPrint(
+//    		"[SB1 BARO] P: %ld,T: %ld,Ts: %ld\n", sb1_data.baro.pressure,
+//			sb1_data.baro.temperature,
+//			sb1_data.baro.ts);
+//
+//	UsbPrint("[SB1 IMU1] Gx: %hd,Gy: %hd,Gz: %hd, Ax: %hd,Ay: %hd,Az: %hd,Ts: %ld\n",
+//			sb1_data.imu_1.gyro_x,
+//			sb1_data.imu_1.gyro_y, sb1_data.imu_1.gyro_z,
+//			sb1_data.imu_1.acc_x, sb1_data.imu_1.acc_y,
+//			sb1_data.imu_1.acc_z, sb1_data.imu_1.ts);
+//	UsbPrint("[SB1 IMU2] Gx: %hd,Gy: %hd,Gz: %hd, Ax: %hd,Ay: %hd,Az: %hd,Ts: %ld\n",
+//			sb1_data.imu_2.gyro_x, sb1_data.imu_2.gyro_y,
+//			sb1_data.imu_2.gyro_z, sb1_data.imu_2.acc_x,
+//			sb1_data.imu_2.acc_y, sb1_data.imu_2.acc_z,
+//			sb1_data.imu_2.ts);
 
     /* Log Data */
     logSensor(tick_count, 1, BARO, &sb1_data.baro);
-    logSensor(tick_count, 1, IMU, &sb1_data.imu);
+    logSensor(tick_count, 1, IMU, &sb1_data.imu_1);
+    logSensor(tick_count, 1, IMU, &sb1_data.imu_2);
     logSensor(tick_count, 2, BARO, &sb2_data.baro);
-    logSensor(tick_count, 2, IMU, &sb2_data.imu);
+    logSensor(tick_count, 2, IMU, &sb2_data.imu_1);
+    logSensor(tick_count, 2, IMU, &sb2_data.imu_2);
     logSensor(tick_count, 3, BARO, &sb3_data.baro);
-    logSensor(tick_count, 3, IMU, &sb3_data.imu);
+    logSensor(tick_count, 3, IMU, &sb3_data.imu_1);
+    logSensor(tick_count, 3, IMU, &sb3_data.imu_2);
     HAL_SPI_Receive_DMA(&hspi1, (uint8_t *)&sb1_data, sizeof(sb1_data));
     HAL_SPI_Receive_DMA(&hspi2, (uint8_t *)&sb2_data, sizeof(sb2_data));
     HAL_SPI_Receive_DMA(&hspi3, (uint8_t *)&sb3_data, sizeof(sb3_data));
@@ -79,9 +80,11 @@ void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
   if (checksum == sb1->checksum) {
     if (AcquireMutex(&sb1_mutex) == osOK) {
       sb1_baro = sb1->baro;
-      sb1_imu = sb1->imu;
+      sb1_imu_1 = sb1->imu_1;
+      sb1_imu_2 = sb1->imu_2;
       ReleaseMutex(&sb1_mutex);
-      sb1_imu.acc_z = -sb1_imu.acc_z;
+      sb1_imu_1.acc_z = -sb1_imu_1.acc_z;
+      sb1_imu_2.acc_z = -sb1_imu_2.acc_z;
     }
   }
 
@@ -90,9 +93,11 @@ void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
   if (checksum == sb2->checksum) {
     if (AcquireMutex(&sb2_mutex) == osOK) {
       sb2_baro = sb2->baro;
-      sb2_imu = sb2->imu;
+      sb2_imu_1 = sb2->imu_1;
+      sb2_imu_2 = sb2->imu_2;
       ReleaseMutex(&sb2_mutex);
-      sb2_imu.acc_z = -sb2_imu.acc_z;
+      sb2_imu_1.acc_z = -sb2_imu_1.acc_z;
+      sb2_imu_2.acc_z = -sb2_imu_2.acc_z;
     }
   }
 
@@ -101,9 +106,11 @@ void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
   if (checksum == sb3->checksum) {
     if (AcquireMutex(&sb3_mutex) == osOK) {
       sb3_baro = sb3->baro;
-      sb3_imu = sb3->imu;
+      sb3_imu_1 = sb3->imu_1;
+      sb3_imu_2 = sb3->imu_2;
       ReleaseMutex(&sb3_mutex);
-      sb3_imu.acc_z = -sb3_imu.acc_z;
+      sb3_imu_1.acc_z = -sb3_imu_1.acc_z;
+      sb3_imu_2.acc_z = -sb3_imu_2.acc_z;
     }
   }
 }
@@ -111,24 +118,26 @@ void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
 /* Read Data from USB */
 void ReadDataUSB() {
   if (osMutexAcquire(usb_data_mutex.mutex, 10)) {
-    sscanf(usb_data_buffer,
-           "%ld,%ld,%ld;%hd,%hd,%hd,%hd,%hd,%hd,%ld|%ld,%ld,%ld;%hd,%hd,%hd,%"
-           "hd,%hd,%hd,%ld|%ld,%ld,%ld;%hd,%hd,%hd,%hd,%hd,%hd,%ld\n",
-           &sb1_baro.pressure, &sb1_baro.temperature, &sb1_baro.ts,
-           &sb1_imu.gyro_x, &sb1_imu.gyro_y, &sb1_imu.gyro_z, &sb1_imu.acc_x,
-           &sb1_imu.acc_y, &sb1_imu.acc_z, &sb1_imu.ts, &sb2_baro.pressure,
-           &sb2_baro.temperature, &sb2_baro.ts, &sb2_imu.gyro_x,
-           &sb2_imu.gyro_y, &sb2_imu.gyro_z, &sb2_imu.acc_x, &sb2_imu.acc_y,
-           &sb2_imu.acc_z, &sb2_imu.ts, &sb3_baro.pressure,
-           &sb3_baro.temperature, &sb3_baro.ts, &sb3_imu.gyro_x,
-           &sb3_imu.gyro_y, &sb3_imu.gyro_z, &sb3_imu.acc_x, &sb3_imu.acc_y,
-           &sb3_imu.acc_z, &sb3_imu.ts);
+//    sscanf(usb_data_buffer,
+//           "%ld,%ld,%ld;%hd,%hd,%hd,%hd,%hd,%hd,%ld|%ld,%ld,%ld;%hd,%hd,%hd,%"
+//           "hd,%hd,%hd,%ld|%ld,%ld,%ld;%hd,%hd,%hd,%hd,%hd,%hd,%ld\n",
+//           &sb1_baro.pressure, &sb1_baro.temperature, &sb1_baro.ts,
+//           &sb1_imu.gyro_x, &sb1_imu.gyro_y, &sb1_imu.gyro_z, &sb1_imu.acc_x,
+//           &sb1_imu.acc_y, &sb1_imu.acc_z, &sb1_imu.ts, &sb2_baro.pressure,
+//           &sb2_baro.temperature, &sb2_baro.ts, &sb2_imu.gyro_x,
+//           &sb2_imu.gyro_y, &sb2_imu.gyro_z, &sb2_imu.acc_x, &sb2_imu.acc_y,
+//           &sb2_imu.acc_z, &sb2_imu.ts, &sb3_baro.pressure,
+//           &sb3_baro.temperature, &sb3_baro.ts, &sb3_imu.gyro_x,
+//           &sb3_imu.gyro_y, &sb3_imu.gyro_z, &sb3_imu.acc_x, &sb3_imu.acc_y,
+//           &sb3_imu.acc_z, &sb3_imu.ts);
     osMutexRelease(usb_data_mutex.mutex);
   }
 }
 
 uint8_t calculate_checksum_sb(sb_data_t *sb_data) {
   return sb_data->baro.pressure + sb_data->baro.temperature +
-         sb_data->imu.gyro_x + sb_data->imu.gyro_y + sb_data->imu.gyro_z +
-         sb_data->imu.acc_x + sb_data->imu.acc_y + sb_data->imu.acc_z;
+         sb_data->imu_1.gyro_x + sb_data->imu_1.gyro_y + sb_data->imu_1.gyro_z +
+         sb_data->imu_1.acc_x + sb_data->imu_1.acc_y + sb_data->imu_1.acc_z +
+		 sb_data->imu_2.gyro_x + sb_data->imu_2.gyro_y + sb_data->imu_2.gyro_z +
+		 sb_data->imu_2.acc_x + sb_data->imu_2.acc_y + sb_data->imu_2.acc_z;
 }

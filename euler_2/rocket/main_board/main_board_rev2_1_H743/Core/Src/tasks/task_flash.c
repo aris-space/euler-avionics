@@ -45,12 +45,12 @@ void vTaskFlash(void *argument) {
     osDelay(1);
     read_data(address - sizeof(data_write) + 4, &data_read, sizeof(data_read));
     //		read_data(address, &data_read, sizeof(data_read));
-    UsbPrint(
-        "[FLASH]: ID: %ld, D0: %ld, D1: %ld, D2: %ld, D3: %ld, D4: %ld, S: "
-        "%s\n",
-        chip_id, data_read.data[0], data_read.data[1], data_read.data[2],
-        data_read.data[3], data_read.data[4], data_read.s);
-    address += sizeof(data_write) + 4;  // 0x100
+//    UsbPrint(
+//        "[FLASH]: ID: %ld, D0: %ld, D1: %ld, D2: %ld, D3: %ld, D4: %ld, S: "
+//        "%s\n",
+//        chip_id, data_read.data[0], data_read.data[1], data_read.data[2],
+//        data_read.data[3], data_read.data[4], data_read.s);
+//    address += sizeof(data_write) + 4;  // 0x100
 
     data_write.data[0]++;
     data_write.data[1] += 2;

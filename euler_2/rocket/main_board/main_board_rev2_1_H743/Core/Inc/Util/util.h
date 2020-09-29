@@ -67,7 +67,8 @@ typedef struct {
 
 typedef struct {
   baro_data_t baro;
-  imu_data_t imu;
+  imu_data_t imu_1;
+  imu_data_t imu_2;
   uint8_t checksum;
 } sb_data_t;
 
@@ -227,7 +228,7 @@ osStatus_t logMsg(timestamp_t ts, char *msg);
 #endif
 /* Comment the next line in order to disable debug mode -- should be disabled
  * during flight */
-//#define DEBUG
+#define DEBUG
 /* Flash read flag */
 #ifdef FLASH_READ
 #undef FLASH_READ
