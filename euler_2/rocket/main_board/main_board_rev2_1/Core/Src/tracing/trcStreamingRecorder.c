@@ -166,9 +166,9 @@ typedef struct {
 #define HANDLE_NO_TASK 2
 
 /* The status codes for the pages of the internal trace buffer. */
-#define PAGE_STATUS_FREE 0
+#define PAGE_STATUS_FREE  0
 #define PAGE_STATUS_WRITE 1
-#define PAGE_STATUS_READ 2
+#define PAGE_STATUS_READ  2
 
 /* Calls prvTraceError if the _assert condition is false. For void functions,
 where no return value is to be provided. */

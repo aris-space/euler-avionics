@@ -15,8 +15,8 @@
 
 #define HEADER_SIZE 3
 #define BUFFER_SIZE 1000
-#define DATA_SIZE 70
-#define GPS_NUMBER 3
+#define DATA_SIZE   70
+#define GPS_NUMBER  3
 
 uint8_t gps_data[GPS_NUMBER][BUFFER_SIZE];
 

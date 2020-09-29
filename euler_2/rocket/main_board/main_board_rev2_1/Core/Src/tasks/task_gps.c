@@ -66,7 +66,7 @@ void vTaskGps(void *argument) {
 
     //		UsbPrint(
     //				"[GPS1] Time: %d:%d.%d Lat: %d.%ld Lon: %d.%ld
-    //Sats: %d, Alt: %d\n", 				GPS1.data.hour,
+    // Sats: %d, Alt: %d\n", 				GPS1.data.hour,
     // GPS1.data.minute, GPS1.data.second,
     // GPS1.data.lat_deg, GPS1.data.lat_decimal,
     // GPS1.data.lon_deg, 				GPS1.data.lon_decimal,
@@ -74,7 +74,7 @@ void vTaskGps(void *argument) {
     //
     //		UsbPrint(
     //				"[GPS2] Time: %d:%d.%d Lat: %d.%ld Lon: %d.%ld
-    //Sats: %d Alt: %d\n", 				GPS2.data.hour,
+    // Sats: %d Alt: %d\n", 				GPS2.data.hour,
     // GPS2.data.minute, GPS2.data.second,
     // GPS2.data.lat_deg, GPS2.data.lat_decimal,
     // GPS2.data.lon_deg, 				GPS2.data.lon_decimal,
@@ -82,7 +82,7 @@ void vTaskGps(void *argument) {
     //
     //		UsbPrint(
     //				"[GPS3] Time: %d:%d.%d Lat: %d.%ld Lon: %d.%ld
-    //Sats: %d, Alt: %d\n", 				GPS3.data.hour,
+    // Sats: %d, Alt: %d\n", 				GPS3.data.hour,
     // GPS3.data.minute, GPS3.data.second,
     // GPS3.data.lat_deg, GPS3.data.lat_decimal,
     // GPS3.data.lon_deg, 				GPS3.data.lon_decimal,

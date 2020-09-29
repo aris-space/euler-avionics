@@ -315,9 +315,9 @@ void prvTraceSetStreamBufferNumberHigh16(void* handle, uint16_t value) {
 
 #if (TRC_CFG_HARDWARE_PORT == TRC_HARDWARE_PORT_ARM_CORTEX_A9)
 
-#define CS_TYPE_NONE 0
-#define CS_TYPE_TASK 1
-#define CS_TYPE_ISR_MASK_CHANGED 2
+#define CS_TYPE_NONE                 0
+#define CS_TYPE_TASK                 1
+#define CS_TYPE_ISR_MASK_CHANGED     2
 #define CS_TYPE_ISR_MASK_NOT_CHANGED 3
 
 #define CS_TYPE_INVALID 0xFFFFFFFF

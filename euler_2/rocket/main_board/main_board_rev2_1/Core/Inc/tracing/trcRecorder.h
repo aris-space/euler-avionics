@@ -97,16 +97,16 @@ typedef const void* traceHandle;
 
 #if (TRC_USE_TRACEALYZER_RECORDER == 1)
 
-#define TRC_STATE_IN_STARTUP 0
-#define TRC_STATE_IN_TASKSWITCH 1
+#define TRC_STATE_IN_STARTUP     0
+#define TRC_STATE_IN_TASKSWITCH  1
 #define TRC_STATE_IN_APPLICATION 2
 
 /* The user event channel for recorder warnings, must be defined in
  * trcKernelPort.c */
 extern traceString trcWarningChannel;
 
-#define TRACE_GET_LOW16(value) ((uint16_t)((value)&0x0000FFFF))
-#define TRACE_GET_HIGH16(value) ((uint16_t)(((value) >> 16) & 0x0000FFFF))
+#define TRACE_GET_LOW16(value)          ((uint16_t)((value)&0x0000FFFF))
+#define TRACE_GET_HIGH16(value)         ((uint16_t)(((value) >> 16) & 0x0000FFFF))
 #define TRACE_SET_LOW16(current, value) (((current)&0xFFFF0000) | (value))
 #define TRACE_SET_HIGH16(current, value) \
   (((current)&0x0000FFFF) | (((uint32_t)(value)) << 16))
@@ -476,10 +476,10 @@ void vTraceSetFrequency(uint32_t frequency);
      TRC_RECORDER_BUFFER_ALLOCATION_CUSTOM)
 void vTraceSetRecorderDataBuffer(void* pRecorderData);
 #else
-#define vTraceSetRecorderDataBuffer(                                           \
-    pRecorderData) /* If not CUSTOM, pRecorderData will be an undefined symbol \
-                      (same as in TRC_ALLOC_CUSTOM_BUFFER), so no (void) here  \
-                    */
+#define vTraceSetRecorderDataBuffer(                                              \
+    pRecorderData)    /* If not CUSTOM, pRecorderData will be an undefined symbol \
+                         (same as in TRC_ALLOC_CUSTOM_BUFFER), so no (void) here  \
+                       */
 #endif
 
 /*******************************************************************************
@@ -530,9 +530,9 @@ void vTraceSetRecorderDataBuffer(void* pRecorderData);
 #endif
 #endif
 #else
-#define TRC_ALLOC_CUSTOM_BUFFER(                                               \
-    bufname) /* If not CUSTOM, bufname will be an undefined symbol (same as in \
-                vTraceSetRecorderDataBuffer), so no (void) here */
+#define TRC_ALLOC_CUSTOM_BUFFER(                                                  \
+    bufname)    /* If not CUSTOM, bufname will be an undefined symbol (same as in \
+                   vTraceSetRecorderDataBuffer), so no (void) here */
 #endif
 
 /******************************************************************************
@@ -1026,7 +1026,7 @@ void prvTraceStoreObjectPropertiesOnCloseEvent(uint8_t evtcode,
 
 /* Internal constants for task state */
 #define TASK_STATE_INSTANCE_NOT_ACTIVE 0
-#define TASK_STATE_INSTANCE_ACTIVE 1
+#define TASK_STATE_INSTANCE_ACTIVE     1
 
 #if (TRC_CFG_INCLUDE_ISR_TRACING == 0)
 
@@ -1134,12 +1134,12 @@ void vTraceUBEvent(traceUBChannel channel);
 #define trcSR_ALLOC_CRITICAL_SECTION_ON_CORTEX_M_ONLY \
   TRACE_ALLOC_CRITICAL_SECTION
 #define trcCRITICAL_SECTION_BEGIN_ON_CORTEX_M_ONLY trcCRITICAL_SECTION_BEGIN
-#define trcCRITICAL_SECTION_END_ON_CORTEX_M_ONLY trcCRITICAL_SECTION_END
+#define trcCRITICAL_SECTION_END_ON_CORTEX_M_ONLY   trcCRITICAL_SECTION_END
 #else
 #define trcSR_ALLOC_CRITICAL_SECTION_ON_CORTEX_M_ONLY() \
   {}
 #define trcCRITICAL_SECTION_BEGIN_ON_CORTEX_M_ONLY() recorder_busy++;
-#define trcCRITICAL_SECTION_END_ON_CORTEX_M_ONLY() recorder_busy--;
+#define trcCRITICAL_SECTION_END_ON_CORTEX_M_ONLY()   recorder_busy--;
 #endif
 
 /******************************************************************************
@@ -1706,7 +1706,7 @@ used within vTraceEnable.
  ******************************************************************************/
 #ifndef TRC_STREAM_PORT_COMMIT_EVENT
 #if (TRC_STREAM_PORT_USE_INTERNAL_BUFFER == 1)
-#define TRC_STREAM_PORT_COMMIT_EVENT(_ptrData, _size) /* Not used */
+#define TRC_STREAM_PORT_COMMIT_EVENT(_ptrData, _size)          /* Not used */
 #define TRC_STREAM_PORT_COMMIT_EVENT_BLOCKING(_ptrData, _size) /* Not used */
 #else
 #define TRC_STREAM_PORT_COMMIT_EVENT(_ptrData, _size)               \
@@ -1901,22 +1901,22 @@ void prvTraceWarning(int errCode);
 /*** ERROR AND WARNING CODES (check using xTraceGetLastError) *****************/
 /******************************************************************************/
 
-#define PSF_ERROR_NONE 0
-#define PSF_ERROR_EVENT_CODE_TOO_LARGE 1
-#define PSF_ERROR_ISR_NESTING_OVERFLOW 2
-#define PSF_ERROR_DWT_NOT_SUPPORTED 3
+#define PSF_ERROR_NONE                     0
+#define PSF_ERROR_EVENT_CODE_TOO_LARGE     1
+#define PSF_ERROR_ISR_NESTING_OVERFLOW     2
+#define PSF_ERROR_DWT_NOT_SUPPORTED        3
 #define PSF_ERROR_DWT_CYCCNT_NOT_SUPPORTED 4
-#define PSF_ERROR_TZCTRLTASK_NOT_CREATED 5
-#define PSF_ERROR_STREAM_PORT_WRITE 6
+#define PSF_ERROR_TZCTRLTASK_NOT_CREATED   5
+#define PSF_ERROR_STREAM_PORT_WRITE        6
 
-#define PSF_WARNING_SYMBOL_TABLE_SLOTS 7
-#define PSF_WARNING_SYMBOL_MAX_LENGTH 8
-#define PSF_WARNING_OBJECT_DATA_SLOTS 9
-#define PSF_WARNING_STRING_TOO_LONG 10
-#define PSF_WARNING_STREAM_PORT_READ 11
-#define PSF_WARNING_STREAM_PORT_WRITE 12
+#define PSF_WARNING_SYMBOL_TABLE_SLOTS           7
+#define PSF_WARNING_SYMBOL_MAX_LENGTH            8
+#define PSF_WARNING_OBJECT_DATA_SLOTS            9
+#define PSF_WARNING_STRING_TOO_LONG              10
+#define PSF_WARNING_STREAM_PORT_READ             11
+#define PSF_WARNING_STREAM_PORT_WRITE            12
 #define PSF_WARNING_STREAM_PORT_INITIAL_BLOCKING 13
-#define PSF_WARNING_STACKMON_NO_SLOTS 14
+#define PSF_WARNING_STACKMON_NO_SLOTS            14
 
 /******************************************************************************/
 /*** INTERNAL STREAMING FUNCTIONS *********************************************/
@@ -2007,7 +2007,7 @@ void prvProcessCommand(TracealyzerCommandType* cmd);
 #define vTraceInstanceFinishedNow()
 #define vTraceInstanceFinishedNext()
 #define vTraceStoreISRBegin(x) (void)(x)
-#define vTraceStoreISREnd(x) (void)(x)
+#define vTraceStoreISREnd(x)   (void)(x)
 #define xTraceSetISRProperties(a, b)                                         \
   ((void)(a), (void)(b),                                                     \
    (traceHandle)0) /* Comma operator in parenthesis is used to avoid "unused \
@@ -2021,10 +2021,10 @@ void prvProcessCommand(TracealyzerCommandType* cmd);
    0) /* Comma operator in parenthesis is used to avoid "unused variable" \
          compiler warnings and return 0 in a single statement */
 #define vTraceChannelPrint(label) (void)(label)
-#define vTraceUBData(label, ...) (void)(label)
+#define vTraceUBData(label, ...)  (void)(label)
 
 #define vTraceSetFilterGroup(x) (void)(x)
-#define vTraceSetFilterMask(x) (void)(x)
+#define vTraceSetFilterMask(x)  (void)(x)
 
 #define prvTraceSetReadyEventsEnabled(status) (void)(status)
 
@@ -2035,9 +2035,9 @@ void prvProcessCommand(TracealyzerCommandType* cmd);
 #define vTraceStop()
 
 #ifndef vTraceSetRecorderDataBuffer
-#define vTraceSetRecorderDataBuffer(                                           \
-    pRecorderData) /* No (void) here - ignore parameter since undefined symbol \
-                      if custom allocation is not used */
+#define vTraceSetRecorderDataBuffer(                                              \
+    pRecorderData)    /* No (void) here - ignore parameter since undefined symbol \
+                         if custom allocation is not used */
 #endif
 
 #define vTraceConsoleChannelPrintF(fmt, ...) (void)(fmt)

@@ -259,7 +259,7 @@ typedef struct {
 
 extern PSFExtensionInfoType PSFExtensionInfo;
 
-#define CAT(a, ...) PRIMITIVE_CAT(a, __VA_ARGS__)
+#define CAT(a, ...)           PRIMITIVE_CAT(a, __VA_ARGS__)
 #define PRIMITIVE_CAT(a, ...) a##__VA_ARGS__
 
 #define TRC_EXT_BASECODE \

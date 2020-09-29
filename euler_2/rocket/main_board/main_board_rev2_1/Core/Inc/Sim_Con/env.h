@@ -6,15 +6,15 @@
 #ifndef ENV_H_
 #define ENV_H_
 
-#define GRAVITATION 9.81
-#define GAMMA 1.4
-#define R_star 8.3144598
-#define M 0.028964
-#define R_0 R_star / M
-#define T_0 273.15
-#define T_GRAD 0.0065
-#define TEMPERATURE_REFERENCE 15   // ISA reference temperature at sea level [K]
-#define PRESSURE_REFERENCE 101325  // ISA reference pressure at sea level [Pa]
+#define GRAVITATION           9.81
+#define GAMMA                 1.4
+#define R_star                8.3144598
+#define M                     0.028964
+#define R_0                   R_star / M
+#define T_0                   273.15
+#define T_GRAD                0.0065
+#define TEMPERATURE_REFERENCE 15  // ISA reference temperature at sea level [K]
+#define PRESSURE_REFERENCE    101325  // ISA reference pressure at sea level [Pa]
 
 typedef struct {
   float p_g;  // Pressure on ground level [Pa]

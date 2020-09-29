@@ -13,17 +13,17 @@
 /* CONSTANTS FOR CONFIGURATION OF THE STATE ESTIMATION */
 #define STATE_ESTIMATION_FREQUENCY 100
 
-#define NUM_SENSORBOARDS 3 /* Number of Sensor Boards */
-#define MAX_NUM_SENSORS    /* Max Betwee Num IMU and Num BARO */
-#define NUM_IMU 3
-#define NUM_BARO 3
+#define NUM_SENSORBOARDS          3 /* Number of Sensor Boards */
+#define MAX_NUM_SENSORS             /* Max Betwee Num IMU and Num BARO */
+#define NUM_IMU                   3
+#define NUM_BARO                  3
 #define MAX_LENGTH_ROLLING_MEMORY 18
 #define USE_SENSOR_ELIMINATION_BY_EXTRAPOLATION \
   0  // set to 1 to activate sensor elimination by extrapolation for barometer
      // and temperature
 #define EXTRAPOLATION_POLYFIT_DEGREE 2
-#define LAMBDA 0.0001 /* Lambda for Moore Penrose Pseudoinverse */
-#define PI 3.1415
+#define LAMBDA                       0.0001 /* Lambda for Moore Penrose Pseudoinverse */
+#define PI                           3.1415
 
 /* State Estimation Baro struct */
 typedef struct {

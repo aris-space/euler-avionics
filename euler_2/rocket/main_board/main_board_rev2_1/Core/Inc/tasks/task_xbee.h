@@ -16,7 +16,7 @@
 #include "Util/mutex.h"
 
 /* defines */
-#define XBEE_SAMPLING_FREQ 10
+#define XBEE_SAMPLING_FREQ      10
 #define XBEE_SAMPLING_FREQ_HIGH 100
 
 /* extern */

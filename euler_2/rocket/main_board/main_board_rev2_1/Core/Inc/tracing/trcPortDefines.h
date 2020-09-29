@@ -47,14 +47,14 @@
 
 #define TRC_FREE_RUNNING_32BIT_INCR 1
 #define TRC_FREE_RUNNING_32BIT_DECR 2
-#define TRC_OS_TIMER_INCR 3
-#define TRC_OS_TIMER_DECR 4
-#define TRC_CUSTOM_TIMER_INCR 5
-#define TRC_CUSTOM_TIMER_DECR 6
+#define TRC_OS_TIMER_INCR           3
+#define TRC_OS_TIMER_DECR           4
+#define TRC_CUSTOM_TIMER_INCR       5
+#define TRC_CUSTOM_TIMER_DECR       6
 
 /* Start options for vTraceEnable. */
-#define TRC_INIT 0
-#define TRC_START 1
+#define TRC_INIT             0
+#define TRC_START            1
 #define TRC_START_AWAIT_HOST 2
 
 /* Command codes for TzCtrl task */
@@ -63,24 +63,24 @@
 /* The final command code, used to validate commands. */
 #define CMD_LAST_COMMAND 1
 
-#define TRC_RECORDER_MODE_SNAPSHOT 0
+#define TRC_RECORDER_MODE_SNAPSHOT  0
 #define TRC_RECORDER_MODE_STREAMING 1
 
-#define TRC_RECORDER_BUFFER_ALLOCATION_STATIC (0x00)
+#define TRC_RECORDER_BUFFER_ALLOCATION_STATIC  (0x00)
 #define TRC_RECORDER_BUFFER_ALLOCATION_DYNAMIC (0x01)
-#define TRC_RECORDER_BUFFER_ALLOCATION_CUSTOM (0x02)
+#define TRC_RECORDER_BUFFER_ALLOCATION_CUSTOM  (0x02)
 
 /* Filter Groups */
-#define FilterGroup0 (uint16_t)0x0001
-#define FilterGroup1 (uint16_t)0x0002
-#define FilterGroup2 (uint16_t)0x0004
-#define FilterGroup3 (uint16_t)0x0008
-#define FilterGroup4 (uint16_t)0x0010
-#define FilterGroup5 (uint16_t)0x0020
-#define FilterGroup6 (uint16_t)0x0040
-#define FilterGroup7 (uint16_t)0x0080
-#define FilterGroup8 (uint16_t)0x0100
-#define FilterGroup9 (uint16_t)0x0200
+#define FilterGroup0  (uint16_t)0x0001
+#define FilterGroup1  (uint16_t)0x0002
+#define FilterGroup2  (uint16_t)0x0004
+#define FilterGroup3  (uint16_t)0x0008
+#define FilterGroup4  (uint16_t)0x0010
+#define FilterGroup5  (uint16_t)0x0020
+#define FilterGroup6  (uint16_t)0x0040
+#define FilterGroup7  (uint16_t)0x0080
+#define FilterGroup8  (uint16_t)0x0100
+#define FilterGroup9  (uint16_t)0x0200
 #define FilterGroup10 (uint16_t)0x0400
 #define FilterGroup11 (uint16_t)0x0800
 #define FilterGroup12 (uint16_t)0x1000
