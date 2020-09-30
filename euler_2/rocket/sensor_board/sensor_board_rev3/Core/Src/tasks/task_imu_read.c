@@ -79,15 +79,15 @@ void vTaskImuRead(void *argument) {
 
 void vInitImu20601() {
 	osDelayUntil(1000);
-	uint8_t r = 0;
-	do {
-		r = icm20601_init(&ICM2);
-		HAL_Delay(10);
-	} while(r);
+	uint8_t r;
 	do {
 		r = icm20601_init(&ICM1);
 		HAL_Delay(10);
-	} while(r);
+	} while(!r);
+	do {
+		r = icm20601_init(&ICM2);
+		HAL_Delay(10);
+	} while(!r);
 }
 
 void vReadImu20601(struct icm20601_dev * dev, int16_t gyroscope_data[], int16_t acceleration[], int16_t *temperature) {
