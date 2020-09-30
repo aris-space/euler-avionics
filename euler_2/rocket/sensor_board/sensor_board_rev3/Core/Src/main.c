@@ -34,6 +34,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 typedef StaticTask_t osStaticThreadDef_t;
+typedef StaticQueue_t osStaticMessageQDef_t;
 /* USER CODE BEGIN PTD */
 
 /* USER CODE END PTD */
@@ -63,7 +64,7 @@ const osThreadAttr_t defaultTask_attributes = {
 };
 /* Definitions for task_baro_read */
 osThreadId_t task_baro_readHandle;
-uint32_t task_baro_readBuffer[ 2048 ];
+uint32_t task_baro_readBuffer[ 1024 ];
 osStaticThreadDef_t task_baro_readControlBlock;
 const osThreadAttr_t task_baro_read_attributes = {
   .name = "task_baro_read",
@@ -75,7 +76,7 @@ const osThreadAttr_t task_baro_read_attributes = {
 };
 /* Definitions for task_imu_read */
 osThreadId_t task_imu_readHandle;
-uint32_t task_imu_readBuffer[ 4096 ];
+uint32_t task_imu_readBuffer[ 2048 ];
 osStaticThreadDef_t task_imu_readControlBlock;
 const osThreadAttr_t task_imu_read_attributes = {
   .name = "task_imu_read",
@@ -87,7 +88,7 @@ const osThreadAttr_t task_imu_read_attributes = {
 };
 /* Definitions for task_send_to_mb */
 osThreadId_t task_send_to_mbHandle;
-uint32_t task_send_to_mbBuffer[ 2048 ];
+uint32_t task_send_to_mbBuffer[ 1024 ];
 osStaticThreadDef_t task_send_to_mbControlBlock;
 const osThreadAttr_t task_send_to_mb_attributes = {
   .name = "task_send_to_mb",
@@ -99,7 +100,7 @@ const osThreadAttr_t task_send_to_mb_attributes = {
 };
 /* Definitions for task_preprocess */
 osThreadId_t task_preprocessHandle;
-uint32_t task_preprocessBuffer[ 2048 ];
+uint32_t task_preprocessBuffer[ 1024 ];
 osStaticThreadDef_t task_preprocessControlBlock;
 const osThreadAttr_t task_preprocess_attributes = {
   .name = "task_preprocess",
@@ -109,16 +110,27 @@ const osThreadAttr_t task_preprocess_attributes = {
   .cb_size = sizeof(task_preprocessControlBlock),
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for preprocess_queue_imu_2 */
+osMessageQueueId_t preprocess_queue_imu_2Handle;
+uint8_t myQueue01Buffer[ 32 * sizeof( imu_data_t ) ];
+osStaticMessageQDef_t myQueue01ControlBlock;
+const osMessageQueueAttr_t preprocess_queue_imu_2_attributes = {
+  .name = "preprocess_queue_imu_2",
+  .cb_mem = &myQueue01ControlBlock,
+  .cb_size = sizeof(myQueue01ControlBlock),
+  .mq_mem = &myQueue01Buffer,
+  .mq_size = sizeof(myQueue01Buffer)
+};
 /* USER CODE BEGIN PV */
-osMessageQueueId_t preprocess_queue;
+osMessageQueueId_t preprocess_queue_imu_1;
 /* Baro Stuff */
 osMutexId_t baro_mutex;
 baro_data_t baro_data_to_mb;
 /* IMU Stuff */
-osMutexId_t imu_mutex;
-imu_data_t imu_data_to_mb;
-/* SPI Send */
-sb_data_t fullsb_data;
+osMutexId_t imu_mutex_1;
+osMutexId_t imu_mutex_2;
+imu_data_t imu_data_1_to_mb;
+imu_data_t imu_data_2_to_mb;
 /* Fake USB Data insert */
 //osMessageQueueId_t usb_data_queue;
 osMutexId_t usb_data_mutex;
@@ -198,15 +210,23 @@ int main(void)
   };
 
   baro_mutex = osMutexNew(&baro_mutex_attr);
+
   /* IMU Mutex */
-  const osMutexAttr_t imu_mutex_attr = {
-    "imu_mutex",                          // human readable mutex name
+  const osMutexAttr_t imu_1_mutex_attr = {
+    "imu_mutex_1",                          // human readable mutex name
     osMutexPrioInherit,    // attr_bits
     NULL,                                     // memory for control block
     0U                                        // size for control block
   };
+  imu_mutex_1 = osMutexNew(&imu_1_mutex_attr);
 
-  imu_mutex = osMutexNew(&imu_mutex_attr);
+  const osMutexAttr_t imu_2_mutex_attr = {
+    "imu_mutex_2",                          // human readable mutex name
+    osMutexPrioInherit,    // attr_bits
+    NULL,                                     // memory for control block
+    0U                                        // size for control block
+  };
+  imu_mutex_2 = osMutexNew(&imu_2_mutex_attr);
 
 
 #ifdef DEBUG
@@ -229,9 +249,13 @@ int main(void)
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
+  /* Create the queue(s) */
+  /* creation of preprocess_queue_imu_2 */
+  preprocess_queue_imu_2Handle = osMessageQueueNew (32, sizeof(imu_data_t), &preprocess_queue_imu_2_attributes);
+
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
-  preprocess_queue = osMessageQueueNew(PREPROCESS_QUEUE_SIZE, sizeof(imu_data_t), NULL);
+  preprocess_queue_imu_1 = osMessageQueueNew(1*PREPROCESS_QUEUE_SIZE, sizeof(imu_data_t), NULL);
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */

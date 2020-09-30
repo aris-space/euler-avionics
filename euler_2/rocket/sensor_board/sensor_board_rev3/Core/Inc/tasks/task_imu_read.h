@@ -15,8 +15,9 @@
 #include "util.h"
 
 /* Constants */
-#define IMU20601_SAMPLING_FREQ 100
+#define IMU20601_SAMPLING_FREQ SAMPLING_FREQ
 
-extern osMessageQueueId_t preprocess_queue;
+extern osMessageQueueId_t preprocess_queue_imu_1;
+extern osMessageQueueId_t preprocess_queue_imu_2Handle;
 
 #endif /* INC_TASK_IMU_READ_H_ */

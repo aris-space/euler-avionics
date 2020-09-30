@@ -18,16 +18,16 @@ void vTaskSendToMb(void *argument);
 
 /* Constants */
 #define SPI_TIMEOUT 5
-#define MB_SAMPLING_RATE 100
+#define MB_SAMPLING_RATE SAMPLING_FREQ
 
 /* extern */
 extern baro_data_t baro_data_to_mb;
-extern imu_data_t imu_data_to_mb;
+extern imu_data_t imu_data_1_to_mb;
+extern imu_data_t imu_data_2_to_mb;
 extern osMutexId_t baro_mutex;
-extern osMutexId_t imu_mutex;
+extern osMutexId_t imu_mutex_1;
+extern osMutexId_t imu_mutex_2;
 extern SPI_HandleTypeDef hspi2;
-extern baro_data_t SPI_Baro;
-extern sb_data_t fullsb_data;
 
 /* USB Sensor Read In */
 //extern osMessageQueueId_t usb_data_queue;

@@ -206,15 +206,14 @@ int main(void)
     NULL,                                     // memory for control block
     0U                                        // size for control block
   };
-
   imu_mutex_1 = osMutexNew(&imu_1_mutex_attr);
+
   const osMutexAttr_t imu_2_mutex_attr = {
     "imu_mutex_2",                          // human readable mutex name
     osMutexPrioInherit,    // attr_bits
     NULL,                                     // memory for control block
     0U                                        // size for control block
   };
-
   imu_mutex_2 = osMutexNew(&imu_2_mutex_attr);
 
 

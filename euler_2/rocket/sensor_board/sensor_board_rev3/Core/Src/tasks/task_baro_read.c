@@ -20,25 +20,30 @@ MS5607 MS = MS5607_INIT();
  * @retval None
  */
 void vTaskBaroRead(void *argument) {
+
 	/* For periodic update */
 	uint32_t tick_count, tick_update;
+
 	/* actual measurements from sensor */
 	int32_t temperature;
 	int32_t pressure;
 
+	/* Initialise Barometer */
 	vInitBaro();
 
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();
 	tick_update = osKernelGetTickFreq() / BARO_SAMPLING_FREQ;
+
 	while (1) {
 		tick_count += tick_update;
+
+		/* Read Barometer */
 		vReadBaro(&temperature, &pressure);
 
-		UsbPrint("P: %ld; T: %ld; t: %ld\n", pressure,
-				temperature, tick_count);
+//		UsbPrint("P: %ld; T: %ld; t: %ld\n", pressure,
+//				temperature, tick_count);
 
-		//TODO HIE AUE STUFF WO MUES GMACHT WERDE MIT DENE DATE
 
 		/* If the Mutex is acquired we write the data into the right variable */
 		if (osMutexAcquire(baro_mutex, BARO_MUTEX_TIMEOUT) == osOK) {

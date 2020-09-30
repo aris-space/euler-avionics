@@ -35,44 +35,57 @@ void vTaskImuRead(void *argument) {
 	int16_t temperature2;
 
 	/* initialize queue message */
-	imu_data_t queue_data = { 0 };
+	imu_data_t queue_data_imu_1 = { 0 };
+	imu_data_t queue_data_imu_2 = { 0 };
 
+	/* Set Both CS High */
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
 
-
+	/* Initialise IMU */
 	vInitImu20601();
 
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();
 	tick_update = osKernelGetTickFreq() / IMU20601_SAMPLING_FREQ;
+
 	for (;;) {
 		tick_count += tick_update;
+
+		/* Read Out Sensors */
 		vReadImu20601(&ICM1, gyroscope_data1, acceleration1, &temperature1);
 		vReadImu20601(&ICM2, gyroscope_data2, acceleration2, &temperature2);
 
 		/* Debugging */
 
-		UsbPrint("[DBG] RAW 1 Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld, T:%ld; \n",
-				gyroscope_data1[0], gyroscope_data1[1], gyroscope_data1[2],
-				acceleration1[0], acceleration1[1], acceleration1[2], temperature1);
-		UsbPrint("[DBG] RAW 2 Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld, T:%ld; \n",
-						gyroscope_data2[0], gyroscope_data2[1], gyroscope_data2[2],
-						acceleration2[0], acceleration2[1], acceleration2[2], temperature2);
+//		UsbPrint("[DBG] RAW 1 Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld, T:%ld; \n",
+//				gyroscope_data1[0], gyroscope_data1[1], gyroscope_data1[2],
+//				acceleration1[0], acceleration1[1], acceleration1[2], temperature1);
+//		UsbPrint("[DBG] RAW 2 Gx: %ld, Gy:%ld, Gz:%ld; Ax: %ld, Ay:%ld, Az:%ld, T:%ld; \n",
+//						gyroscope_data2[0], gyroscope_data2[1], gyroscope_data2[2],
+//						acceleration2[0], acceleration2[1], acceleration2[2], temperature2);
 
-		//TODO HIE AUE STUFF WO MUES GMACHT WERDE MIT DENE DATE
-
-		queue_data.gyro_x = gyroscope_data1[0];
-		queue_data.gyro_y = gyroscope_data1[1];
-		queue_data.gyro_z = gyroscope_data1[2];
-		queue_data.acc_x = acceleration1[0];
-		queue_data.acc_y = acceleration1[1];
-		queue_data.acc_z = acceleration1[2];
-		queue_data.ts = osKernelGetTickCount();
+		/* Write Sensor Data into queue Data */
+		queue_data_imu_1.gyro_x = gyroscope_data1[0];
+		queue_data_imu_1.gyro_y = gyroscope_data1[1];
+		queue_data_imu_1.gyro_z = gyroscope_data1[2];
+		queue_data_imu_1.acc_x = acceleration1[0];
+		queue_data_imu_1.acc_y = acceleration1[1];
+		queue_data_imu_1.acc_z = acceleration1[2];
+		queue_data_imu_1.ts = osKernelGetTickCount();
+		queue_data_imu_2.gyro_x = gyroscope_data2[0];
+		queue_data_imu_2.gyro_y = gyroscope_data2[1];
+		queue_data_imu_2.gyro_z = gyroscope_data2[2];
+		queue_data_imu_2.acc_x = acceleration2[0];
+		queue_data_imu_2.acc_y = acceleration2[1];
+		queue_data_imu_2.acc_z = acceleration2[2];
+		queue_data_imu_2.ts = osKernelGetTickCount();
 
 		/* Send Data to Queue */
-		osMessageQueuePut(preprocess_queue, &queue_data, 0U, 0U);
+		osMessageQueuePut(preprocess_queue_imu_1, &queue_data_imu_1, 0U, 0U);
+		osMessageQueuePut(preprocess_queue_imu_2Handle, &queue_data_imu_2, 0U, 0U);
 
+		/* Sleep */
 		osDelayUntil(tick_count);
 	}
 }

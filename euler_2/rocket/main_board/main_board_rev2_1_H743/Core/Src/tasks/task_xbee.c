@@ -36,6 +36,7 @@ void vTaskXbee(void *argument) {
 
   osDelay(700);
 
+
   /* Infinite loop */
 
   tick_update_slow = osKernelGetTickFreq() / XBEE_SAMPLING_FREQ;
@@ -116,6 +117,21 @@ void vTaskXbee(void *argument) {
     telemetry_send.height = state_est_data.position_world[2];
     telemetry_send.velocity = state_est_data.velocity_world[2];
     telemetry_send.ts = osKernelGetTickCount();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /* Write Buzzer State*/
     // telemetry_send.flight_phase = telemetry_send.flight_phase +

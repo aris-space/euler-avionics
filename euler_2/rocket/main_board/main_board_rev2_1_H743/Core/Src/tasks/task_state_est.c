@@ -4,7 +4,7 @@
  *  Created on: Nov 29, 2019
  *      Author: Jonas
  */
-#include "sim_con/state_est.h"
+#include "../../aris-euler-state-estimation/Inc/state_est.h"
 #include "util/logging_util.h"
 #include "tasks/task_state_est.h"
 

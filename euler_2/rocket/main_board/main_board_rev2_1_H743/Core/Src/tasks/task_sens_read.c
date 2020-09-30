@@ -35,16 +35,16 @@ void vTaskSensRead(void *argument) {
     } else {
       ReadDataSB(&sb1_data, &sb2_data, &sb3_data);
     }
-//    UsbPrint(
-//    		"[SB1 BARO] P: %ld,T: %ld,Ts: %ld\n", sb1_data.baro.pressure,
-//			sb1_data.baro.temperature,
-//			sb1_data.baro.ts);
-//
-//	UsbPrint("[SB1 IMU1] Gx: %hd,Gy: %hd,Gz: %hd, Ax: %hd,Ay: %hd,Az: %hd,Ts: %ld\n",
-//			sb1_data.imu_1.gyro_x,
-//			sb1_data.imu_1.gyro_y, sb1_data.imu_1.gyro_z,
-//			sb1_data.imu_1.acc_x, sb1_data.imu_1.acc_y,
-//			sb1_data.imu_1.acc_z, sb1_data.imu_1.ts);
+    UsbPrint(
+    		"[SB1 BARO] P: %ld,T: %ld,Ts: %ld\n", sb1_data.baro.pressure,
+			sb1_data.baro.temperature,
+			sb1_data.baro.ts);
+
+	UsbPrint("[SB1 IMU1] Gx: %hd,Gy: %hd,Gz: %hd, Ax: %hd,Ay: %hd,Az: %hd,Ts: %ld\n",
+			sb1_data.imu_1.gyro_x,
+			sb1_data.imu_1.gyro_y, sb1_data.imu_1.gyro_z,
+			sb1_data.imu_1.acc_x, sb1_data.imu_1.acc_y,
+			sb1_data.imu_1.acc_z, sb1_data.imu_1.ts);
 //	UsbPrint("[SB1 IMU2] Gx: %hd,Gy: %hd,Gz: %hd, Ax: %hd,Ay: %hd,Az: %hd,Ts: %ld\n",
 //			sb1_data.imu_2.gyro_x, sb1_data.imu_2.gyro_y,
 //			sb1_data.imu_2.gyro_z, sb1_data.imu_2.acc_x,

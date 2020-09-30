@@ -5,7 +5,7 @@
  *      Author: Jonas
  */
 
-#include "sim_con/controller.h"
+#include "../../aris-euler-controller/Inc/controller.h"
 #include "util/logging_util.h"
 #include "tasks/task_controller.h"
 
@@ -22,6 +22,7 @@ void vTaskController(void *argument) {
   /* Initialize the control_data struct */
   control_data_t control_data = {0};
   control_data_init(&control_data);
+
 
   osDelay(1100);
 
