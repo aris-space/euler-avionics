@@ -303,3 +303,91 @@ void decode_rs()
                 recd[i] = alpha_to[recd[i]];
             else recd[i] = 0;
 }
+
+void print_struct(telemetry_t* data_t){
+    printf("\n===========Telemetry data=============\n");
+    printf("*Sensor board\n");
+    printf("      -pressure = %i\n", data_t->sb_data.pressure);
+    printf("      -temperature = %i\n", data_t->sb_data.temperature);
+    printf("      -gyro_x = %i\n", data_t->sb_data.gyro_x);
+    printf("      -gyro_y = %i\n", data_t->sb_data.gyro_y);
+    printf("      -gyro_z = %i\n", data_t->sb_data.gyro_z);
+    printf("      -acc_x = %i\n", data_t->sb_data.acc_x);
+    printf("      -acc_y = %i\n", data_t->sb_data.acc_y);
+    printf("      -acc_z = %i\n", data_t->sb_data.acc_z);
+    printf("*Battery\n");
+    printf("      -voltage = %i\n", data_t->battery.battery);
+    printf("      -current = %i\n", data_t->battery.current);
+    printf("      -consumption = %i\n", data_t->battery.consumption);
+    printf("*GPS\n");
+    printf("      -hour = %i\n", data_t->gps.hour);
+    printf("      -minute = %i\n", data_t->gps.minute);
+    printf("      -second = %i\n", data_t->gps.second);
+    printf("      -lat_decimal = %i\n", data_t->gps.lat_decimal);
+    printf("      -lon_decimal = %i\n", data_t->gps.lon_decimal);
+    printf("      -HDOP = %i\n", data_t->gps.HDOP);
+    printf("      -altitude = %i\n", data_t->gps.altitude);
+    printf("      -satelite = %i\n", data_t->gps.satellite);
+    printf("      -lat_deg = %i\n", data_t->gps.lat_deg);
+    printf("      -lon_deg = %i\n", data_t->gps.lon_deg);
+    printf("      -fix = %i\n", data_t->gps.fix);
+    printf("altitude = %i\n", data_t->height);
+    printf("velocity = %i\n", data_t->velocity);
+    printf("airbrake_extension = %i\n", data_t->airbrake_extension);
+    switch (data_t->flight_phase) {
+        case 1:
+            printf("flight phase = IDLE\n");
+            break;
+        case 2:
+            printf("flight phase = AIRBRAKE_TEST\n");
+            break;
+        case 3:
+            printf("flight phase = THRUSTING\n");
+            break;
+        case 4:
+            printf("flight phase = COASTING\n");
+            break;
+        case 5:
+            printf("flight phase = DESCENT\n");
+            break;
+        case 6:
+            printf("flight phase = RECOVERY\n");
+            break;
+
+    }
+    printf("==========================================\n\n");
+}
+
+void struct_to_poly(telemetry_t t_data){
+    unsigned char *buffer = (unsigned char*)malloc(sizeof(t_data));
+    memcpy(buffer, (const unsigned char *)&t_data, sizeof(t_data));
+    uint8_t idx, i;
+    uint8_t tmp = 0;
+    for(i=0;i<kk;i++){
+
+        idx = i-(int)ceil((double)i/2);
+        if(tmp==0){
+            data[i] = buffer[idx] >> 4;
+            tmp=1;
+        }else{
+            data[i] = buffer[idx] & 0x0F;
+            tmp=0;
+        }
+
+    }
+}
+
+telemetry_t poly_to_struct(){
+    int i;
+    uint8_t tmp2[kk];
+    for(i=0;i < kk; i++){
+        tmp2[i] = recd[nn-kk+i];
+    }
+    unsigned char *rec_buffer = (unsigned char*)malloc(sizeof(telemetry_t));
+    for(i=0; i < 72; i++){
+        rec_buffer[i] = (tmp2[2*i] << 4) | tmp2[2*i+1];
+    }
+    telemetry_t rec;
+    memcpy(&rec, rec_buffer, sizeof(rec));
+    return rec;
+}

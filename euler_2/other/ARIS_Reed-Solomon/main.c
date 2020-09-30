@@ -1,7 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
 #include "RS/RS.h"
 
 int main() {
@@ -42,47 +39,33 @@ int main() {
     //flight phase
     t_data.flight_phase = COASTING;
 
+    print_struct(&t_data);
+
     printf("size of telemetry struct: %llu bytes\n", sizeof(t_data));
     printf("size of data: %llu bytes\n", sizeof(data));
 
-    unsigned char *buffer = (unsigned char*)malloc(sizeof(t_data));
-    memcpy(buffer, (const unsigned char *)&t_data, sizeof(t_data));
+    register int i;
 
-    int j;
-    /*
-    printf("Copied byte array is: \n");
-    for(j=0;j<sizeof(t_data);j++)
-        printf("%02X ",buffer[j]);
-    printf("\n");*/
+    // convert struct to coefficients of polynomial
+    struct_to_poly(t_data);
 
-    int idx;
-    uint8_t tmp=0;
+    // make a copy of the data before it gets corrupted on purpose
     uint8_t orig_data[kk];
-    for(j=0;j<kk;j++){
-        //data[j] = (buffer[j*4] << 24) | (buffer[j*4+1] << 16) | (buffer[j*4+2] << 8) | (buffer[j*4+3]);
-        idx = j-(int)ceil((double)j/2);
-        if(tmp==0){
-            data[j] = buffer[idx] >> 4;
-            orig_data[j] = buffer[idx] >> 4;
-            tmp=1;
-        }else{
-            data[j] = buffer[idx] & 0x0F;
-            orig_data[j] = buffer[idx] & 0x0F;
-            tmp=0;
-        }
-
+    for(i=0;i<kk;i++){
+        orig_data[i] = data[i];
     }
 
     set_irr_poly();
-    register int i;
+
 
 /* generate the Galois Field GF(2**mm) */
     generate_gf();
+    /*
     printf("Look-up tables for GF(2**%2d)\n", mm);
     printf("  i   alpha_to[i]  index_of[i]\n");
     for (i = 0; i <= nn; i++)
         printf("%3d      %3d          %3d\n", i, alpha_to[i], index_of[i]);
-    printf("\n\n");
+    printf("\n\n");*/
 
 /* compute the generator polynomial for this RS code */
     gen_poly();
@@ -144,5 +127,10 @@ int main() {
     for(i=0; i < kk; i++){
         printf("%d         %X                   %X                    %X\n", i, orig_data[i], data[i], recd[nn-kk+i]);
     }
+
+    //convert received polynomial back to struct
+    telemetry_t rec = poly_to_struct();
+    print_struct(&rec);
+
     return 0;
 }

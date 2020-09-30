@@ -7,15 +7,17 @@
 
 #include <stdio.h>
 #include <stdint.h>
-
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
 
 #define mm  8           /* RS code over GF(2**mm) - change to suit */
 #define nn  255         /* nn=2**mm -1   length of codeword */
 #define tt  55          /* number of errors that can be corrected */
 #define kk  145         /* kk = nn-2*tt  */
 
-int alpha_to[nn + 1], index_of[nn + 1], gg[nn - kk + 1];
-int pp[mm + 1], recd[nn], bb[nn - kk];
+uint8_t alpha_to[nn + 1], index_of[nn + 1], gg[nn - kk + 1];
+uint8_t pp[mm + 1], recd[nn], bb[nn - kk];
 uint8_t data[kk];
 
 
@@ -25,6 +27,7 @@ void gen_poly();
 void encode_rs();
 void decode_rs();
 
+#pragma pack(push, 1)
 /* Rocket state */
 typedef enum {
     IDLE = 1,
@@ -74,5 +77,10 @@ typedef struct {
     int32_t airbrake_extension;
     flight_phase_e flight_phase;
 } telemetry_t;
+#pragma pack(pop)
+
+void print_struct(telemetry_t* data_t);
+void struct_to_poly(telemetry_t t_data);
+telemetry_t poly_to_struct();
 
 #endif //ARIS_REED_SOLOMON_RS_H
