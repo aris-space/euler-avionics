@@ -243,6 +243,9 @@ int32_t controller_output_global = 0;
 env_t global_env = {0};
 flight_phase_detection_t global_flight_phase_detection = {0};
 
+/** MOTOR CONTROLLER VARIABLES **/
+uint32_t global_airbrake_ext_meas = 0;
+
 /** TELEMETRY COMMAND **/
 command_e global_telemetry_command;
 
@@ -264,6 +267,10 @@ custom_mutex_t state_est_mutex;
 osMutexId_t controller_mutex_only;
 custom_mutex_t controller_mutex;
 
+/* Motor Controller */
+osMutexId_t airbrake_ext_mutex_only;
+custom_mutex_t airbrake_ext_mutex;
+
 /* FSM */
 osMutexId_t fsm_mutex_only;
 custom_mutex_t fsm_mutex;
@@ -274,10 +281,6 @@ gps_data_t globalGPS;
 osMutexId_t gps_mutex_only;
 custom_mutex_t gps_mutex;
 
-/* Motor Controller */
-osMutexId_t motor_mutex_only;
-custom_mutex_t motor_mutex;
-
 /* Battery */
 osMutexId_t battery_mutex_only;
 telemetry_battery_data_t global_battery_data;
@@ -286,7 +289,6 @@ custom_mutex_t battery_mutex;
 /* Telemetry Command */
 osMutexId_t command_mutex_only;
 custom_mutex_t command_mutex;
-int32_t global_airbrake_extension;
 
 /* USB debugging */
 osMutexId_t usb_data_mutex_only;
@@ -502,14 +504,14 @@ int main(void)
   battery_mutex_only = osMutexNew(&battery_mutex_attr);
 
   /* Motor Mutex */
-  const osMutexAttr_t motor_mutex_attr = {
-      "motor_mutex_only",  // human readable mutex name
+  const osMutexAttr_t airbrake_ext_mutex_attr = {
+      "airbrake_ext_mutex_only",  // human readable mutex name
       osMutexPrioInherit,  // attr_bits
       NULL,                // memory for control block
       0U                   // size for control block
   };
 
-  motor_mutex_only = osMutexNew(&motor_mutex_attr);
+  airbrake_ext_mutex_only = osMutexNew(&airbrake_ext_mutex_attr);
 
   /** Initialise Mutexes **/
 
@@ -524,7 +526,7 @@ int main(void)
   command_mutex.mutex = command_mutex_only;
   gps_mutex.mutex = gps_mutex_only;
   battery_mutex.mutex = battery_mutex_only;
-  motor_mutex.mutex = motor_mutex_only;
+  airbrake_ext_mutex.mutex = airbrake_ext_mutex_only;
 
   global_flight_phase_detection.flight_phase = IDLE;
   global_flight_phase_detection.mach_regime = SUBSONIC;

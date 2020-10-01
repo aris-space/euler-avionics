@@ -27,6 +27,10 @@ void vTaskStateEst(void *argument) {
   float sum_press = 0;
   uint16_t calibrate_count = 0;
 
+  /* Airbrake extension */
+  uint32_t airbrake_ext_meas = 0;
+
+
   /* reset counter */
   uint32_t reset_counter = 0;
   bool was_reset = false;
@@ -88,6 +92,13 @@ void vTaskStateEst(void *argument) {
         calibrate_count = 0;
       }
     }
+
+    /* get current airbrake extension */
+    ReadMutex(&airbrake_ext_mutex, &global_airbrake_ext_meas,
+        		&airbrake_ext_meas, sizeof(global_airbrake_ext_meas));
+
+    /* write into state_est_state */
+    state_est_state.state_est_meas.airbrake_ext_meas = ((float)airbrake_ext_meas)/1000;
 
     /* get new Phase Detection*/
     ReadMutex(&fsm_mutex, &global_flight_phase_detection,

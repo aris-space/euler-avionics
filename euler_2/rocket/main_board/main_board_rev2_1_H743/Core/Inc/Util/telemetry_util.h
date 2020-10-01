@@ -27,6 +27,7 @@ typedef struct {
 
 typedef struct {
   uint8_t startbyte;
+  timestamp_t ts;
   telemetry_sb_data_t sb_data;
   telemetry_battery_data_t battery;
   gps_data_t gps;
@@ -34,7 +35,6 @@ typedef struct {
   int32_t velocity;
   int32_t airbrake_extension;
   flight_phase_e flight_phase;
-  timestamp_t ts;
   uint8_t checksum;
 } telemetry_t;
 

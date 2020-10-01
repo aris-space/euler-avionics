@@ -99,9 +99,9 @@ void vTaskXbee(void *argument) {
     ReadMutex(&state_est_mutex, &state_est_data_global, &state_est_data,
               sizeof(state_est_data));
 
-    ReadMutex(&motor_mutex, &global_airbrake_extension,
+    ReadMutex(&airbrake_ext_mutex, &global_airbrake_ext_meas,
               &telemetry_send.airbrake_extension,
-              sizeof(global_airbrake_extension));
+              sizeof(airbrake_ext_mutex));
 
     ReadMutex(&fsm_mutex, &global_flight_phase_detection.flight_phase,
               &telemetry_send.flight_phase,

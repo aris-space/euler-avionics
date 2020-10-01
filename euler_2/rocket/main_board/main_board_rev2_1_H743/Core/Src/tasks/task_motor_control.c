@@ -64,6 +64,15 @@ void vTaskMotorCont(void *argument) {
     /* Read Current Motor Position */
     motor_status = GetPosition(&measured_motor_position);
 
+    /* Transform Motor Position to a value between [0-1000] */
+    measured_motor_position = measured_motor_position * 1000 / (-150);
+
+    /* Write To global airbrake extension */
+    if (AcquireMutex(&airbrake_ext_mutex) == osOK) {
+      global_airbrake_ext_meas = measured_motor_position;
+      ReleaseMutex(&airbrake_ext_mutex);
+    }
+
     /* Read Telemetry Command */
     ReadMutex(&command_mutex, &global_telemetry_command, &telemetry_command,
               sizeof(global_telemetry_command));
@@ -121,12 +130,6 @@ void vTaskMotorCont(void *argument) {
       DisableMotor();
       osDelay(1000);
       EnableMotor();
-    }
-
-    /* Write To global airbrake extension */
-    if (AcquireMutex(&motor_mutex) == osOK) {
-      global_airbrake_extension = measured_motor_position;
-      ReleaseMutex(&motor_mutex);
     }
 
     osDelayUntil(tick_count);

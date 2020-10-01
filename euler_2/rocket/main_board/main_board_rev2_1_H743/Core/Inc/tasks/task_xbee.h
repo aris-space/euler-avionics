@@ -28,7 +28,7 @@ extern custom_mutex_t command_mutex;
 extern custom_mutex_t sb1_mutex;
 extern custom_mutex_t sb2_mutex;
 extern custom_mutex_t sb3_mutex;
-extern custom_mutex_t motor_mutex;
+extern custom_mutex_t airbrake_ext_mutex;
 extern custom_mutex_t battery_mutex;
 extern custom_mutex_t gps_mutex;
 
@@ -43,7 +43,7 @@ extern baro_data_t sb3_baro;
 extern imu_data_t sb3_imu_1;
 extern imu_data_t sb3_imu_2;
 extern state_est_data_t state_est_data_global;
-extern int32_t global_airbrake_extension;
+extern uint32_t global_airbrake_ext_meas;
 extern flight_phase_detection_t global_flight_phase_detection;
 extern command_e global_telemetry_command;
 extern gps_data_t globalGPS;
