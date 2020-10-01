@@ -10,7 +10,7 @@
 
 /* includes */
 
-#include "sim_con/flight_phase_detection.h"
+#include "../aris-euler-state-estimation/Inc/flight_phase_detection.h"
 #include "util/mutex.h"
 #include "util/util.h"
 

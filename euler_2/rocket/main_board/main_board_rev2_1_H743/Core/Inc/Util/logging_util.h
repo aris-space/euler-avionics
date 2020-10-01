@@ -8,7 +8,7 @@
 #ifndef INC_UTIL_LOGGING_UTIL_H_
 #define INC_UTIL_LOGGING_UTIL_H_
 
-#include "sim_con/state_est_const.h"
+#include "../aris-euler-state-estimation/Inc/state_est_const.h"
 #include "cmsis_os.h"
 
 #define LOG_BUFFER_LEN 30

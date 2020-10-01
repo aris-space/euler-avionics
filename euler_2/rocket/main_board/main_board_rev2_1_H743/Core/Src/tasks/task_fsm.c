@@ -5,7 +5,7 @@
  *      Author: Jonas
  */
 
-#include "sim_con/flight_phase_detection.h"
+#include "../aris-euler-state-estimation/Inc/flight_phase_detection.h"
 #include "util/logging_util.h"
 #include "tasks/task_fsm.h"
 

@@ -9,7 +9,7 @@
 #define INC_TASKS_TASK_FSM_H_
 
 /* Includes */
-#include "sim_con/env.h"
+#include "../aris-euler-state-estimation/Inc/env.h"
 #include "util/mutex.h"
 #include "util/util.h"
 

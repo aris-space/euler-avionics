@@ -8,8 +8,8 @@
 #ifndef INC_UTIL_MUTEX_H_
 #define INC_UTIL_MUTEX_H_
 
-#include "sim_con/env.h"
-#include "sim_con/state_est_const.h"
+
+#include "../aris-euler-state-estimation/Inc/state_est_const.h"
 #include "util/util.h"
 #include <string.h>
 

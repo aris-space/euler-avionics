@@ -19,7 +19,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "sim_con/state_est.h"
+#include "../aris-euler-state-estimation/Inc/state_est_const.h"
+#include "../aris-euler-state-estimation/Inc/env.h"
+#include "../aris-euler-state-estimation/Inc/flight_phase_detection.h"
 #include "util/logging_util.h"
 #include "util/mutex.h"
 #include "util/util.h"

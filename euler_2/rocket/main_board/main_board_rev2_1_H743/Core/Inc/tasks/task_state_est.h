@@ -11,6 +11,7 @@
 /* Includes */
 #include "util/mutex.h"
 #include "util/util.h"
+#include "../aris-euler-state-estimation/Inc/env.h"
 /* Constants */
 /* -> Are in state_est_settings */
 

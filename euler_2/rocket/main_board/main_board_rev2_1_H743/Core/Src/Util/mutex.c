@@ -4,7 +4,7 @@
  *  Created on: Jun 19, 2020
  *      Author: Jonas
  */
-#include "sim_con/env.h"
+#include "../aris-euler-state-estimation/Inc/flight_phase_detection.h"
 #include "util/mutex.h"
 
 osStatus_t AcquireMutex(custom_mutex_t *custom_mutex) {
