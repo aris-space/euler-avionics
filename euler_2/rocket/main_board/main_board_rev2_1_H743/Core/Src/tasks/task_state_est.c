@@ -98,7 +98,7 @@ void vTaskStateEst(void *argument) {
         		&airbrake_ext_meas, sizeof(global_airbrake_ext_meas));
 
     /* write into state_est_state */
-    state_est_state.state_est_meas.airbrake_ext_meas = ((float)airbrake_ext_meas)/1000;
+    state_est_state.state_est_meas.airbrake_extension = ((float)airbrake_ext_meas)/1000;
 
     /* get new Phase Detection*/
     ReadMutex(&fsm_mutex, &global_flight_phase_detection,

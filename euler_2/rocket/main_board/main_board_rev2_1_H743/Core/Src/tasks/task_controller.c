@@ -38,10 +38,9 @@ void vTaskController(void *argument) {
     ReadMutex(&state_est_mutex, &state_est_data_global, &state_est_data_local,
               sizeof(state_est_data_local));
 
-    control_data.sf_ref_altitude_AGL =
-        ((float)state_est_data_global.position_world[2]) / 1000;
-    control_data.sf_velocity =
-        ((float)state_est_data_global.velocity_world[2]) / 1000;
+    control_data.sf_ref_altitude_AGL = ((float)state_est_data_global.position_world[2]) / 1000;
+    control_data.sf_velocity = ((float)state_est_data_global.velocity_world[2]) / 1000;
+    control_data.tracking_feedback = ((float)state_est_data_global.airbrake_extension) / 1000000;
 
     /* Update flight Phase */
     ReadMutex(&fsm_mutex, &global_flight_phase_detection,
