@@ -27,7 +27,7 @@
  \%	print a percent sign
  */
 
-osStatus_t logSensor(timestamp_t ts, board_id_t sensor_board_id,
+osStatus_t log_sensor(timestamp_t ts, board_id_t sensor_board_id,
                      sensor_type_e sensor_type, void *sensor_data) {
   log_elem_t log_elem = {.ts = ts,
                          .log_type = SENSOR,
@@ -55,20 +55,20 @@ osStatus_t logSensor(timestamp_t ts, board_id_t sensor_board_id,
   return ret_sd;
 }
 
-osStatus_t logRocketState(timestamp_t ts,
+osStatus_t log_rocket_state(timestamp_t ts,
                           flight_phase_detection_t flight_phase_detection) {
   log_elem_t log_elem = {
       .ts = ts, .log_type = STATE, .u.state = flight_phase_detection};
   return osMessageQueuePut(sd_queue, &log_elem, 0U, 0U);
 }
 
-osStatus_t logEstimatorVar(timestamp_t ts, state_est_data_t estimator_data) {
+osStatus_t log_estimator_var(timestamp_t ts, state_est_data_t estimator_data) {
   log_elem_t log_elem = {
       .ts = ts, .log_type = ESTIMATOR_VAR, .u.est_var = estimator_data};
   return osMessageQueuePut(sd_queue, &log_elem, 0U, 0U);
 }
 
-osStatus_t logControllerOutput(timestamp_t ts, int32_t controller_output,
+osStatus_t log_controller_output(timestamp_t ts, int32_t controller_output,
                                int32_t reference_error,
                                int32_t integrated_error) {
   log_elem_t log_elem = {.ts = ts,
@@ -79,7 +79,7 @@ osStatus_t logControllerOutput(timestamp_t ts, int32_t controller_output,
   return osMessageQueuePut(sd_queue, &log_elem, 0U, 0U);
 }
 
-osStatus_t logMotor(timestamp_t ts, int32_t desired_position,
+osStatus_t log_motor(timestamp_t ts, int32_t desired_position,
                     int32_t actual_position) {
   log_elem_t log_elem = {.ts = ts,
                          .log_type = MOTOR_POSITION,
@@ -88,7 +88,7 @@ osStatus_t logMotor(timestamp_t ts, int32_t desired_position,
   return osMessageQueuePut(sd_queue, &log_elem, 0U, 0U);
 }
 
-osStatus_t logMsg(timestamp_t ts, char *msg) {
+osStatus_t log_msg(timestamp_t ts, char *msg) {
   log_elem_t log_elem = {.ts = ts, .log_type = MSG};
   memcpy(log_elem.u.msg, msg, strlen(msg) + 1);
   return osMessageQueuePut(sd_queue, &log_elem, 0U, 0U);

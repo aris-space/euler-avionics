@@ -56,9 +56,9 @@ void vTaskXbee(void *argument) {
     //		UsbPrint("[Telemetry] ts: %u, Received Commmand: %u, Rx_buffer;
     //%u\n", 				telemetry_send.ts, local_command,
     // local_command_rx);
-    if (AcquireMutex(&command_mutex) == osOK) {
+    if (acquire_mutex(&command_mutex) == osOK) {
       global_telemetry_command = local_command;
-      ReleaseMutex(&command_mutex);
+      release_mutex(&command_mutex);
     }
 
     /* Check if we need to go to fast sampling */
@@ -83,8 +83,8 @@ void vTaskXbee(void *argument) {
     }
 
     /* Read Sensor Board Data */
-    ReadMutex(&sb1_mutex, &sb1_baro, &local_sb_data.baro, sizeof(sb1_baro));
-    ReadMutex(&sb1_mutex, &sb1_imu_1, &local_sb_data.imu_1, sizeof(sb1_imu_1));
+    read_mutex(&sb1_mutex, &sb1_baro, &local_sb_data.baro, sizeof(sb1_baro));
+    read_mutex(&sb1_mutex, &sb1_imu_1, &local_sb_data.imu_1, sizeof(sb1_imu_1));
 
     telemetry_send.sb_data.pressure = local_sb_data.baro.pressure;
     telemetry_send.sb_data.temperature = local_sb_data.baro.temperature;
@@ -96,42 +96,27 @@ void vTaskXbee(void *argument) {
     telemetry_send.sb_data.gyro_z = local_sb_data.imu_1.gyro_z;
 
     /* Read Control Data*/
-    ReadMutex(&state_est_mutex, &state_est_data_global, &state_est_data,
+    read_mutex(&state_est_mutex, &state_est_data_global, &state_est_data,
               sizeof(state_est_data));
 
-    ReadMutex(&airbrake_ext_mutex, &global_airbrake_ext_meas,
+    read_mutex(&airbrake_ext_mutex, &global_airbrake_ext_meas,
               &telemetry_send.airbrake_extension,
               sizeof(airbrake_ext_mutex));
 
-    ReadMutex(&fsm_mutex, &global_flight_phase_detection.flight_phase,
+    read_mutex(&fsm_mutex, &global_flight_phase_detection.flight_phase,
               &telemetry_send.flight_phase,
               sizeof(global_flight_phase_detection.flight_phase));
 
     /* read GPS */
-    ReadMutex(&gps_mutex, &globalGPS, &telemetry_send.gps, sizeof(globalGPS));
+    read_mutex(&gps_mutex, &globalGPS, &telemetry_send.gps, sizeof(globalGPS));
 
     /* read Battery */
-    ReadMutex(&battery_mutex, &global_battery_data, &telemetry_send.battery,
+    read_mutex(&battery_mutex, &global_battery_data, &telemetry_send.battery,
               sizeof(global_battery_data));
 
     telemetry_send.height = state_est_data.position_world[2];
     telemetry_send.velocity = state_est_data.velocity_world[2];
     telemetry_send.ts = osKernelGetTickCount();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /* Write Buzzer State*/
     // telemetry_send.flight_phase = telemetry_send.flight_phase +

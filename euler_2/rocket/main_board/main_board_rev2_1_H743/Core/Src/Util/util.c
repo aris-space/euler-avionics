@@ -16,7 +16,7 @@
 
 /** USB DEBUGGING SECTION **/
 
-inline uint8_t UsbPrint(const char *format, ...) {
+inline uint8_t usb_print(const char *format, ...) {
   uint8_t ret = 1;
 #ifdef DEBUG
   if (osMutexAcquire(print_mutex, 0U) == osOK) {

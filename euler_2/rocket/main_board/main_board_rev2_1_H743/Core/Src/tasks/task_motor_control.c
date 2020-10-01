@@ -9,7 +9,7 @@
 #include "tasks/task_motor_control.h"
 #include "drivers/epos4/epos4.h"
 
-static void testairbrakes(int32_t position);
+static void test_airbrakes(int32_t position);
 
 void vTaskMotorCont(void *argument) {
   /* For periodic update */
@@ -40,18 +40,18 @@ void vTaskMotorCont(void *argument) {
   int32_t desired_motor_position = 0;
   int32_t measured_motor_position = 0;
 
-  while (EnableMotor() != osOK) {
+  while (enable_motor() != osOK) {
     osDelay(1000);
   };
 
-  SetPositionMode(position_mode);
-  while (SetPositionMode(position_mode) != osOK) {
+  set_position_mode(position_mode);
+  while (set_position_mode(position_mode) != osOK) {
     osDelay(1000);
   };
 
   if (position_mode == 0x01) {
     motor_status =
-        ConfigurePPM(PPM_velocity, PPM_acceleration, PPM_deceleration);
+        configure_ppm(PPM_velocity, PPM_acceleration, PPM_deceleration);
   }
 
   /* Infinite loop */
@@ -62,29 +62,29 @@ void vTaskMotorCont(void *argument) {
     tick_count += tick_update;
 
     /* Read Current Motor Position */
-    motor_status = GetPosition(&measured_motor_position);
+    motor_status = get_position(&measured_motor_position);
 
     /* Transform Motor Position to a value between [0-1000] */
     measured_motor_position = measured_motor_position * 1000 / (-150);
 
     /* Write To global airbrake extension */
-    if (AcquireMutex(&airbrake_ext_mutex) == osOK) {
+    if (acquire_mutex(&airbrake_ext_mutex) == osOK) {
       global_airbrake_ext_meas = measured_motor_position;
-      ReleaseMutex(&airbrake_ext_mutex);
+      release_mutex(&airbrake_ext_mutex);
     }
 
     /* Read Telemetry Command */
-    ReadMutex(&command_mutex, &global_telemetry_command, &telemetry_command,
+    read_mutex(&command_mutex, &global_telemetry_command, &telemetry_command,
               sizeof(global_telemetry_command));
 
-    UsbPrint("[MOTOR] Read Position:%d\n", measured_motor_position);
+    usb_print("[MOTOR] Read Position:%d\n", measured_motor_position);
 
     /* Read FSM State */
-    ReadMutex(&fsm_mutex, &global_flight_phase_detection,
+    read_mutex(&fsm_mutex, &global_flight_phase_detection,
               &flight_phase_detection, sizeof(global_flight_phase_detection));
 
     /* Read in Current Controller Output */
-    ReadMutex(&controller_mutex, &controller_output_global,
+    read_mutex(&controller_mutex, &controller_output_global,
               &controller_actuation, sizeof(controller_actuation));
 
     /* Transform 0-1 Controller output to controller output of motor */
@@ -105,39 +105,39 @@ void vTaskMotorCont(void *argument) {
      */
     if (flight_phase_detection.flight_phase == COASTING) {
       /* Move the Motor */
-      motor_status = MoveToPositionPPM(desired_motor_position);
+      motor_status = move_to_position_ppm(desired_motor_position);
     } else {
-      motor_status = MoveToPositionPPM(50);
+      motor_status = move_to_position_ppm(50);
     }
 
     if(osKernelGetTickCount() < 10000 && osKernelGetTickCount() > 9960){
-    	testairbrakes(-100);
+    	test_airbrakes(-100);
     }
 
     /* Airbrake Test if telemetry command is given and we are in idle state */
     if (flight_phase_detection.flight_phase == IDLE &&
         telemetry_command == AIRBRAKE_TEST_COMMAND &&
         osKernelGetTickCount() < 60000) {
-      testairbrakes(-140);
+      test_airbrakes(-140);
       telemetry_command = IDLE_COMMAND;
     }
 
     /* Log Motor Position and Desired Motor Position */
-    logMotor(osKernelGetTickCount(), desired_motor_position,
+    log_motor(osKernelGetTickCount(), desired_motor_position,
              measured_motor_position);
 
     if (motor_status != osOK && flight_phase_detection.flight_phase == IDLE) {
-      DisableMotor();
+      disable_motor();
       osDelay(1000);
-      EnableMotor();
+      enable_motor();
     }
 
     osDelayUntil(tick_count);
   }
 }
 
-static void testairbrakes(int32_t position) {
-  MoveToPositionPPM(position);
+static void test_airbrakes(int32_t position) {
+  move_to_position_ppm(position);
   osDelay(100);
-  MoveToPositionPPM(2);
+  move_to_position_ppm(2);
 }

@@ -7,7 +7,7 @@
 #include "../aris-euler-state-estimation/Inc/flight_phase_detection.h"
 #include "util/mutex.h"
 
-osStatus_t AcquireMutex(custom_mutex_t *custom_mutex) {
+osStatus_t acquire_mutex(custom_mutex_t *custom_mutex) {
   osStatus_t status = osOK;
   status = osMutexAcquire(custom_mutex->mutex, 10);
   if (status == osOK) {
@@ -17,11 +17,11 @@ osStatus_t AcquireMutex(custom_mutex_t *custom_mutex) {
   return status;
 }
 
-osStatus_t ReleaseMutex(custom_mutex_t *custom_mutex) {
+osStatus_t release_mutex(custom_mutex_t *custom_mutex) {
   return osMutexRelease(custom_mutex->mutex);
 }
 
-osStatus_t ReadMutex(custom_mutex_t *custom_mutex, void const *global_data,
+osStatus_t read_mutex(custom_mutex_t *custom_mutex, void const *global_data,
                      void *const local_data, int32_t size) {
   uint8_t buffer[100] = {0};
   uint32_t counter = custom_mutex->counter;
@@ -38,9 +38,9 @@ osStatus_t ReadMutex(custom_mutex_t *custom_mutex, void const *global_data,
   return status;
 }
 
-osStatus_t ReadMutexStateEst(custom_mutex_t *custom_mutex, baro_data_t *baro,
-                             imu_data_t *imu, state_est_meas_t *state,
-                             uint32_t sb_number) {
+osStatus_t read_mutex_state_est(custom_mutex_t *custom_mutex, baro_data_t *baro,
+                                imu_data_t *imu, state_est_meas_t *state,
+                                uint32_t sb_number) {
   /* Buffer */
   uint32_t Placeholder_timestamps[2] = {0};
   float Placeholder_measurement[3] = {0};

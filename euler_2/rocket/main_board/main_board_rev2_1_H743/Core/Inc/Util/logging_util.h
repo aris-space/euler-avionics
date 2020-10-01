@@ -67,22 +67,18 @@ extern osMessageQueueId_t flash_queue;
 /* We are writing by sectors to flash so max FLASH_BUFFER_LEN should be 4096 */
 #define FLASH_BUFFER_LEN 4096
 
-// typedef struct {
-//	char str[LOG_BUFFER_LEN];
-//} log_entry_t;
-
-osStatus_t logFlash(void *flash_data);
-osStatus_t logSensor(timestamp_t ts, board_id_t sensor_board_id,
+osStatus_t log_flash(void *flash_data);
+osStatus_t log_sensor(timestamp_t ts, board_id_t sensor_board_id,
                      sensor_type_e sens_type, void *sensor_data);
-osStatus_t logRocketState(timestamp_t ts,
+osStatus_t log_rocket_state(timestamp_t ts,
                           flight_phase_detection_t flight_phase_detection);
-osStatus_t logEstimatorVar(timestamp_t ts, state_est_data_t estimator_data);
-osStatus_t logControllerOutput(timestamp_t ts, int32_t controller_output,
+osStatus_t log_estimator_var(timestamp_t ts, state_est_data_t estimator_data);
+osStatus_t log_controller_output(timestamp_t ts, int32_t controller_output,
                                int32_t reference_error,
                                int32_t integrated_error);
-osStatus_t logMotor(timestamp_t ts, int32_t desired_position,
+osStatus_t log_motor(timestamp_t ts, int32_t desired_position,
                     int32_t actual_position);
-osStatus_t logMsg(timestamp_t ts, char *msg);
+osStatus_t log_msg(timestamp_t ts, char *msg);
 
 
 #endif /* INC_UTIL_LOGGING_UTIL_H_ */

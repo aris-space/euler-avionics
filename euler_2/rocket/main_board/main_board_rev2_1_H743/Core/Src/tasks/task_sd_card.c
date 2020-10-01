@@ -19,11 +19,11 @@ FIL EULER_LOG_FILE;
 	traceString sd_channel;
 #endif
 
-static void mountSDCard();
-static void remountSDCard();
-static FRESULT findNextFileName(char *file_name);
-static int32_t formatLogStr(char *str, log_elem_t *log_entry);
-static FRESULT openFile(char *file_name);
+static void mount_sd_card();
+static void remount_sd_card();
+static FRESULT find_next_file_name(char *file_name);
+static FRESULT open_file(char *file_name);
+static int32_t format_log_str(char *str, log_elem_t *log_entry);
 
 void vTaskSdCard(void *argument) {
   // Try everything forever;
@@ -32,15 +32,15 @@ void vTaskSdCard(void *argument) {
   sd_channel = xTraceRegisterString("SD Channel");
 #endif
 
-  UsbPrint("[STORAGE TASK] Starting SD Card Task...\n");
+  usb_print("[STORAGE TASK] Starting SD Card Task...\n");
   FRESULT res;
   char EULER_LOG_FILE_NAME[13] = "";
   char *sd_str_buffer =
       (char *)calloc(SD_BUFFER_LEN, sizeof(char));  // 0x20000000;
   uint16_t sd_str_idx = 0;
   osDelay(300);
-  UsbPrint("[STORAGE TASK] Mounting SD Card...\n");
-  mountSDCard();
+  usb_print("[STORAGE TASK] Mounting SD Card...\n");
+  mount_sd_card();
   uint8_t already_entered = 0;
   for (;;) {
 #if (configUSE_TRACE_FACILITY == 1)
@@ -50,26 +50,26 @@ void vTaskSdCard(void *argument) {
     flight_phase_detection_t local_flight_phase = {.flight_phase = IDLE};
 
     if (already_entered) {
-      UsbPrint("[STORAGE TASK] Remounting SD Card...\n");
-      remountSDCard();
+      usb_print("[STORAGE TASK] Remounting SD Card...\n");
+      remount_sd_card();
     } else {
       already_entered = 1;
     }
   /* TODO [nemanja]: change this goto */
   logToNewFile:
-    if (findNextFileName(EULER_LOG_FILE_NAME) != FR_OK) {
-      UsbPrint("[STORAGE TASK] Error while finding log file!\n");
+    if (find_next_file_name(EULER_LOG_FILE_NAME) != FR_OK) {
+      usb_print("[STORAGE TASK] Error while finding log file!\n");
       continue;
     }
 
-    if (openFile(EULER_LOG_FILE_NAME) != FR_OK) {
+    if (open_file(EULER_LOG_FILE_NAME) != FR_OK) {
       continue;
     }
 
     char log_header[32] = "Timestamp;Log Entry Type;Data\n";
     int32_t puts_res = f_puts(log_header, &EULER_LOG_FILE);
     if (puts_res < 0) {
-      UsbPrint("[STORAGE TASK] Failed writing to file: %d\n", puts_res);
+      usb_print("[STORAGE TASK] Failed writing to file: %d\n", puts_res);
       continue; /* continuing for loop */
     }
 
@@ -85,7 +85,7 @@ void vTaskSdCard(void *argument) {
       if (osMessageQueueGet(sd_queue, &curr_log_elem, NULL, osWaitForever) ==
           osOK) {
         /* prepare tmp log string */
-        tmp_str_len = formatLogStr(tmp_str, &curr_log_elem);
+        tmp_str_len = format_log_str(tmp_str, &curr_log_elem);
         if (tmp_str_len > 0) {
           if (sd_str_idx + tmp_str_len < SD_BUFFER_LEN) {
             /* write output */
@@ -96,7 +96,7 @@ void vTaskSdCard(void *argument) {
             sd_str_buffer[sd_str_idx++] = '\0';
             int32_t puts_res = f_puts(sd_str_buffer, &EULER_LOG_FILE);
             if (puts_res < 0) {
-              UsbPrint("[STORAGE TASK] Failed writing to file: %d\n", puts_res);
+              usb_print("[STORAGE TASK] Failed writing to file: %d\n", puts_res);
 #if (configUSE_TRACE_FACILITY == 1)
               vTracePrint(sd_channel, "Writing to file failed");
 #endif
@@ -112,7 +112,7 @@ void vTaskSdCard(void *argument) {
               HAL_GPIO_TogglePin(LED4_GPIO_Port, LED4_Pin);
               res = f_sync(&EULER_LOG_FILE);
               if (res != FR_OK) {
-                UsbPrint("[STORAGE TASK] Failed syncing file: %d\n", res);
+                usb_print("[STORAGE TASK] Failed syncing file: %d\n", res);
 #if (configUSE_TRACE_FACILITY == 1)
                 vTracePrint(sd_channel, "File sync failed");
 #endif
@@ -123,7 +123,7 @@ void vTaskSdCard(void *argument) {
 #endif
               }
               // if the rocket landed, create a new file and write to that one
-              if (ReadMutex(&fsm_mutex, &global_flight_phase_detection,
+              if (read_mutex(&fsm_mutex, &global_flight_phase_detection,
                             &local_flight_phase,
                             sizeof(global_flight_phase_detection)) == osOK &&
                   local_flight_phase.flight_phase == TOUCHDOWN) {
@@ -142,7 +142,7 @@ void vTaskSdCard(void *argument) {
             tmp_str[0] = 0;
           }
         } else {
-          UsbPrint("[STORAGE TASK] tmp_str_len < 0!!!!!! %d\n", tmp_str_len);
+          usb_print("[STORAGE TASK] tmp_str_len < 0!!!!!! %d\n", tmp_str_len);
           tmp_str_len = 0;
           tmp_str[0] = 0;
         }
@@ -153,12 +153,12 @@ void vTaskSdCard(void *argument) {
 }
 
 
-static void mountSDCard() {
+static void mount_sd_card() {
   FRESULT res;
   do {
     res = f_mount(&EULER_FatFS, "", 1);
     if (res != FR_OK) {
-      UsbPrint("[STORAGE TASK] Failed mounting SD card: %d\n", res);
+      usb_print("[STORAGE TASK] Failed mounting SD card: %d\n", res);
 #if (configUSE_TRACE_FACILITY == 1)
       vTracePrint(sd_channel, "SD card mounting failed");
 #endif
@@ -174,7 +174,7 @@ static void mountSDCard() {
   } while (res != FR_OK);
 }
 
-static void remountSDCard() {
+static void remount_sd_card() {
   FRESULT res;
   // f_close(&EULER_LOG_FILE);
   do {
@@ -186,7 +186,7 @@ static void remountSDCard() {
     //		memset(&EULER_FatFS, 0, sizeof(EULER_FatFS));
     res = f_mount(&EULER_FatFS, "", 1);
     if (res != FR_OK) {
-      UsbPrint("[STORAGE TASK] Failed remounting SD card: %d\n", res);
+      usb_print("[STORAGE TASK] Failed remounting SD card: %d\n", res);
 #if (configUSE_TRACE_FACILITY == 1)
       vTracePrint(sd_channel, "Sd card remounting failed");
 #endif
@@ -201,9 +201,9 @@ static void remountSDCard() {
   } while (res != FR_OK);
 }
 
-static FRESULT findNextFileName(char *file_name) {
+static FRESULT find_next_file_name(char *file_name) {
   FRESULT res;
-  UsbPrint("[STORAGE TASK] Creating file name\n");
+  usb_print("[STORAGE TASK] Creating file name\n");
   uint16_t file_number = 1;
 
   DIR dj;
@@ -226,20 +226,39 @@ static FRESULT findNextFileName(char *file_name) {
     file_name[5] = '0' + (file_number / 10) % 10;
     file_name[4] = '0' + (file_number / 100) % 10;
 
-    UsbPrint("[STORAGE TASK] Using file name: %s\n", file_name);
+    usb_print("[STORAGE TASK] Using file name: %s\n", file_name);
 
     res = f_closedir(&dj);
     if (res != FR_OK) {
-      UsbPrint("[STORAGE TASK] Failed closing directory: %d\n", res);
+      usb_print("[STORAGE TASK] Failed closing directory: %d\n", res);
     }
   } else {
-    UsbPrint("[STORAGE TASK] Failed finding first or next file: %d\n", res);
+    usb_print("[STORAGE TASK] Failed finding first or next file: %d\n", res);
   }
 
   return res;
 }
 
-static int32_t formatLogStr(char *str, log_elem_t *log_entry) {
+static FRESULT open_file(char *file_name) {
+  FRESULT res;
+  usb_print("[STORAGE TASK] Opening log file\n");
+  res = f_open(&EULER_LOG_FILE, file_name, FA_OPEN_ALWAYS | FA_WRITE);
+  if (res != FR_OK) {
+    usb_print("[STORAGE TASK] Failed opening log file \"%s\": %d\n", file_name,
+             res);
+    return res;
+  }
+
+  usb_print("[STORAGE TASK] Going to end of file\n");
+  res = f_lseek(&EULER_LOG_FILE, f_size(&EULER_LOG_FILE));
+  if (res != FR_OK) {
+    usb_print("[STORAGE TASK] Failed going to end of file: %d\n", res);
+    return res;
+  }
+  return res;
+}
+
+static int32_t format_log_str(char *str, log_elem_t *log_entry) {
   int32_t str_len = 0;
   switch (log_entry->log_type) {
     case SENSOR: {
@@ -311,23 +330,4 @@ static int32_t formatLogStr(char *str, log_elem_t *log_entry) {
     } break;
   }
   return str_len;
-}
-
-static FRESULT openFile(char *file_name) {
-  FRESULT res;
-  UsbPrint("[STORAGE TASK] Opening log file\n");
-  res = f_open(&EULER_LOG_FILE, file_name, FA_OPEN_ALWAYS | FA_WRITE);
-  if (res != FR_OK) {
-    UsbPrint("[STORAGE TASK] Failed opening log file \"%s\": %d\n", file_name,
-             res);
-    return res;
-  }
-
-  UsbPrint("[STORAGE TASK] Going to end of file\n");
-  res = f_lseek(&EULER_LOG_FILE, f_size(&EULER_LOG_FILE));
-  if (res != FR_OK) {
-    UsbPrint("[STORAGE TASK] Failed going to end of file: %d\n", res);
-    return res;
-  }
-  return res;
 }

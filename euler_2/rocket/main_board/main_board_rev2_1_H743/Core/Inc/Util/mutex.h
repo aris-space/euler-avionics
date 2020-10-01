@@ -13,15 +13,15 @@
 #include "util/util.h"
 #include <string.h>
 
-osStatus_t AcquireMutex(custom_mutex_t *custom_mutex);
+osStatus_t acquire_mutex(custom_mutex_t *custom_mutex);
 
-osStatus_t ReleaseMutex(custom_mutex_t *custom_mutex);
+osStatus_t release_mutex(custom_mutex_t *custom_mutex);
 
-osStatus_t ReadMutex(custom_mutex_t *custom_mutex, const void *global_data,
-                     void *const local_data, int32_t size);
+osStatus_t read_mutex(custom_mutex_t *custom_mutex, const void *global_data,
+                      void *const local_data, int32_t size);
 
-osStatus_t ReadMutexStateEst(custom_mutex_t *custom_mutex,
-                             baro_data_t *baro_data, imu_data_t *imu_data,
-                             state_est_meas_t *state, uint32_t sb_number);
+osStatus_t read_mutex_state_est(custom_mutex_t *custom_mutex,
+                                baro_data_t *baro_data, imu_data_t *imu_data,
+                                state_est_meas_t *state, uint32_t sb_number);
 
 #endif /* INC_UTIL_MUTEX_H_ */

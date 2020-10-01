@@ -4,9 +4,11 @@
  *  Created on: Nov 29, 2019
  *      Author: Jonas
  */
+
+#include "tasks/task_state_est.h"
 #include "../../aris-euler-state-estimation/Inc/state_est.h"
 #include "util/logging_util.h"
-#include "tasks/task_state_est.h"
+#include "util/mutex.h"
 
 void vTaskStateEst(void *argument) {
   /* For periodic update */
@@ -45,7 +47,7 @@ void vTaskStateEst(void *argument) {
     tick_count += tick_update;
 
     /* Acquire New Command */
-    ReadMutex(&command_mutex, &global_telemetry_command, &telemetry_command,
+    read_mutex(&command_mutex, &global_telemetry_command, &telemetry_command,
               sizeof(global_telemetry_command));
 
     /*
@@ -68,13 +70,13 @@ void vTaskStateEst(void *argument) {
     /* Acquire the Sensor data */
 
     /* Sensor Board 1 */
-    ReadMutexStateEst(&sb1_mutex, &sb1_baro, &sb1_imu_1, &state_est_state.state_est_meas, 1);
+    read_mutex_state_est(&sb1_mutex, &sb1_baro, &sb1_imu_1, &state_est_state.state_est_meas, 1);
 
     /* Sensor Board 2 */
-    ReadMutexStateEst(&sb2_mutex, &sb2_baro, &sb2_imu_1, &state_est_state.state_est_meas, 2);
+    read_mutex_state_est(&sb2_mutex, &sb2_baro, &sb2_imu_1, &state_est_state.state_est_meas, 2);
 
     /* Sensor Board 3 */
-    ReadMutexStateEst(&sb3_mutex, &sb3_baro, &sb3_imu_1, &state_est_state.state_est_meas, 3);
+    read_mutex_state_est(&sb3_mutex, &sb3_baro, &sb3_imu_1, &state_est_state.state_est_meas, 3);
 
     /* calculate averaging */
     if (state_est_state.flight_phase_detection.flight_phase == IDLE) {
@@ -94,23 +96,23 @@ void vTaskStateEst(void *argument) {
     }
 
     /* get current airbrake extension */
-    ReadMutex(&airbrake_ext_mutex, &global_airbrake_ext_meas,
+    read_mutex(&airbrake_ext_mutex, &global_airbrake_ext_meas,
         		&airbrake_ext_meas, sizeof(global_airbrake_ext_meas));
 
     /* write into state_est_state */
     state_est_state.state_est_meas.airbrake_extension = ((float)airbrake_ext_meas)/1000;
 
     /* get new Phase Detection*/
-    ReadMutex(&fsm_mutex, &global_flight_phase_detection,
+    read_mutex(&fsm_mutex, &global_flight_phase_detection,
     		&state_est_state.flight_phase_detection, sizeof(state_est_state.flight_phase_detection));
 
     /* Kalman Filter Step */
     state_est_step(tick_count, &state_est_state, false);
 
     /* Update global State Estimation Data */
-    if (AcquireMutex(&state_est_mutex) == osOK) {
+    if (acquire_mutex(&state_est_mutex) == osOK) {
     	state_est_data_global = state_est_state.state_est_data;
-      ReleaseMutex(&state_est_mutex);
+      release_mutex(&state_est_mutex);
     }
 
     //		UsbPrint("[DBG] Height: %d; Velocity: %d; t: %lu\n",
@@ -119,13 +121,13 @@ void vTaskStateEst(void *argument) {
     // tick_count);
 
     /* Update env for FSM */
-    if (AcquireMutex(&fsm_mutex) == osOK) {
+    if (acquire_mutex(&fsm_mutex) == osOK) {
       global_env = state_est_state.env;
-      ReleaseMutex(&fsm_mutex);
+      release_mutex(&fsm_mutex);
     }
 
     /* Write to logging system */
-    logEstimatorVar(osKernelGetTickCount(), state_est_data_global);
+    log_estimator_var(osKernelGetTickCount(), state_est_data_global);
 
     /* TODO: Check if the state estimation can do this for the given frequency
      */

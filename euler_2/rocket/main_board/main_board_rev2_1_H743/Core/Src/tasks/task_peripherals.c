@@ -44,11 +44,11 @@ void vTaskPeripherals(void *argument) {
     tick_count += tick_update;
 
     /* Read Telemetry Command */
-    ReadMutex(&command_mutex, &global_telemetry_command, &telemetry_command,
+    read_mutex(&command_mutex, &global_telemetry_command, &telemetry_command,
               sizeof(global_telemetry_command));
 
     /* Read Flight Phase */
-    ReadMutex(&fsm_mutex, &global_flight_phase_detection,
+    read_mutex(&fsm_mutex, &global_flight_phase_detection,
               &flight_phase_detection, sizeof(global_flight_phase_detection));
 
     /* Enable Buzzer trough Telemetry */

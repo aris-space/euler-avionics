@@ -67,21 +67,21 @@ void vTaskBattery(void *argument) {
       curr = 0;
       bat = 0;
       supp = 0;
-      UsbPrint(
+      usb_print(
           "[BATTERY] Supply: %d Battery: %d Current: %dmA, Consumption: %dmAh "
           "Power: %dmW\n",
           battery_data.supply, battery_data.battery, battery_data.current,
           battery_data.consumption, battery_data.power);
 
       /* Log Battery Power */
-      logSensor(osKernelGetTickCount(), 1, BATTERY, &battery_data);
+      log_sensor(osKernelGetTickCount(), 1, BATTERY, &battery_data);
 
       /* Write Data into global Variable */
-      if (AcquireMutex(&battery_mutex) == osOK) {
+      if (acquire_mutex(&battery_mutex) == osOK) {
         global_battery_data.battery = battery_data.battery;
         global_battery_data.consumption = battery_data.consumption;
         global_battery_data.current = battery_data.current;
-        ReleaseMutex(&battery_mutex);
+        release_mutex(&battery_mutex);
       }
     }
     /* Sleep */

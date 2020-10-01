@@ -40,7 +40,7 @@ void vTaskFsm(void *argument) {
     tick_count += tick_update;
 
     /* Read Telemetry Command */
-    ReadMutex(&command_mutex, &global_telemetry_command, &telemetry_command,
+    read_mutex(&command_mutex, &global_telemetry_command, &telemetry_command,
               sizeof(global_telemetry_command));
 
     /* Reset Flight Phase if Telemetry asks to */
@@ -51,22 +51,22 @@ void vTaskFsm(void *argument) {
     }
 
     /* Update Local State Estimation Data */
-    ReadMutex(&state_est_mutex, &state_est_data_global, &state_est_data_fsm,
+    read_mutex(&state_est_mutex, &state_est_data_global, &state_est_data_fsm,
               sizeof(state_est_data_global));
 
     /* Update Local Environment Data */
-    ReadMutex(&env_mutex, &global_env, &environment, sizeof(global_env));
+    read_mutex(&env_mutex, &global_env, &environment, sizeof(global_env));
 
     /* get Flight Phase update */
     detect_flight_phase(tick_count, &flight_phase_detection, &state_est_data_fsm);
 
     /* Write updated flight Phase detection */
-    if (AcquireMutex(&fsm_mutex) == osOK) {
+    if (acquire_mutex(&fsm_mutex) == osOK) {
       global_flight_phase_detection = flight_phase_detection;
-      ReleaseMutex(&fsm_mutex);
+      release_mutex(&fsm_mutex);
     }
 
-    logRocketState(osKernelGetTickCount(), flight_phase_detection);
+    log_rocket_state(osKernelGetTickCount(), flight_phase_detection);
 
     /* Sleep */
     osDelayUntil(tick_count);

@@ -8,8 +8,8 @@
 #include "util/logging_util.h"
 #include "tasks/task_sens_read.h"
 
-static void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3);
-static void ReadDataUSB();
+static void read_data_sb(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3);
+static void read_data_usb();
 static uint8_t calculate_checksum_sb(sb_data_t *sb_data);
 
 /* SPI Read Data */
@@ -31,16 +31,16 @@ void vTaskSensRead(void *argument) {
 
     /* Get Data */
     if (USB_DATA_ENABLE) {
-      ReadDataUSB();
+      read_data_usb();
     } else {
-      ReadDataSB(&sb1_data, &sb2_data, &sb3_data);
+      read_data_sb(&sb1_data, &sb2_data, &sb3_data);
     }
-    UsbPrint(
+    usb_print(
     		"[SB1 BARO] P: %ld,T: %ld,Ts: %ld\n", sb1_data.baro.pressure,
 			sb1_data.baro.temperature,
 			sb1_data.baro.ts);
 
-	UsbPrint("[SB1 IMU1] Gx: %hd,Gy: %hd,Gz: %hd, Ax: %hd,Ay: %hd,Az: %hd,Ts: %ld\n",
+	usb_print("[SB1 IMU1] Gx: %hd,Gy: %hd,Gz: %hd, Ax: %hd,Ay: %hd,Az: %hd,Ts: %ld\n",
 			sb1_data.imu_1.gyro_x,
 			sb1_data.imu_1.gyro_y, sb1_data.imu_1.gyro_z,
 			sb1_data.imu_1.acc_x, sb1_data.imu_1.acc_y,
@@ -52,15 +52,15 @@ void vTaskSensRead(void *argument) {
 //			sb1_data.imu_2.ts);
 
     /* Log Data */
-    logSensor(tick_count, 1, BARO, &sb1_data.baro);
-    logSensor(tick_count, 1, IMU, &sb1_data.imu_1);
-    logSensor(tick_count, 1, IMU, &sb1_data.imu_2);
-    logSensor(tick_count, 2, BARO, &sb2_data.baro);
-    logSensor(tick_count, 2, IMU, &sb2_data.imu_1);
-    logSensor(tick_count, 2, IMU, &sb2_data.imu_2);
-    logSensor(tick_count, 3, BARO, &sb3_data.baro);
-    logSensor(tick_count, 3, IMU, &sb3_data.imu_1);
-    logSensor(tick_count, 3, IMU, &sb3_data.imu_2);
+    log_sensor(tick_count, 1, BARO, &sb1_data.baro);
+    log_sensor(tick_count, 1, IMU, &sb1_data.imu_1);
+    log_sensor(tick_count, 1, IMU, &sb1_data.imu_2);
+    log_sensor(tick_count, 2, BARO, &sb2_data.baro);
+    log_sensor(tick_count, 2, IMU, &sb2_data.imu_1);
+    log_sensor(tick_count, 2, IMU, &sb2_data.imu_2);
+    log_sensor(tick_count, 3, BARO, &sb3_data.baro);
+    log_sensor(tick_count, 3, IMU, &sb3_data.imu_1);
+    log_sensor(tick_count, 3, IMU, &sb3_data.imu_2);
     HAL_SPI_Receive_DMA(&hspi1, (uint8_t *)&sb1_data, sizeof(sb1_data));
     HAL_SPI_Receive_DMA(&hspi2, (uint8_t *)&sb2_data, sizeof(sb2_data));
     HAL_SPI_Receive_DMA(&hspi3, (uint8_t *)&sb3_data, sizeof(sb3_data));
@@ -74,16 +74,16 @@ void vTaskSensRead(void *argument) {
 //	//HAL_SPIEx_FlushRxFifo(hspi);
 //}
 /* Read Data from Sensor Boards */
-static void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
+static void read_data_sb(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
   /* Read SB 1, Write SB 1 Global Variable */
   uint8_t checksum;
   checksum = calculate_checksum_sb(sb1);
   if (checksum == sb1->checksum) {
-    if (AcquireMutex(&sb1_mutex) == osOK) {
+    if (acquire_mutex(&sb1_mutex) == osOK) {
       sb1_baro = sb1->baro;
       sb1_imu_1 = sb1->imu_1;
       sb1_imu_2 = sb1->imu_2;
-      ReleaseMutex(&sb1_mutex);
+      release_mutex(&sb1_mutex);
       sb1_imu_1.acc_z = -sb1_imu_1.acc_z;
       sb1_imu_2.acc_z = -sb1_imu_2.acc_z;
     }
@@ -92,11 +92,11 @@ static void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
   /* Read SB 2, Write SB 2 Global Variable  */
   checksum = calculate_checksum_sb(sb2);
   if (checksum == sb2->checksum) {
-    if (AcquireMutex(&sb2_mutex) == osOK) {
+    if (acquire_mutex(&sb2_mutex) == osOK) {
       sb2_baro = sb2->baro;
       sb2_imu_1 = sb2->imu_1;
       sb2_imu_2 = sb2->imu_2;
-      ReleaseMutex(&sb2_mutex);
+      release_mutex(&sb2_mutex);
       sb2_imu_1.acc_z = -sb2_imu_1.acc_z;
       sb2_imu_2.acc_z = -sb2_imu_2.acc_z;
     }
@@ -105,11 +105,11 @@ static void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
   /* Read SB 3, Write SB 3 Global Variable  */
   checksum = calculate_checksum_sb(sb3);
   if (checksum == sb3->checksum) {
-    if (AcquireMutex(&sb3_mutex) == osOK) {
+    if (acquire_mutex(&sb3_mutex) == osOK) {
       sb3_baro = sb3->baro;
       sb3_imu_1 = sb3->imu_1;
       sb3_imu_2 = sb3->imu_2;
-      ReleaseMutex(&sb3_mutex);
+      release_mutex(&sb3_mutex);
       sb3_imu_1.acc_z = -sb3_imu_1.acc_z;
       sb3_imu_2.acc_z = -sb3_imu_2.acc_z;
     }
@@ -117,7 +117,7 @@ static void ReadDataSB(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
 }
 
 /* Read Data from USB */
-static void ReadDataUSB() {
+static void read_data_usb() {
   if (osMutexAcquire(usb_data_mutex.mutex, 10)) {
 //    sscanf(usb_data_buffer,
 //           "%ld,%ld,%ld;%hd,%hd,%hd,%hd,%hd,%hd,%ld|%ld,%ld,%ld;%hd,%hd,%hd,%"

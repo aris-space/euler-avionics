@@ -35,7 +35,7 @@ void vTaskController(void *argument) {
     tick_count += tick_update;
 
     /* Update Sensor Fusion Variables */
-    ReadMutex(&state_est_mutex, &state_est_data_global, &state_est_data_local,
+    read_mutex(&state_est_mutex, &state_est_data_global, &state_est_data_local,
               sizeof(state_est_data_local));
 
     control_data.sf_ref_altitude_AGL = ((float)state_est_data_global.position_world[2]) / 1000;
@@ -43,7 +43,7 @@ void vTaskController(void *argument) {
     control_data.tracking_feedback = ((float)state_est_data_global.airbrake_extension) / 1000000;
 
     /* Update flight Phase */
-    ReadMutex(&fsm_mutex, &global_flight_phase_detection,
+    read_mutex(&fsm_mutex, &global_flight_phase_detection,
               &current_flight_phase_detection, sizeof(state_est_data_local));
 
     /** MAKE SURE THE RIGHT CONTROLLER IS ACTIVE IS ACTIVE!!!!! **/
@@ -54,13 +54,13 @@ void vTaskController(void *argument) {
     }
 
     /* Write Control Input into Global Variable */
-    if (AcquireMutex(&controller_mutex) == osOK) {
+    if (acquire_mutex(&controller_mutex) == osOK) {
       controller_output_global = (int32_t)(control_data.control_input * 1000);
-      ReleaseMutex(&controller_mutex);
+      release_mutex(&controller_mutex);
     }
 
     /* Log to SD Card */
-    logControllerOutput(osKernelGetTickCount(),
+    log_controller_output(osKernelGetTickCount(),
                         (int32_t)(control_data.control_input * 1000),
                         (int32_t)(control_data.reference_error * 1000),
                         (int32_t)(control_data.integrated_error * 1000));

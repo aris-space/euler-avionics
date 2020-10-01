@@ -138,6 +138,6 @@ osMutexId_t print_mutex;
 char print_buffer[PRINT_BUFFER_LEN];
 #endif
 
-uint8_t UsbPrint(const char *format, ...);
+uint8_t usb_print(const char *format, ...);
 
 #endif /* INC_UTIL_UTIL_H_ */

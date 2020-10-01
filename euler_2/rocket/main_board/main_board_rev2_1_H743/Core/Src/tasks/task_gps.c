@@ -91,9 +91,9 @@ void vTaskGps(void *argument) {
     // GPS3.data.satellite, GPS3.data.altitude);
 
     /* Write GPS to Log */
-    logSensor(osKernelGetTickCount(), 1, GPS, &GPS1.data);
-    logSensor(osKernelGetTickCount(), 2, GPS, &GPS2.data);
-    logSensor(osKernelGetTickCount(), 3, GPS, &GPS3.data);
+    log_sensor(osKernelGetTickCount(), 1, GPS, &GPS1.data);
+    log_sensor(osKernelGetTickCount(), 2, GPS, &GPS2.data);
+    log_sensor(osKernelGetTickCount(), 3, GPS, &GPS3.data);
 
     /* get best possible GPS for Telemetry */
 
@@ -149,9 +149,9 @@ void vTaskGps(void *argument) {
       // GPS3.data.lon_decimal; gps_telemetry.satellite = GPS3.data.satellite;
     }
 
-    if (AcquireMutex(&gps_mutex) == osOK) {
+    if (acquire_mutex(&gps_mutex) == osOK) {
       globalGPS = gps_telemetry;
-      ReleaseMutex(&gps_mutex);
+      release_mutex(&gps_mutex);
     }
     /* Sleep */
     osDelayUntil(tick_count);
