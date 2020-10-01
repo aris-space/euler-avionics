@@ -1,6 +1,6 @@
 [submodule "euler_2/rocket/main_board/main_board_rev2_1_H743/Core/aris-euler-state-estimation"]
 	path = euler_2/rocket/main_board/main_board_rev2_1_H743/Core/aris-euler-state-estimation
-	url = git@github.com:aris-space/aris-euler-state-estimation.git
+	url = https://github.com/aris-space/aris-euler-state-estimation
 [submodule "euler_2/rocket/main_board/main_board_rev2_1_H743/Core/aris-euler-controller"]
 	path = euler_2/rocket/main_board/main_board_rev2_1_H743/Core/aris-euler-controller
-	url = git@github.com:aris-space/aris-euler-controller.git
+	url = https://github.com/aris-space/aris-euler-controller
