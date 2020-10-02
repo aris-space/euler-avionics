@@ -1,3 +1,10 @@
+/*
+ * main.c
+ *
+ * Created on: 20.09.2020
+ *     Author: Imre Kertesz
+ */
+
 #include <stdio.h>
 #include "RS/RS.h"
 

@@ -1,6 +1,9 @@
-//
-// Created by imrek on 20.09.2020.
-//
+/*
+ * Rs.h
+ *
+ * Created on: 20.09.2020
+ *     Author: Imre Kertesz
+ */
 
 #ifndef ARIS_REED_SOLOMON_RS_H
 #define ARIS_REED_SOLOMON_RS_H

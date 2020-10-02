@@ -1,6 +1,13 @@
-//
-// Created by imrek on 20.09.2020.
-//
+/*
+ * RS.c
+ *
+ * Created on: 20.09.2020
+ *     Author: Imre Kertesz
+ *
+ * This is an adaption of the implementation of the Reed-Solomon code created
+ * by Simon Rockliff, 26th June 1991
+ * The original implementation can be found at: https://github.com/ethz-asl/rtklibros/blob/master/src/todo/rs.c
+ */
 
 #include "RS.h"
 
