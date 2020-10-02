@@ -2,7 +2,6 @@
 // Created by imrek on 20.09.2020.
 //
 
-//#include <stdlib.h>
 #include "RS.h"
 
 // array of irreducible polynomials
@@ -26,16 +25,18 @@
         "11010000000010001"     // 16   1+x+x^3+x^12+x^16
 };
 
-
-void  set_irr_poly(){
+// sets the irreducible polynomial
+void set_irr_poly(int16_t *pp){
     register int i;
+
     char *x = poly_array[mm];
     for (i=0; i < mm+1; i++) {
         pp[i] = x[i] - "0"[0];
     }
 }
 
-void generate_gf(){
+//generates the Galois field
+void generate_gf(int16_t const *pp, int16_t *index_of, int16_t *alpha_to){
     register int i, mask;
 
     mask = 1;
@@ -58,7 +59,8 @@ void generate_gf(){
     index_of[0] = -1;
 }
 
-void gen_poly()
+// creates the generator polynomial
+void gen_poly(int16_t *gg, int16_t const *alpha_to, int16_t const *index_of)
 /* Obtain the generator polynomial of the tt-error correcting, length
   nn=(2**mm -1) Reed Solomon code  from the product of (X+alpha**i), i=1..2*tt
 */
@@ -78,7 +80,7 @@ void gen_poly()
     for (i = 0; i <= nn - kk; i++) gg[i] = index_of[gg[i]];
 }
 
-void encode_rs()
+void encode_rs(int16_t *bb, int16_t const *index_of, int16_t const *alpha_to, int16_t const *gg, int16_t const *data)
 /* take the string of symbols in data[i], i=0..(k-1) and encode systematically
    to produce 2*tt parity symbols in bb[0]..bb[2*tt-1]
    data[] is input and bb[] is output in polynomial form.
@@ -107,7 +109,7 @@ void encode_rs()
     }
 }
 
-void decode_rs()
+void decode_rs(int16_t * recd, int16_t const *alpha_to, int16_t const *index_of)
 /* assume we have received bits grouped into mm-bit symbols in recd[i],
    i=0..(nn-1),  and recd[i] is index form (ie as powers of alpha).
    We first compute the 2*tt syndromes by substituting alpha**i into rec(X) and
@@ -358,7 +360,7 @@ void print_struct(telemetry_t* data_t){
     printf("==========================================\n\n");
 }
 
-void struct_to_poly(telemetry_t t_data){
+void struct_to_poly(telemetry_t t_data, int16_t *data){
     unsigned char *buffer = (unsigned char*)malloc(sizeof(t_data));
     memcpy(buffer, (const unsigned char *)&t_data, sizeof(t_data));
     uint8_t idx, i;
@@ -377,17 +379,63 @@ void struct_to_poly(telemetry_t t_data){
     }
 }
 
-telemetry_t poly_to_struct(){
+telemetry_t poly_to_struct(int16_t const *recd){
     int i;
     uint8_t tmp2[kk];
     for(i=0;i < kk; i++){
         tmp2[i] = recd[nn-kk+i];
     }
     unsigned char *rec_buffer = (unsigned char*)malloc(sizeof(telemetry_t));
-    for(i=0; i < 72; i++){
+    for(i=0; i < kk2-1; i++){
         rec_buffer[i] = (tmp2[2*i] << 4) | tmp2[2*i+1];
     }
     telemetry_t rec;
     memcpy(&rec, rec_buffer, sizeof(rec));
     return rec;
+}
+
+void compress_data(int16_t const *recd, int16_t *recd_compact){
+    register int i;
+    for (i=0; i<nn-kk;i++){
+        recd_compact[i] = recd[i];
+    }
+    for (i=nn-kk;i < nn-kk+kk2;i++){
+        if (i == nn-kk+kk2-1){
+            recd_compact[i] = (recd[2*(i-nn+kk)+nn-kk] << 4) | 0x0;
+        }
+        else{
+            recd_compact[i] = (recd[2*(i-nn+kk)+nn-kk] << 4) | recd[2*(i-nn+kk)+nn-kk+1];
+        }
+    }
+}
+
+int16_t * decompress_data(int16_t const *recd_compact){
+    uint8_t idx, tmp = 0;
+    int i;
+    static int16_t recd[nn];
+    for (i=0;i< nn-kk;i++){
+        recd[i] = recd_compact[i];
+    }
+    for(i=nn-kk;i<nn;i++){
+
+        idx = (i-nn+kk)-(int)ceil((double)(i-nn+kk)/2)+nn-kk;
+        if(tmp==0){
+            recd[i] = recd_compact[idx] >> 4;
+            tmp=1;
+        }else{
+            recd[i] = recd_compact[idx] & 0x0F;
+            tmp=0;
+        }
+
+    }
+    return recd;
+}
+
+void print_look_up_table(int16_t const * alpha_to, int16_t const *index_of){
+    register int i;
+    printf("\nLook-up tables for GF(2**%2d)\n", mm);
+    printf("  i   alpha_to[i]  index_of[i]\n");
+    for (i = 0; i <= nn; i++)
+        printf("%3d      %3d          %3d\n", i, alpha_to[i], index_of[i]);
+    printf("\n\n");
 }
