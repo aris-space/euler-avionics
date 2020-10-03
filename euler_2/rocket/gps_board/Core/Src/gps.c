@@ -42,6 +42,7 @@ void to_char_array16 (uint8_t* buffer, uint16_t data){
 void _parse_nmea (int size) {
 		uint8_t out_buff [18] = {0};
 		for (int i = 0; i < size; i++) nmea_message[i] = nmea_message[i] - 48;
+		if (size < 25) return;
 		if (size >= 30){
 			out_buff[0] = nmea_message[1] * 10 + nmea_message[2];	// Hour
 			out_buff[1] = nmea_message[3] * 10 + nmea_message[4];	// Minute

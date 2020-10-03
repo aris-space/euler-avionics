@@ -3,10 +3,10 @@
 
 uint8_t _parse_data(struct gps_device *dev, uint8_t *data) {
 	uint8_t crc = 0;
-	for(int i = 0; i < 17; i++){
+	for(int i = 0; i < BUFFER_SIZE-1; i++){
 		crc += data[i];
 	}
-	if(crc == data[17]){
+	if(crc == data[BUFFER_SIZE-1]){
 		dev->data.hour = data[0];
 		dev->data.minute = data[1];
 		dev->data.second = data[2];
@@ -44,15 +44,18 @@ uint8_t gps_read_sensor(struct gps_device *dev) {
 	  HAL_UART_DMAStop(dev->uart_bus);
 	  _parse_data(dev,gps_data[dev->id]);
 	  _buffer_reset(dev);
+	  HAL_UART_DMAResume(dev->uart_bus);
 	  HAL_UART_Receive_DMA(dev->uart_bus, gps_data[dev->id], BUFFER_SIZE);
   } else {
 	  if (dev->timeout_counter >= 5){
 		  _buffer_reset(dev);
+		  HAL_UART_DMAStop(dev->uart_bus);
 		  HAL_UART_Receive_DMA(dev->uart_bus, gps_data[dev->id], BUFFER_SIZE);
+		  HAL_UART_DMAResume(dev->uart_bus);
 		  dev->timeout_counter = 0;
-		  return 0;
 	  }
 	  else dev->timeout_counter++;
+	  return 0;
   }
   return 1;
 }
