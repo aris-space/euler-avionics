@@ -123,7 +123,7 @@ static const imu_data_t EMPTY_IMU = {0};
 #endif
 /* Comment the next line in order to disable debug mode -- should be disabled
  * during flight */
-#define DEBUG
+/* #define DEBUG */
 /* Flash read flag */
 #ifdef FLASH_READ
 #undef FLASH_READ

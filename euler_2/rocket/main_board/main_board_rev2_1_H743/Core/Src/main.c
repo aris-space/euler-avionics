@@ -19,12 +19,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "../aris-euler-state-estimation/Inc/state_est_const.h"
-#include "../aris-euler-state-estimation/Inc/env.h"
-#include "../aris-euler-state-estimation/Inc/flight_phase_detection.h"
-#include "util/logging_util.h"
-#include "util/mutex.h"
-#include "util/util.h"
 #include "cmsis_os.h"
 #include "fatfs.h"
 #include "usb_device.h"
@@ -40,6 +34,8 @@
 #include "tasks/task_battery.h"
 #include "tasks/task_sd_card.h"
 #include "tasks/task_xbee.h"
+#include "Util/logging_util.h"
+#include "../aris-euler-state-estimation/Inc/flight_phase_detection.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
