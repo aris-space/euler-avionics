@@ -8,10 +8,13 @@
 #include <string.h>
 
 static uint16_t calculate_crc(uint8_t *data, uint8_t len);
-static osStatus_t move_to_position(int32_t position);
 static osStatus_t write_command(uint8_t *command, uint8_t *data, uint8_t *rx_buffer);
 static osStatus_t read_command(uint8_t *command, uint8_t *rx_buffer);
 
+
+// This function calculates the crc code which is needed at the end of the command
+// To successfully send a command to the EPOS4 a CRC code needs to be calculated and
+// attached to the command (last 2 bytes). See Datasheet for more information
 static uint16_t calculate_crc(uint8_t *data, uint8_t len) {
   uint16_t shifter, c;
   uint16_t carry;
@@ -36,27 +39,14 @@ static uint16_t calculate_crc(uint8_t *data, uint8_t len) {
 }
 
 
-static osStatus_t move_to_position(int32_t position) {
-  osStatus_t status = osError;
 
-  uint8_t command[2];
-  uint8_t data[4];
-  uint8_t rx_buffer_write[20];
-
-  /* Register for Desired Position */
-  command[0] = 0x60;
-  command[1] = 0x7A;
-
-  data[0] = (position >> 24) & 0xFF;
-  data[1] = (position >> 16) & 0xFF;
-  data[2] = (position >> 8) & 0xFF;
-  data[3] = position & 0xFF;
-
-  status = write_command(command, data, rx_buffer_write);
-
-  return status;
-}
-
+// This function is the low level command to write to the EPOS4.
+// To write something, first the command bytes have to be set, in what register
+// A write is needed -> command argument
+// What is written into that register is saved into Data
+// Then the CRC is calculated and the command is sent per UART via the DMA
+// The EPOS4 always returns something and as such we check if the returned value
+// yielded an error. The returned value is also returned into the rx_buffer
 static osStatus_t write_command(uint8_t *command, uint8_t *data, uint8_t *rx_buffer) {
   osStatus_t status = osError;
 
@@ -107,6 +97,11 @@ static osStatus_t write_command(uint8_t *command, uint8_t *data, uint8_t *rx_buf
   return status;
 }
 
+// This function only implements the low level reading. This is useful
+// For the reading of the current motor position.
+// Like the write we need to insert the command -> being where we want to
+// read the data. And what we read is then inserted into the rx_buffer
+// argument
 static osStatus_t read_command(uint8_t *command, uint8_t *rx_buffer) {
   osStatus_t status = osError;
 
@@ -150,6 +145,9 @@ static osStatus_t read_command(uint8_t *command, uint8_t *rx_buffer) {
   return status;
 }
 
+// This function enables the motor driver and if it is unsuccessful it returns an
+// osError. If this function is not called at the beginning no motor command
+// will be accepted
 osStatus_t enable_motor() {
   osStatus_t status = osError;
 
@@ -195,6 +193,7 @@ osStatus_t enable_motor() {
   return status;
 }
 
+// This function disables the motor driver
 osStatus_t disable_motor() {
   osStatus_t status = osError;
 
@@ -216,6 +215,9 @@ osStatus_t disable_motor() {
   return status;
 }
 
+// This function sets the position mode. There are 2 different position modes
+// 1. Profile Position Mode (PPM) -> slower, more stable
+// 2. Cyclic R... Mode (CRM) -> faster, less stable
 osStatus_t set_position_mode(int8_t position_mode) {
   osStatus_t status = osError;
 
@@ -238,7 +240,10 @@ osStatus_t set_position_mode(int8_t position_mode) {
   return status;
 }
 
-osStatus_t move_to_position_ppm(int32_t position) {
+// This function writes the desired position into the EPOS4 position register
+// Afterwards it tells the EPOS 4 to update the position and then we disable
+// The movement again.
+osStatus_t move_to_position(int32_t position) {
   osStatus_t status = osError;
 
   uint8_t command[2];
@@ -281,6 +286,9 @@ osStatus_t move_to_position_ppm(int32_t position) {
   return status;
 }
 
+// This function configures PPM values. Those are handtuned and need
+// to be called if this motor configuration is used with the estimated
+// values.
 osStatus_t configure_ppm(int32_t velocity, int32_t acceleration,
                         int32_t deceleration) {
   osStatus_t status = osError;
@@ -325,6 +333,7 @@ osStatus_t configure_ppm(int32_t velocity, int32_t acceleration,
   return status;
 }
 
+// This function reads the current position register.
 osStatus_t get_position(int32_t *position) {
   osStatus_t status = osError;
 

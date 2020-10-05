@@ -10,6 +10,8 @@
 #include "drivers/gps/gps.h"
 
 void vTaskGps(void *argument) {
+
+	/* Initialize GPS Devices */
   UBLOX GPS1 = {0, &huart1};
   UBLOX GPS2 = {1, &huart2};
   UBLOX GPS3 = {2, &huart3};
@@ -34,7 +36,7 @@ void vTaskGps(void *argument) {
   gps_dma_init(&GPS2);
   gps_dma_init(&GPS3);
 
-  for (;;) {
+  while (1) {
     tick_count += tick_update;
 
     /* Read GPS */
@@ -94,8 +96,8 @@ void vTaskGps(void *argument) {
     log_sensor(osKernelGetTickCount(), 2, GPS, &GPS2.data);
     log_sensor(osKernelGetTickCount(), 3, GPS, &GPS3.data);
 
-    /* get best possible GPS for Telemetry */
 
+    /* get best possible GPS for Telemetry */
     if (GPS1.data.satellite >= GPS2.data.satellite) {
       if (GPS1.data.satellite >= GPS3.data.satellite) {
         choose_GPS = 1;
@@ -148,10 +150,12 @@ void vTaskGps(void *argument) {
       // GPS3.data.lon_decimal; gps_telemetry.satellite = GPS3.data.satellite;
     }
 
+    /* Write into global GPS variable */
     if (acquire_mutex(&gps_mutex) == osOK) {
       globalGPS = gps_telemetry;
       release_mutex(&gps_mutex);
     }
+
     /* Sleep */
     osDelayUntil(tick_count);
   }

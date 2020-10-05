@@ -66,6 +66,7 @@ void vTaskFsm(void *argument) {
       release_mutex(&fsm_mutex);
     }
 
+    /* Log current flight phase */
     log_rocket_state(osKernelGetTickCount(), flight_phase_detection);
 
     /* Sleep */

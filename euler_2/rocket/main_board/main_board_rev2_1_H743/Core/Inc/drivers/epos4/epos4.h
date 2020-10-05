@@ -17,7 +17,7 @@ osStatus_t disable_motor();
 
 osStatus_t set_position_mode(int8_t position_mode);
 
-osStatus_t move_to_position_ppm(int32_t position);
+osStatus_t move_to_position(int32_t position);
 
 osStatus_t configure_ppm(int32_t velocity, int32_t acceleration,
                         int32_t deceleration);

@@ -22,11 +22,12 @@ void vTaskSensRead(void *argument) {
   uint32_t tick_count, tick_update;
 
   osDelay(800);
+
   /* Infinite loop */
   tick_count = osKernelGetTickCount();
   tick_update = osKernelGetTickFreq() / SENSOR_READ_FREQUENCY;
 
-  for (;;) {
+  while (1) {
     tick_count += tick_update;
 
     /* Get Data */
@@ -61,9 +62,13 @@ void vTaskSensRead(void *argument) {
     log_sensor(tick_count, 3, BARO, &sb3_data.baro);
     log_sensor(tick_count, 3, IMU, &sb3_data.imu_1);
     log_sensor(tick_count, 3, IMU, &sb3_data.imu_2);
+
+    /* Get new Data over SPI */
+
     HAL_SPI_Receive_DMA(&hspi1, (uint8_t *)&sb1_data, sizeof(sb1_data));
     HAL_SPI_Receive_DMA(&hspi2, (uint8_t *)&sb2_data, sizeof(sb2_data));
     HAL_SPI_Receive_DMA(&hspi3, (uint8_t *)&sb3_data, sizeof(sb3_data));
+
     /* Periodic Update */
     osDelayUntil(tick_count);
   }
@@ -73,6 +78,8 @@ void vTaskSensRead(void *argument) {
 // void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi) {
 //	//HAL_SPIEx_FlushRxFifo(hspi);
 //}
+
+
 /* Read Data from Sensor Boards */
 static void read_data_sb(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
   /* Read SB 1, Write SB 1 Global Variable */
@@ -84,6 +91,7 @@ static void read_data_sb(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
       sb1_imu_1 = sb1->imu_1;
       sb1_imu_2 = sb1->imu_2;
       release_mutex(&sb1_mutex);
+      /* Invert Sensor Board acc z because reverse mounting of SB */
       sb1_imu_1.acc_z = -sb1_imu_1.acc_z;
       sb1_imu_2.acc_z = -sb1_imu_2.acc_z;
     }
@@ -97,6 +105,7 @@ static void read_data_sb(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
       sb2_imu_1 = sb2->imu_1;
       sb2_imu_2 = sb2->imu_2;
       release_mutex(&sb2_mutex);
+      /* Invert Sensor Board acc z because reverse mounting of SB */
       sb2_imu_1.acc_z = -sb2_imu_1.acc_z;
       sb2_imu_2.acc_z = -sb2_imu_2.acc_z;
     }
@@ -110,6 +119,7 @@ static void read_data_sb(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
       sb3_imu_1 = sb3->imu_1;
       sb3_imu_2 = sb3->imu_2;
       release_mutex(&sb3_mutex);
+      /* Invert Sensor Board acc z because reverse mounting of SB */
       sb3_imu_1.acc_z = -sb3_imu_1.acc_z;
       sb3_imu_2.acc_z = -sb3_imu_2.acc_z;
     }

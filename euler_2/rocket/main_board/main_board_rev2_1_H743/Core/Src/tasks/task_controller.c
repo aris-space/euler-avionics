@@ -9,8 +9,6 @@
 #include "util/logging_util.h"
 #include "tasks/task_controller.h"
 
-/* Abbreviation 'aw' is used to described everything related to the antiwindup
- */
 
 void vTaskController(void *argument) {
   /* For periodic update */
@@ -46,7 +44,7 @@ void vTaskController(void *argument) {
     read_mutex(&fsm_mutex, &global_flight_phase_detection,
               &current_flight_phase_detection, sizeof(state_est_data_local));
 
-    /** MAKE SURE THE RIGHT CONTROLLER IS ACTIVE IS ACTIVE!!!!! **/
+    /* Compute control Input */
     if (LQR_ACTIVE) {
       compute_control_input(&control_data, &current_flight_phase_detection);
     } else {

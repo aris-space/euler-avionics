@@ -10,6 +10,7 @@
 
 static float get_temp(uint16_t adc_value);
 
+/* DMA Buffer */
 uint32_t adc_value[4];
 
 void vTaskBattery(void *argument) {
@@ -30,14 +31,14 @@ void vTaskBattery(void *argument) {
   tick_count = osKernelGetTickCount();
   tick_update = osKernelGetTickFreq() / BATTERY_SAMPLE_RATE;
 
-  // ADC init
+  /* ADC init */
 
   HAL_ADC_Stop_DMA(&hadc1);
   HAL_ADC_Start_DMA(&hadc1, adc_value, 4);
 
   osDelay(500);
 
-  for (;;) {
+  while (1) {
     tick_count += tick_update;
     double current2 = ((double)adc_value[0] * (2.5 / 65536.0) - (3.3 * 0.107)) /
                       0.264;                                       // CURR2

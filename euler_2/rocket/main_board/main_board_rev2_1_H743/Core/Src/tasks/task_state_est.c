@@ -24,6 +24,7 @@ void vTaskStateEst(void *argument) {
   /* average Temperature */
   float average_temp = 0;
   float sum_temp = 0;
+
   /* average Pressure */
   float average_press = 0;
   float sum_press = 0;
@@ -43,7 +44,7 @@ void vTaskStateEst(void *argument) {
   tick_count = osKernelGetTickCount();
   tick_update = osKernelGetTickFreq() / STATE_ESTIMATION_FREQUENCY;
 
-  for (;;) {
+  while (1) {
     tick_count += tick_update;
 
     /* Acquire New Command */
@@ -132,6 +133,7 @@ void vTaskStateEst(void *argument) {
     /* TODO: Check if the state estimation can do this for the given frequency
      */
 
+    /* Sleep */
     osDelayUntil(tick_count);
   }
 }

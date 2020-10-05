@@ -46,7 +46,6 @@ void vTaskXbee(void *argument) {
 	/* set irreducible polynomial */
 	set_irr_poly(pp);
 
-
 	/* generate the Galois Field GF(2**mm) */
 	generate_gf(pp, index_of, alpha_to);
 
@@ -58,7 +57,6 @@ void vTaskXbee(void *argument) {
 
 
 	/* Infinite loop */
-
 	tick_update_slow = osKernelGetTickFreq() / XBEE_SAMPLING_FREQ;
 	tick_update_fast = osKernelGetTickFreq() / XBEE_SAMPLING_FREQ_HIGH;
 	bool fast_sampling = true;
@@ -138,11 +136,6 @@ void vTaskXbee(void *argument) {
 		telemetry_send.velocity = state_est_data.velocity_world[2];
 		telemetry_send.ts = osKernelGetTickCount();
 
-		/* Write Buzzer State*/
-		// telemetry_send.flight_phase = telemetry_send.flight_phase +
-		// 128*(buzzer_on_fsm ^ buzzer_on_telemetry);
-
-
 
 		/*=============Encoding Part of Reed Solomon =============*/
 
@@ -157,7 +150,7 @@ void vTaskXbee(void *argument) {
 		/* put the transmitted codeword, made up of data plus parity, in recd[] */
 		for (int i = 0; i < nn - kk; i++) recd[i] = bb[i];
 
-		//compress data for transmission
+		/* compress data for transmission */
 		compress_data(recd, recd_compact);
 
 		/* Send recd_compact */
@@ -172,6 +165,10 @@ void vTaskXbee(void *argument) {
 	}
 }
 
+/* Callback function onto the telemetry receive. If we receive 4 Times
+ * Exactly the same command we received an actual command and need to
+ * propagate it into the system
+ */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if (huart == &huart7) {
 		static uint8_t buffer[4];

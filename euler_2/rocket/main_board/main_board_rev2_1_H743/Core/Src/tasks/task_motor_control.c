@@ -40,10 +40,12 @@ void vTaskMotorCont(void *argument) {
   int32_t desired_motor_position = 0;
   int32_t measured_motor_position = 0;
 
+  /* Enable Motor */
   while (enable_motor() != osOK) {
     osDelay(1000);
   };
 
+  /* Set Position Mode */
   set_position_mode(position_mode);
   while (set_position_mode(position_mode) != osOK) {
     osDelay(1000);
@@ -58,26 +60,12 @@ void vTaskMotorCont(void *argument) {
   tick_count = osKernelGetTickCount();
   tick_update = osKernelGetTickFreq() / MOTOR_TASK_FREQUENCY;
 
-  for (;;) {
+  while (1) {
     tick_count += tick_update;
-
-    /* Read Current Motor Position */
-    motor_status = get_position(&measured_motor_position);
-
-    /* Transform Motor Position to a value between [0-1000] */
-    measured_motor_position = measured_motor_position * 1000 / (-150);
-
-    /* Write To global airbrake extension */
-    if (acquire_mutex(&airbrake_ext_mutex) == osOK) {
-      global_airbrake_ext_meas = measured_motor_position;
-      release_mutex(&airbrake_ext_mutex);
-    }
 
     /* Read Telemetry Command */
     read_mutex(&command_mutex, &global_telemetry_command, &telemetry_command,
               sizeof(global_telemetry_command));
-
-    usb_print("[MOTOR] Read Position:%d\n", measured_motor_position);
 
     /* Read FSM State */
     read_mutex(&fsm_mutex, &global_flight_phase_detection,
@@ -105,9 +93,9 @@ void vTaskMotorCont(void *argument) {
      */
     if (flight_phase_detection.flight_phase == COASTING) {
       /* Move the Motor */
-      motor_status = move_to_position_ppm(desired_motor_position);
+      motor_status = move_to_position(desired_motor_position);
     } else {
-      motor_status = move_to_position_ppm(0);
+      motor_status = move_to_position(0);
     }
 
 //    if(osKernelGetTickCount() < 10000 && osKernelGetTickCount() > 9960){
@@ -121,6 +109,20 @@ void vTaskMotorCont(void *argument) {
       test_airbrakes(-140);
       telemetry_command = IDLE_COMMAND;
     }
+
+    /* Read Current Motor Position */
+    motor_status = get_position(&measured_motor_position);
+
+    /* Transform Motor Position to a value between [0-1000] */
+    measured_motor_position = measured_motor_position * 1000 / (-150);
+
+    /* Write To global airbrake extension */
+    if (acquire_mutex(&airbrake_ext_mutex) == osOK) {
+      global_airbrake_ext_meas = measured_motor_position;
+      release_mutex(&airbrake_ext_mutex);
+    }
+
+    usb_print("[MOTOR] Read Position:%d\n", measured_motor_position);
 
     /* Log Motor Position and Desired Motor Position */
     log_motor(osKernelGetTickCount(), desired_motor_position,
@@ -137,7 +139,7 @@ void vTaskMotorCont(void *argument) {
 }
 
 static void test_airbrakes(int32_t position) {
-  move_to_position_ppm(position);
+  move_to_position(position);
   osDelay(100);
-  move_to_position_ppm(2);
+  move_to_position(2);
 }
