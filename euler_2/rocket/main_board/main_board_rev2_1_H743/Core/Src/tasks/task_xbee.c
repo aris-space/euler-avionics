@@ -33,14 +33,14 @@ void vTaskXbee(void *argument) {
 	local_command = IDLE_COMMAND;
 
 	/* Reed Solomon Initialisation */
-	int16_t alpha_to[nn + 1];
-	int16_t index_of[nn + 1];
-	int16_t gg[nn - kk + 1];
-	int16_t pp[mm + 1];
-	int16_t recd[nn];
-	int16_t bb[nn - kk];
-	int16_t data[kk];
-	int16_t recd_compact[nn-kk+kk2];
+	int16_t alpha_to[NN + 1];
+	int16_t index_of[NN + 1];
+	int16_t gg[NN - KK + 1];
+	int16_t pp[MM + 1];
+	int16_t recd[NN];
+	int16_t bb[NN - KK];
+	int16_t data[KK];
+	int16_t recd_compact[NN-KK+KK2];
 
 
 	/* set irreducible polynomial */
@@ -148,7 +148,7 @@ void vTaskXbee(void *argument) {
 		encode_rs(bb, index_of, alpha_to, gg, data);
 
 		/* put the transmitted codeword, made up of data plus parity, in recd[] */
-		for (int i = 0; i < nn - kk; i++) recd[i] = bb[i];
+		for (int i = 0; i < NN - KK; i++) recd[i] = bb[i];
 
 		/* compress data for transmission */
 		compress_data(recd, recd_compact);

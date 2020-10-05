@@ -36,8 +36,8 @@
 void set_irr_poly(int16_t *pp){
     register int i;
 
-    char *x = poly_array[mm];
-    for (i=0; i < mm+1; i++) {
+    char *x = poly_array[MM];
+    for (i=0; i < MM+1; i++) {
         pp[i] = x[i] - "0"[0];
     }
 }
@@ -47,19 +47,19 @@ void generate_gf(int16_t const *pp, int16_t *index_of, int16_t *alpha_to){
     register int i, mask;
 
     mask = 1;
-    alpha_to[mm] = 0;
-    for (i=0; i < mm; i++){
+    alpha_to[MM] = 0;
+    for (i=0; i < MM; i++){
         alpha_to[i] = mask;
         index_of[alpha_to[i]] = i;
         if (pp[i] != 0)
-            alpha_to[mm] ^= mask;
+            alpha_to[MM] ^= mask;
         mask <<= 1;
     }
-    index_of[alpha_to[mm]] = mm;
+    index_of[alpha_to[MM]] = MM;
     mask >>= 1;
-    for (i = mm + 1; i < nn; i++) {
+    for (i = MM + 1; i < NN; i++) {
         if (alpha_to[i - 1] >= mask)
-            alpha_to[i] = alpha_to[mm] ^ ((alpha_to[i - 1] ^ mask) << 1);
+            alpha_to[i] = alpha_to[MM] ^ ((alpha_to[i - 1] ^ mask) << 1);
         else alpha_to[i] = alpha_to[i - 1] << 1;
         index_of[alpha_to[i]] = i;
     }
@@ -68,46 +68,46 @@ void generate_gf(int16_t const *pp, int16_t *index_of, int16_t *alpha_to){
 
 // creates the generator polynomial
 void gen_poly(int16_t *gg, int16_t const *alpha_to, int16_t const *index_of)
-/* Obtain the generator polynomial of the tt-error correcting, length
-  nn=(2**mm -1) Reed Solomon code  from the product of (X+alpha**i), i=1..2*tt
+/* Obtain the generator polynomial of the TT-error correcting, length
+  NN=(2**mm -1) Reed Solomon code  from the product of (X+alpha**i), i=1..2*TT
 */
 {
 
     gg[0] = 2;    /* primitive element alpha = 2  for GF(2**mm)  */
     gg[1] = 1;    /* g(x) = (X+alpha) initially */
-    for (int i = 2; i <= nn - kk; i++) {
+    for (int i = 2; i <= NN - KK; i++) {
         gg[i] = 1;
         for (int j = i - 1; j > 0; j--)
-            if (gg[j] != 0) gg[j] = gg[j - 1] ^ alpha_to[(index_of[gg[j]] + i) % nn];
+            if (gg[j] != 0) gg[j] = gg[j - 1] ^ alpha_to[(index_of[gg[j]] + i) % NN];
             else gg[j] = gg[j - 1];
-        gg[0] = alpha_to[(index_of[gg[0]] + i) % nn];     /* gg[0] can never be zero */
+        gg[0] = alpha_to[(index_of[gg[0]] + i) % NN];     /* gg[0] can never be zero */
     }
     /* convert gg[] to index form for quicker encoding */
-    for (int i = 0; i <= nn - kk; i++) gg[i] = index_of[gg[i]];
+    for (int i = 0; i <= NN - KK; i++) gg[i] = index_of[gg[i]];
 }
 
 void encode_rs(int16_t *bb, int16_t const *index_of, int16_t const *alpha_to, int16_t const *gg, int16_t const *data)
 /* take the string of symbols in data[i], i=0..(k-1) and encode systematically
-   to produce 2*tt parity symbols in bb[0]..bb[2*tt-1]
+   to produce 2*TT parity symbols in bb[0]..bb[2*TT-1]
    data[] is input and bb[] is output in polynomial form.
    Encoding is done by using a feedback shift register with appropriate
    connections specified by the elements of gg[], which was generated above.
-   Codeword is   c(X) = data(X)*X**(nn-kk)+ b(X)          */
+   Codeword is   c(X) = data(X)*X**(NN-KK)+ b(X)          */
 {
     int feedback;
 
-    for (int i = 0; i < nn - kk; i++) bb[i] = 0;
-    for (int i = kk - 1; i >= 0; i--) {
-        feedback = index_of[data[i] ^ bb[nn - kk - 1]];
+    for (int i = 0; i < NN - KK; i++) bb[i] = 0;
+    for (int i = KK - 1; i >= 0; i--) {
+        feedback = index_of[data[i] ^ bb[NN - KK - 1]];
         if (feedback != -1) {
-            for (int j = nn - kk - 1; j > 0; j--)
+            for (int j = NN - KK - 1; j > 0; j--)
                 if (gg[j] != -1)
-                    bb[j] = bb[j - 1] ^ alpha_to[(gg[j] + feedback) % nn];
+                    bb[j] = bb[j - 1] ^ alpha_to[(gg[j] + feedback) % NN];
                 else
                     bb[j] = bb[j - 1];
-            bb[0] = alpha_to[(gg[0] + feedback) % nn];
+            bb[0] = alpha_to[(gg[0] + feedback) % NN];
         } else {
-            for (int j = nn - kk - 1; j > 0; j--)
+            for (int j = NN - KK - 1; j > 0; j--)
                 bb[j] = bb[j - 1];
             bb[0] = 0;
         }
@@ -116,15 +116,15 @@ void encode_rs(int16_t *bb, int16_t const *index_of, int16_t const *alpha_to, in
 
 void decode_rs(int16_t * recd, int16_t const *alpha_to, int16_t const *index_of)
 /* assume we have received bits grouped into mm-bit symbols in recd[i],
-   i=0..(nn-1),  and recd[i] is index form (ie as powers of alpha).
-   We first compute the 2*tt syndromes by substituting alpha**i into rec(X) and
+   i=0..(NN-1),  and recd[i] is index form (ie as powers of alpha).
+   We first compute the 2*TT syndromes by substituting alpha**i into rec(X) and
    evaluating, storing the syndromes in s[i], i=1..2tt (leave s[0] zero) .
    Then we use the Berlekamp iteration to find the error location polynomial
-   elp[i].   If the degree of the elp is >tt, we cannot correct all the errors
+   elp[i].   If the degree of the elp is >TT, we cannot correct all the errors
    and hence just put out the information symbols uncorrected. If the degree of
-   elp is <=tt, we substitute alpha**i , i=1..n into the elp to get the roots,
+   elp is <=TT, we substitute alpha**i , i=1..n into the elp to get the roots,
    hence the inverse roots, the error location numbers. If the number of errors
-   located does not equal the degree of the elp, we have more than tt errors
+   located does not equal the degree of the elp, we have more than TT errors
    and cannot correct them.  Otherwise, we then solve for the error value at
    the error location and correct the error.  The procedure is that found in
    Lin and Costello. For the cases where the number of errors is known to be too
@@ -135,15 +135,15 @@ void decode_rs(int16_t * recd, int16_t const *alpha_to, int16_t const *index_of)
    can be returned as error flags to the calling routine if desired.   */
 {
     register int i, j, u, q;
-    int elp[nn - kk + 2][nn - kk], d[nn - kk + 2], l[nn - kk + 2], u_lu[nn - kk + 2], s[nn - kk + 1];
-    int count, syn_error = 0, root[tt], loc[tt], z[tt + 1], err[nn], reg[tt + 1];
+    int elp[NN - KK + 2][NN - KK], d[NN - KK + 2], l[NN - KK + 2], u_lu[NN - KK + 2], s[NN - KK + 1];
+    int count, syn_error = 0, root[TT], loc[TT], z[TT + 1], err[NN], reg[TT + 1];
 
 /* first form the syndromes */
-    for (i = 1; i <= nn - kk; i++) {
+    for (i = 1; i <= NN - KK; i++) {
         s[i] = 0;
-        for (j = 0; j < nn; j++)
+        for (j = 0; j < NN; j++)
             if (recd[j] != -1)
-                s[i] ^= alpha_to[(recd[j] + i * j) % nn];      /* recd[j] in index form */
+                s[i] ^= alpha_to[(recd[j] + i * j) % NN];      /* recd[j] in index form */
 /* convert syndrome from polynomial form to index form  */
         if (s[i] != 0) syn_error = 1;        /* set flag if non-zero syndrome => error */
         s[i] = index_of[s[i]];
@@ -154,7 +154,7 @@ void decode_rs(int16_t * recd, int16_t const *alpha_to, int16_t const *index_of)
 /* compute the error location polynomial via the Berlekamp iterative algorithm,
    following the terminology of Lin and Costello :   d[u] is the 'mu'th
    discrepancy, where u='mu'+1 and 'mu' (the Greek letter!) is the step number
-   ranging from -1 to 2*tt (see L&C),  l[u] is the
+   ranging from -1 to 2*TT (see L&C),  l[u] is the
    degree of the elp at that step, and u_l[u] is the difference between the
    step number and the degree of the elp.
 */
@@ -163,7 +163,7 @@ void decode_rs(int16_t * recd, int16_t const *alpha_to, int16_t const *index_of)
         d[1] = s[1];        /* index form */
         elp[0][0] = 0;      /* index form */
         elp[1][0] = 1;      /* polynomial form */
-        for (i = 1; i < nn - kk; i++) {
+        for (i = 1; i < NN - KK; i++) {
             elp[0][i] = -1;   /* index form */
             elp[1][i] = 0;   /* polynomial form */
         }
@@ -202,10 +202,10 @@ void decode_rs(int16_t * recd, int16_t const *alpha_to, int16_t const *index_of)
                 else l[u + 1] = l[q] + u - q;
 
 /* form new elp(x) */
-                for (i = 0; i < nn - kk; i++) elp[u + 1][i] = 0;
+                for (i = 0; i < NN - KK; i++) elp[u + 1][i] = 0;
                 for (i = 0; i <= l[q]; i++)
                     if (elp[q][i] != -1)
-                        elp[u + 1][i + u - q] = alpha_to[(d[u] + nn - d[q] + elp[q][i]) % nn];
+                        elp[u + 1][i + u - q] = alpha_to[(d[u] + NN - d[q] + elp[q][i]) % NN];
                 for (i = 0; i <= l[u]; i++) {
                     elp[u + 1][i] ^= elp[u][i];
                     elp[u][i] = index_of[elp[u][i]];  /*convert old elp value to index*/
@@ -214,7 +214,7 @@ void decode_rs(int16_t * recd, int16_t const *alpha_to, int16_t const *index_of)
             u_lu[u + 1] = u - l[u + 1];
 
 /* form (u+1)th discrepancy */
-            if (u < nn - kk)    /* no discrepancy computed on last iteration */
+            if (u < NN - KK)    /* no discrepancy computed on last iteration */
             {
                 if (s[u + 1] != -1)
                     d[u + 1] = alpha_to[s[u + 1]];
@@ -222,13 +222,13 @@ void decode_rs(int16_t * recd, int16_t const *alpha_to, int16_t const *index_of)
                     d[u + 1] = 0;
                 for (i = 1; i <= l[u + 1]; i++)
                     if ((s[u + 1 - i] != -1) && (elp[u + 1][i] != 0))
-                        d[u + 1] ^= alpha_to[(s[u + 1 - i] + index_of[elp[u + 1][i]]) % nn];
+                        d[u + 1] ^= alpha_to[(s[u + 1 - i] + index_of[elp[u + 1][i]]) % NN];
                 d[u + 1] = index_of[d[u + 1]];    /* put d[u+1] into index form */
             }
-        } while ((u < nn - kk) && (l[u + 1] <= tt));
+        } while ((u < NN - KK) && (l[u + 1] <= TT));
 
         u++;
-        if (l[u] <= tt)         /* can correct error */
+        if (l[u] <= TT)         /* can correct error */
         {
 /* put elp into index form */
             for (i = 0; i <= l[u]; i++) elp[u][i] = index_of[elp[u][i]];
@@ -237,21 +237,21 @@ void decode_rs(int16_t * recd, int16_t const *alpha_to, int16_t const *index_of)
             for (i = 1; i <= l[u]; i++)
                 reg[i] = elp[u][i];
             count = 0;
-            for (i = 1; i <= nn; i++) {
+            for (i = 1; i <= NN; i++) {
                 q = 1;
                 for (j = 1; j <= l[u]; j++)
                     if (reg[j] != -1) {
-                        reg[j] = (reg[j] + j) % nn;
+                        reg[j] = (reg[j] + j) % NN;
                         q ^= alpha_to[reg[j]];
                     }
                 if (!q)        /* store root and error location number indices */
                 {
                     root[count] = i;
-                    loc[count] = nn - i;
+                    loc[count] = NN - i;
                     count++;
                 }
             }
-            if (count == l[u])    /* no. roots = degree of elp hence <= tt errors */
+            if (count == l[u])    /* no. roots = degree of elp hence <= TT errors */
             {
 /* form polynomial z(x) */
                 for (i = 1; i <= l[u]; i++)        /* Z[0] = 1 always - do not need */
@@ -266,12 +266,12 @@ void decode_rs(int16_t * recd, int16_t const *alpha_to, int16_t const *index_of)
                         z[i] = 0;
                     for (j = 1; j < i; j++)
                         if ((s[j] != -1) && (elp[u][i - j] != -1))
-                            z[i] ^= alpha_to[(elp[u][i - j] + s[j]) % nn];
+                            z[i] ^= alpha_to[(elp[u][i - j] + s[j]) % NN];
                     z[i] = index_of[z[i]];         /* put into index form */
                 }
 
                 /* evaluate errors at locations given by error location numbers loc[i] */
-                for (i = 0; i < nn; i++) {
+                for (i = 0; i < NN; i++) {
                     err[i] = 0;
                     if (recd[i] != -1)        /* convert recd[] to polynomial form */
                         recd[i] = alpha_to[recd[i]];
@@ -282,30 +282,30 @@ void decode_rs(int16_t * recd, int16_t const *alpha_to, int16_t const *index_of)
                     err[loc[i]] = 1;       /* accounts for z[0] */
                     for (j = 1; j <= l[u]; j++)
                         if (z[j] != -1)
-                            err[loc[i]] ^= alpha_to[(z[j] + j * root[i]) % nn];
+                            err[loc[i]] ^= alpha_to[(z[j] + j * root[i]) % NN];
                     if (err[loc[i]] != 0) {
                         err[loc[i]] = index_of[err[loc[i]]];
                         q = 0;     /* form denominator of error term */
                         for (j = 0; j < l[u]; j++)
                             if (j != i)
-                                q += index_of[1 ^ alpha_to[(loc[j] + root[i]) % nn]];
-                        q = q % nn;
-                        err[loc[i]] = alpha_to[(err[loc[i]] - q + nn) % nn];
+                                q += index_of[1 ^ alpha_to[(loc[j] + root[i]) % NN]];
+                        q = q % NN;
+                        err[loc[i]] = alpha_to[(err[loc[i]] - q + NN) % NN];
                         recd[loc[i]] ^= err[loc[i]];  /*recd[i] must be in polynomial form */
                     }
                 }
-            } else    /* no. roots != degree of elp => >tt errors and cannot solve */
-                for (i = 0; i < nn; i++)        /* could return error flag if desired */
+            } else    /* no. roots != degree of elp => >TT errors and cannot solve */
+                for (i = 0; i < NN; i++)        /* could return error flag if desired */
                     if (recd[i] != -1)        /* convert recd[] to polynomial form */
                         recd[i] = alpha_to[recd[i]];
                     else recd[i] = 0;     /* just output received codeword as is */
-        } else         /* elp has degree has degree >tt hence cannot solve */
-            for (i = 0; i < nn; i++)       /* could return error flag if desired */
+        } else         /* elp has degree has degree >TT hence cannot solve */
+            for (i = 0; i < NN; i++)       /* could return error flag if desired */
                 if (recd[i] != -1)        /* convert recd[] to polynomial form */
                     recd[i] = alpha_to[recd[i]];
                 else recd[i] = 0;     /* just output received codeword as is */
     } else       /* no non-zero syndromes => no errors: output received codeword */
-        for (i = 0; i < nn; i++)
+        for (i = 0; i < NN; i++)
             if (recd[i] != -1)        /* convert recd[] to polynomial form */
                 recd[i] = alpha_to[recd[i]];
             else recd[i] = 0;
@@ -317,7 +317,7 @@ void struct_to_poly(telemetry_t t_data, int16_t *data){
     memcpy(buffer, (const unsigned char *)&t_data, sizeof(t_data));
     uint8_t idx;
     uint8_t tmp = 0;
-    for(int i=0;i<kk;i++){
+    for(int i=0;i<KK;i++){
 
         idx = i-(int)ceil((double)i/2);
         if(tmp==0){
@@ -332,12 +332,12 @@ void struct_to_poly(telemetry_t t_data, int16_t *data){
 }
 
 telemetry_t poly_to_struct(int16_t const *recd){
-    uint8_t tmp2[kk];
-    for(int i=0;i < kk; i++){
-        tmp2[i] = recd[nn-kk+i];
+    uint8_t tmp2[KK];
+    for(int i=0;i < KK; i++){
+        tmp2[i] = recd[NN-KK+i];
     }
     unsigned char *rec_buffer = (unsigned char*)malloc(sizeof(telemetry_t));
-    for(int i=0; i < kk2-1; i++){
+    for(int i=0; i < KK2-1; i++){
         rec_buffer[i] = (tmp2[2*i] << 4) | tmp2[2*i+1];
     }
     telemetry_t rec;
@@ -347,28 +347,28 @@ telemetry_t poly_to_struct(int16_t const *recd){
 
 void compress_data(int16_t const *recd, int16_t *recd_compact){
 
-    for (int i=0; i<nn-kk;i++){
+    for (int i=0; i<NN-KK;i++){
         recd_compact[i] = recd[i];
     }
-    for (int i=nn-kk;i < nn-kk+kk2;i++){
-        if (i == nn-kk+kk2-1){
-            recd_compact[i] = (recd[2*(i-nn+kk)+nn-kk] << 4) | 0x0;
+    for (int i=NN-KK;i < NN-KK+KK2;i++){
+        if (i == NN-KK+KK2-1){
+            recd_compact[i] = (recd[2*(i-NN+KK)+NN-KK] << 4) | 0x0;
         }
         else{
-            recd_compact[i] = (recd[2*(i-nn+kk)+nn-kk] << 4) | recd[2*(i-nn+kk)+nn-kk+1];
+            recd_compact[i] = (recd[2*(i-NN+KK)+NN-KK] << 4) | recd[2*(i-NN+KK)+NN-KK+1];
         }
     }
 }
 
 int16_t * decompress_data(int16_t const *recd_compact){
     uint8_t idx, tmp = 0;
-    static int16_t recd[nn];
-    for (int i=0;i< nn-kk;i++){
+    static int16_t recd[NN];
+    for (int i=0;i< NN-KK;i++){
         recd[i] = recd_compact[i];
     }
-    for(int i=nn-kk;i<nn;i++){
+    for(int i=NN-KK;i<NN;i++){
 
-        idx = (i-nn+kk)-(int)ceil((double)(i-nn+kk)/2)+nn-kk;
+        idx = (i-NN+KK)-(int)ceil((double)(i-NN+KK)/2)+NN-KK;
         if(tmp==0){
             recd[i] = recd_compact[idx] >> 4;
             tmp=1;
@@ -383,9 +383,9 @@ int16_t * decompress_data(int16_t const *recd_compact){
 
 void print_look_up_table(int16_t const * alpha_to, int16_t const *index_of){
     register int i;
-    printf("\nLook-up tables for GF(2**%2d)\n", mm);
+    printf("\nLook-up tables for GF(2**%2d)\n", MM);
     printf("  i   alpha_to[i]  index_of[i]\n");
-    for (i = 0; i <= nn; i++)
+    for (i = 0; i <= NN; i++)
         printf("%3d      %3d          %3d\n", i, alpha_to[i], index_of[i]);
     printf("\n\n");
 }

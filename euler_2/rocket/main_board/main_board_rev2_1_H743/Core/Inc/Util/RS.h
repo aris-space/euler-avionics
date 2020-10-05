@@ -15,11 +15,11 @@
 #include <math.h>
 #include "Util/telemetry_util.h"
 
-#define mm  8           /* RS code over GF(2**mm) */
-#define nn  255         /* nn=2**mm -1   length of codeword */
-#define tt  20          /* number of errors that can be corrected */
-#define kk  (nn-(2*tt))        /* kk = nn-2*tt  - length of data without parity bits*/
-#define kk2 (int)ceil((double)kk/2) /* length of compressed data without parity bits*/
+#define MM  8           /* RS code over GF(2**mm) */
+#define NN  255         /* nn=2**mm -1   length of codeword */
+#define TT  20          /* number of errors that can be corrected */
+#define KK  (NN-(2*TT))        /* kk = nn-2*tt  - length of data without parity bits*/
+#define KK2 (int)ceil((double)KK/2) /* length of compressed data without parity bits*/
 
 /* sets the irreducible polynomial */
 void set_irr_poly(int16_t *pp);
