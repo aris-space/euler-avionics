@@ -42,6 +42,7 @@ void vTaskSdCard(void *argument) {
   usb_print("[STORAGE TASK] Mounting SD Card...\n");
   mount_sd_card();
   uint8_t already_entered = 0;
+  uint8_t td_file_created = 0;
   for (;;) {
 #if (configUSE_TRACE_FACILITY == 1)
     vTracePrint(sd_channel, "Starting for loop...");
@@ -123,10 +124,10 @@ void vTaskSdCard(void *argument) {
 #endif
               }
               // if the rocket landed, create a new file and write to that one
-              if (read_mutex(&fsm_mutex, &global_flight_phase_detection,
-                            &local_flight_phase,
-                            sizeof(global_flight_phase_detection)) == osOK &&
+              if ((td_file_created == 0) && read_mutex(&fsm_mutex, &global_flight_phase_detection,
+                  &local_flight_phase, sizeof(global_flight_phase_detection)) == osOK &&
                   local_flight_phase.flight_phase == TOUCHDOWN) {
+            	td_file_created = 1;
                 f_close(&EULER_LOG_FILE);
                 // "clean" current file name
                 EULER_LOG_FILE_NAME[0] = 0;

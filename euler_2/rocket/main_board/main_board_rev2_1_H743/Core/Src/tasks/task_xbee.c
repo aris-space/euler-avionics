@@ -7,6 +7,10 @@
 #include "tasks/task_xbee.h"
 #include "Util/RS.h"
 
+#if (configUSE_TRACE_FACILITY == 1)
+	traceString xb_channel;
+#endif
+
 command_xbee_t local_command_xbee;
 
 command_e local_command_rx;
@@ -16,7 +20,13 @@ bool new_command = false;
 
 int uart_counter = 0;
 
+
 void vTaskXbee(void *argument) {
+
+#if (configUSE_TRACE_FACILITY == 1)
+  xb_channel = xTraceRegisterString("Xbee Channel");
+#endif
+
 	/* For periodic update */
 	uint32_t tick_count, tick_update_slow, tick_update_fast;
 
@@ -49,9 +59,16 @@ void vTaskXbee(void *argument) {
 	/* generate the Galois Field GF(2**mm) */
 	generate_gf(pp, index_of, alpha_to);
 
+#if (configUSE_TRACE_FACILITY == 1)
+                vTracePrint(xb_channel, "GF GENERATED");
+#endif
+
 	/* compute the generator polynomial for this RS code */
 	gen_poly(gg, alpha_to, index_of);
 
+#if (configUSE_TRACE_FACILITY == 1)
+                vTracePrint(xb_channel, "POLY GENERATED");
+#endif
 
 	osDelay(700);
 
@@ -87,11 +104,17 @@ void vTaskXbee(void *argument) {
 		/* Check if we need to go to low sampling */
 		if (local_command == TELEMETRY_LOW_SAMPLING) {
 			fast_sampling = false;
+#if (configUSE_TRACE_FACILITY == 1)
+                vTracePrint(xb_channel, "SLOW SAMPLING");
+#endif
 		}
 
 		/* Go Back to Low Sampling if we are in Touchdown */
 		if (telemetry_send.flight_phase == TOUCHDOWN_T) {
 			fast_sampling = false;
+#if (configUSE_TRACE_FACILITY == 1)
+                vTracePrint(xb_channel, "SLOW SAMPLING FROM TD");
+#endif
 		}
 
 		/* reset command */
@@ -142,16 +165,30 @@ void vTaskXbee(void *argument) {
 		/* convert struct to coefficients of polynomial */
 		struct_to_poly(telemetry_send, data);
 
+
+#if (configUSE_TRACE_FACILITY == 1)
+                vTracePrint(xb_channel, "struct_to_poly done");
+#endif
+
 		/* encode data[] to produce parity in bb[].  Data input and parity output
 		   is in polynomial form
 		 */
 		encode_rs(bb, index_of, alpha_to, gg, data);
+
+
+#if (configUSE_TRACE_FACILITY == 1)
+                vTracePrint(xb_channel, "encode_rs done");
+#endif
 
 		/* put the transmitted codeword, made up of data plus parity, in recd[] */
 		for (int i = 0; i < NN - KK; i++) recd[i] = bb[i];
 
 		/* compress data for transmission */
 		compress_data(recd, recd_compact);
+
+#if (configUSE_TRACE_FACILITY == 1)
+                vTracePrint(xb_channel, "compress_data done");
+#endif
 
 		/* Send recd_compact */
 
