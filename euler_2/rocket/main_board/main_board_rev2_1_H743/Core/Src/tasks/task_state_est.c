@@ -8,6 +8,7 @@
 #include "tasks/task_state_est.h"
 #include "../../aris-euler-state-estimation/Inc/state_est.h"
 #include "util/logging_util.h"
+#include "util/util.h"
 #include "util/mutex.h"
 
 void vTaskStateEst(void *argument) {
@@ -62,7 +63,7 @@ void vTaskStateEst(void *argument) {
     }
 
     /* Reset the whole thing automatically after 30 Seconds of running */
-    if (reset_counter > 30 * STATE_ESTIMATION_FREQUENCY && !was_reset) {
+    if (reset_counter > 5 * STATE_ESTIMATION_FREQUENCY && !was_reset) {
     	reset_state_est_state(average_press, average_temp, &state_est_state);
       was_reset = true;
     }
@@ -116,10 +117,11 @@ void vTaskStateEst(void *argument) {
       release_mutex(&state_est_mutex);
     }
 
-    //		UsbPrint("[DBG] Height: %d; Velocity: %d; t: %lu\n",
-    //				state_est_data_global.position_world[2],
-    //				state_est_data_global.velocity_world[2],
-    // tick_count);
+    usb_print("[DBG] Height: %d; Velocity: %d; Airbrake_ext: %d; t: %lu\n",
+    				state_est_data_global.position_world[2],
+    				state_est_data_global.velocity_world[2],
+					(int32_t)(state_est_state.state_est_meas.airbrake_extension*1000),
+     tick_count);
 
     /* Update env for FSM */
     if (acquire_mutex(&fsm_mutex) == osOK) {

@@ -569,7 +569,7 @@ int main(void)
   task_sens_readHandle = osThreadNew(vTaskSensRead, NULL, &task_sens_read_attributes);
 
   /* creation of task_sd_card */
-  task_sd_cardHandle = osThreadNew(vTaskSdCard, NULL, &task_sd_card_attributes);
+  //task_sd_cardHandle = osThreadNew(vTaskSdCard, NULL, &task_sd_card_attributes);
 
   /* creation of task_motor_cont */
   task_motor_contHandle = osThreadNew(vTaskMotorCont, NULL, &task_motor_cont_attributes);
