@@ -232,6 +232,8 @@ baro_data_t sb3_baro = {0};
 imu_data_t sb3_imu_1 = {0};
 imu_data_t sb3_imu_2 = {0};
 
+__attribute__((section(".user.dtcm"))) uint32_t dtcmtest[5000];
+
 /** CONTROL VARIABLES **/
 
 state_est_data_t state_est_data_global = {0};
