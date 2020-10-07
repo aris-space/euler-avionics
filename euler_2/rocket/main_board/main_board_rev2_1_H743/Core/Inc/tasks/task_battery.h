@@ -14,9 +14,6 @@
 
 #define BATTERY_SAMPLE_RATE 50
 
-#define V25 (1.43)
-#define AVG_SLOPE (.0043)
-
 extern ADC_HandleTypeDef hadc1;
 
 extern custom_mutex_t battery_mutex;
