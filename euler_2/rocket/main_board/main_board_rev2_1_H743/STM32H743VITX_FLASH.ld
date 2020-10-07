@@ -170,6 +170,12 @@ SECTIONS
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
   } >RAM_D1
+  
+  .user.dtcm :
+  {
+    . = ALIGN(4);
+    _user_dtcm = .;        /* create a global symbol at data start */
+  } >DTCMRAM
 
   /* Remove information from the compiler libraries */
   /DISCARD/ :
