@@ -98,9 +98,9 @@ void vTaskMotorCont(void *argument) {
       motor_status = move_to_position(0);
     }
 
-//    if(osKernelGetTickCount() < 10000 && osKernelGetTickCount() > 9960){
-//    	test_airbrakes(-100);
-//    }
+    if(osKernelGetTickCount() < 10000 && osKernelGetTickCount() > 9960){
+    	test_airbrakes(-100);
+    }
 
     /* Airbrake Test if telemetry command is given and we are in idle state */
     if (flight_phase_detection.flight_phase == IDLE &&
@@ -114,7 +114,12 @@ void vTaskMotorCont(void *argument) {
     motor_status = get_position(&measured_motor_position);
 
     /* Transform Motor Position to a value between [0-1000] */
-    measured_motor_position = measured_motor_position * 1000 / (-150);
+    if(measured_motor_position < 0){
+    	measured_motor_position = 0;
+    }
+    else{
+    	measured_motor_position = measured_motor_position * 1000 / (-150);
+    }
 
     /* Write To global airbrake extension */
     if (acquire_mutex(&airbrake_ext_mutex) == osOK) {

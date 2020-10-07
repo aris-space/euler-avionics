@@ -114,6 +114,7 @@ void encode_rs(int16_t *bb, int16_t const *index_of, int16_t const *alpha_to, in
     }
 }
 
+
 void decode_rs(int16_t * recd, int16_t const *alpha_to, int16_t const *index_of)
 /* assume we have received bits grouped into mm-bit symbols in recd[i],
    i=0..(NN-1),  and recd[i] is index form (ie as powers of alpha).
