@@ -20,6 +20,18 @@ bool new_command = false;
 
 int uart_counter = 0;
 
+/* Reed Solomon Initialisation */
+
+__attribute__((section(".user.dtcm"))) int16_t alpha_to[NN + 1];
+__attribute__((section(".user.dtcm"))) int16_t index_of[NN + 1];
+__attribute__((section(".user.dtcm"))) int16_t gg[NN - KK + 1];
+__attribute__((section(".user.dtcm"))) int16_t pp[MM + 1];
+__attribute__((section(".user.dtcm"))) int16_t recd[NN];
+__attribute__((section(".user.dtcm"))) int16_t bb[NN - KK];
+__attribute__((section(".user.dtcm"))) int16_t data[KK];
+__attribute__((section(".user.dtcm"))) int16_t recd_compact[NN-KK+KK2];
+
+
 
 void vTaskXbee(void *argument) {
 
@@ -42,15 +54,7 @@ void vTaskXbee(void *argument) {
 	local_command_rx = IDLE_COMMAND;
 	local_command = IDLE_COMMAND;
 
-	/* Reed Solomon Initialisation */
-	int16_t alpha_to[NN + 1];
-	int16_t index_of[NN + 1];
-	int16_t gg[NN - KK + 1];
-	int16_t pp[MM + 1];
-	int16_t recd[NN];
-	int16_t bb[NN - KK];
-	int16_t data[KK];
-	int16_t recd_compact[NN-KK+KK2];
+
 
 
 	/* set irreducible polynomial */
