@@ -12,9 +12,9 @@
 uint32_t adc_value[4];
 
 /* Buffers for running avarrage */
-__attribute__((section(".user.dtcm"))) double current_buffer[50];
-__attribute__((section(".user.dtcm"))) double supply_buffer[50];
-__attribute__((section(".user.dtcm"))) double battery_buffer[50];
+__attribute__((section(".user_dtcm"))) double current_buffer[50];
+__attribute__((section(".user_dtcm"))) double supply_buffer[50];
+__attribute__((section(".user_dtcm"))) double battery_buffer[50];
 
 void vTaskBattery(void *argument) {
   /* For periodic update */
@@ -43,10 +43,10 @@ void vTaskBattery(void *argument) {
 
   while (1) {
     tick_count += tick_update;
-    double current2 = ((double)adc_value[0] * (2.45 / 65536.0) - (3.3 * 0.107)) /
-                      0.264;                                       // CURR2
-    double current1 = ((double)adc_value[1] * (2.45 / 65536.0) - (3.3 * 0.107)) /
-                          0.264;  // CURR1
+    double current2 = ((double)adc_value[0] * (2.45 / 65536.0) - (3.41 * 0.1)) /
+                      0.66;                                       // CURR2
+    double current1 = ((double)adc_value[1] * (2.45 / 65536.0) - (3.41 * 0.1)) /
+                          0.66;  // CURR1
 
     float supply_voltage = adc_value[2] * (2.45 / 65536.0) * 2;           // 3V3
     float battery_voltage = adc_value[3] * (2.45 / 65536.0) * 5.2;  // BAT

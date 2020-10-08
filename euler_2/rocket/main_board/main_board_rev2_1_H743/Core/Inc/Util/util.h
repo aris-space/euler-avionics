@@ -12,6 +12,12 @@
 
 /** BASIC TYPES **/
 
+/* DO NOT USE DTCM FOR DMA!! */
+/* DO NOT USE DTCM WITH INITALIZED VALUES!! */
+/* ONLY USE DTCM ON GLOBAL VARIABLES */
+#define DTCM \
+      __attribute__((section(".user_dtcm")))
+
 /* Timestamp */
 typedef uint32_t timestamp_t;
 
@@ -123,7 +129,7 @@ static const imu_data_t EMPTY_IMU = {0};
 #endif
 /* Comment the next line in order to disable debug mode -- should be disabled
  * during flight */
-#define DEBUG
+//#define DEBUG
 /* Flash read flag */
 #ifdef FLASH_READ
 #undef FLASH_READ

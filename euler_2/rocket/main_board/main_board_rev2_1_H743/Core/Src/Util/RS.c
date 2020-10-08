@@ -12,7 +12,7 @@
 #include "Util/RS.h"
 
 // array of irreducible polynomials
-__attribute__((section(".user.dtcm"))) char *poly_array[] = {
+char *poly_array[] = {
         NULL,                   //  0   no code
         NULL,                   //  1   no code
         "111",                  //  2   1+x+x^2

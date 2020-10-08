@@ -22,14 +22,16 @@ int uart_counter = 0;
 
 /* Reed Solomon Initialisation */
 
-__attribute__((section(".user.dtcm"))) int16_t alpha_to[NN + 1];
-__attribute__((section(".user.dtcm"))) int16_t index_of[NN + 1];
-__attribute__((section(".user.dtcm"))) int16_t gg[NN - KK + 1];
-__attribute__((section(".user.dtcm"))) int16_t pp[MM + 1];
-__attribute__((section(".user.dtcm"))) int16_t recd[NN];
-__attribute__((section(".user.dtcm"))) int16_t bb[NN - KK];
-__attribute__((section(".user.dtcm"))) int16_t data[KK];
-__attribute__((section(".user.dtcm"))) int16_t recd_compact[NN-KK+KK2];
+DTCM int16_t alpha_to[NN + 1];
+DTCM int16_t index_of[NN + 1];
+DTCM int16_t gg[NN - KK + 1];
+DTCM int16_t pp[MM + 1];
+DTCM int16_t recd[NN];
+DTCM int16_t bb[NN - KK];
+DTCM int16_t tele_data[KK];
+DTCM int16_t recd_compact[NN-KK+KK2];
+
+uint8_t transmission_data[NN-KK+KK2];
 
 
 
@@ -81,6 +83,7 @@ void vTaskXbee(void *argument) {
 	tick_update_slow = osKernelGetTickFreq() / XBEE_SAMPLING_FREQ;
 	tick_update_fast = osKernelGetTickFreq() / XBEE_SAMPLING_FREQ_HIGH;
 	bool fast_sampling = true;
+	HAL_UART_Receive_IT(&huart7, (uint8_t *)&local_command_rx, 1);
 	tick_count = osKernelGetTickCount();
 
 	while (1) {
@@ -167,7 +170,7 @@ void vTaskXbee(void *argument) {
 		/*=============Encoding Part of Reed Solomon =============*/
 
 		/* convert struct to coefficients of polynomial */
-		struct_to_poly(telemetry_send, data);
+		struct_to_poly(telemetry_send, tele_data);
 
 
 #if (configUSE_TRACE_FACILITY == 1)
@@ -177,7 +180,7 @@ void vTaskXbee(void *argument) {
 		/* encode data[] to produce parity in bb[].  Data input and parity output
 		   is in polynomial form
 		 */
-		encode_rs(bb, index_of, alpha_to, gg, data);
+		encode_rs(bb, index_of, alpha_to, gg, tele_data);
 
 
 #if (configUSE_TRACE_FACILITY == 1)
@@ -190,6 +193,10 @@ void vTaskXbee(void *argument) {
 		/* compress data for transmission */
 		compress_data(recd, recd_compact);
 
+		for (int i= 0; i < sizeof(recd_compact)/2; i++){
+			transmission_data[i] = (uint8_t)recd_compact[i];
+		}
+
 #if (configUSE_TRACE_FACILITY == 1)
                 vTracePrint(xb_channel, "compress_data done");
 #endif
@@ -197,8 +204,8 @@ void vTaskXbee(void *argument) {
 		/* Send recd_compact */
 
 		/* Send to Xbee module */
-		HAL_UART_Transmit_DMA(&huart7, (uint8_t*) recd_compact,
-				sizeof(recd_compact));
+		HAL_UART_Transmit(&huart7, transmission_data,
+				sizeof(transmission_data), 500);
 
 		uart_counter = 0;
 		/* Sleep */
