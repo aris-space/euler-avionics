@@ -134,6 +134,7 @@ void vTaskSdCard(void *argument) {
 #if (configUSE_TRACE_FACILITY == 1)
                 vTracePrint(sd_channel, "Logging to new file");
 #endif
+                usb_print("[STORAGE TASK] Touchdown detected, logging to new file!");
                 goto logToNewFile;
               }
             }
@@ -218,6 +219,7 @@ static FRESULT find_next_file_name(char *file_name) {
       file_number = current_file_number + 1;
     }
     res = f_findnext(&dj, &fno);
+    osDelay(10);
   }
   file_number = file_number <= 999 ? file_number : 999;
 

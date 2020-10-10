@@ -299,6 +299,7 @@ char usb_data_buffer[256] = {0};
 
 /** Logging Queue **/
 osMessageQueueId_t sd_queue;
+osMessageQueueId_t flash_queue;
 
 /* USER CODE END PV */
 
@@ -558,6 +559,7 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_QUEUES */
   sd_queue = osMessageQueueNew(SD_QUEUE_SIZE, sizeof(log_elem_t), NULL);
+  flash_queue = osMessageQueueNew(FLASH_QUEUE_SIZE, sizeof(log_elem_t), NULL);
 #if (configUSE_TRACE_FACILITY == 1)
   vTraceSetQueueName(sd_queue, "SD Queue");
 #endif

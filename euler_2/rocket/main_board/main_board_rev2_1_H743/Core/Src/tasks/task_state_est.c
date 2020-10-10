@@ -120,11 +120,11 @@ void vTaskStateEst(void *argument) {
       release_mutex(&state_est_mutex);
     }
 
-    usb_print("[DBG] Height: %d; Velocity: %d; Airbrake_ext: %d; t: %lu\n",
-    				state_est_data_global.position_world[2],
-    				state_est_data_global.velocity_world[2],
-					(int32_t)(state_est_state.state_est_meas.airbrake_extension*1000),
-     tick_count);
+//    usb_print("[DBG] Height: %d; Velocity: %d; Airbrake_ext: %d; t: %lu\n",
+//    				state_est_data_global.position_world[2],
+//    				state_est_data_global.velocity_world[2],
+//					(int32_t)(state_est_state.state_est_meas.airbrake_extension*1000),
+//     tick_count);
 
     /* Update env for FSM */
     if (acquire_mutex(&fsm_mutex) == osOK) {

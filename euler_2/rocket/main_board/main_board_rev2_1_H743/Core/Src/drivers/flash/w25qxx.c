@@ -1,5 +1,5 @@
-#include "Flash/w25qxx.h"
-#include "Flash/w25qxxConf.h"
+#include "drivers/flash/w25qxx.h"
+#include "drivers/flash/w25qxxConf.h"
 
 #if (_W25QXX_DEBUG == 1)
 #include "Util/util.h"
