@@ -86,6 +86,10 @@ void vTaskXbee(void *argument) {
 	HAL_UART_Receive_IT(&huart7, (uint8_t *)&local_command_rx, 1);
 	tick_count = osKernelGetTickCount();
 
+	telemetry_send.alignment1 = 0xFAFAFAFA;
+	telemetry_send.alignment2 = 0xFEFEFEFE;
+	telemetry_send.alignment3 = 0xDCDCDCDC;
+
 	while (1) {
 		/* Tick Update */
 		if (fast_sampling) {
@@ -93,11 +97,7 @@ void vTaskXbee(void *argument) {
 		} else {
 			tick_count += tick_update_slow;
 		}
-		/* Read Command */
-		//		HAL_UART_Receive_IT(&huart7, (uint8_t*) &local_command_rx, 1);
-		//		UsbPrint("[Telemetry] ts: %u, Received Commmand: %u, Rx_buffer;
-		//%u\n", 				telemetry_send.ts, local_command,
-		// local_command_rx);
+
 		if (acquire_mutex(&command_mutex) == osOK) {
 			global_telemetry_command = local_command;
 			release_mutex(&command_mutex);
@@ -111,17 +111,11 @@ void vTaskXbee(void *argument) {
 		/* Check if we need to go to low sampling */
 		if (local_command == TELEMETRY_LOW_SAMPLING) {
 			fast_sampling = false;
-#if (configUSE_TRACE_FACILITY == 1)
-                vTracePrint(xb_channel, "SLOW SAMPLING");
-#endif
 		}
 
 		/* Go Back to Low Sampling if we are in Touchdown */
 		if (telemetry_send.flight_phase == TOUCHDOWN_T) {
 			fast_sampling = false;
-#if (configUSE_TRACE_FACILITY == 1)
-                vTracePrint(xb_channel, "SLOW SAMPLING FROM TD");
-#endif
 		}
 
 		/* reset command */
@@ -149,7 +143,7 @@ void vTaskXbee(void *argument) {
 
 		read_mutex(&airbrake_ext_mutex, &global_airbrake_ext_meas,
 				&telemetry_send.airbrake_extension,
-				sizeof(airbrake_ext_mutex));
+				sizeof(telemetry_send.airbrake_extension));
 
 		read_mutex(&fsm_mutex, &global_flight_phase_detection.flight_phase,
 				&telemetry_send.flight_phase,
@@ -162,33 +156,25 @@ void vTaskXbee(void *argument) {
 		read_mutex(&battery_mutex, &global_battery_data, &telemetry_send.battery,
 				sizeof(global_battery_data));
 
+
 		telemetry_send.height = state_est_data.position_world[2];
 		telemetry_send.velocity = state_est_data.velocity_world[2];
-		telemetry_send.ts = osKernelGetTickCount();
 
+		telemetry_send.ts = osKernelGetTickCount();
 
 		/*=============Encoding Part of Reed Solomon =============*/
 
 		/* convert struct to coefficients of polynomial */
 		struct_to_poly(telemetry_send, tele_data);
 
-
-#if (configUSE_TRACE_FACILITY == 1)
-                vTracePrint(xb_channel, "struct_to_poly done");
-#endif
-
 		/* encode data[] to produce parity in bb[].  Data input and parity output
 		   is in polynomial form
 		 */
 		encode_rs(bb, index_of, alpha_to, gg, tele_data);
 
-
-#if (configUSE_TRACE_FACILITY == 1)
-                vTracePrint(xb_channel, "encode_rs done");
-#endif
-
 		/* put the transmitted codeword, made up of data plus parity, in recd[] */
-		for (int i = 0; i < NN - KK; i++) recd[i] = bb[i];
+		for (int i = 0; i < KK; i++) recd[i] = tele_data[i];
+		for (int i = 0; i < NN-KK; i++) recd[i+KK-1] = bb[i];
 
 		/* compress data for transmission */
 		compress_data(recd, recd_compact);
@@ -204,8 +190,8 @@ void vTaskXbee(void *argument) {
 		/* Send recd_compact */
 
 		/* Send to Xbee module */
-		HAL_UART_Transmit(&huart7, transmission_data,
-				sizeof(transmission_data), 500);
+		HAL_UART_Transmit_DMA(&huart7, transmission_data,
+				sizeof(transmission_data));
 
 		uart_counter = 0;
 		/* Sleep */

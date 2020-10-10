@@ -12,9 +12,9 @@
 uint32_t adc_value[4];
 
 /* Buffers for running avarrage */
-__attribute__((section(".user_dtcm"))) double current_buffer[50];
-__attribute__((section(".user_dtcm"))) double supply_buffer[50];
-__attribute__((section(".user_dtcm"))) double battery_buffer[50];
+double current_buffer[50];
+double supply_buffer[50];
+double battery_buffer[50];
 
 void vTaskBattery(void *argument) {
   /* For periodic update */

@@ -17,9 +17,9 @@
 
 #define MM  8           /* RS code over GF(2**mm) */
 #define NN  255         /* nn=2**mm -1   length of codeword */
-#define TT  20          /* number of errors that can be corrected */
-#define KK  215//(NN-(2*TT))        /* kk = nn-2*tt  - length of data without parity bits*/
-#define KK2 108//(int)ceil((double)KK/2) /* length of compressed data without parity bits*/
+#define TT  44          /* number of errors that can be corrected */
+#define KK  167//(NN-(2*TT))        /* kk = nn-2*tt  - length of data without parity bits*/
+#define KK2 84//(int)ceil((double)KK/2) /* length of compressed data without parity bits*/
 
 /* sets the irreducible polynomial */
 void set_irr_poly(int16_t *pp);

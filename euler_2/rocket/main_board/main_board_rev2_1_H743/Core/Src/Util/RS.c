@@ -328,7 +328,6 @@ void struct_to_poly(telemetry_t t_data, int16_t *data){
             data[i] = buffer[idx] & 0x0F;
             tmp=0;
         }
-
     }
 }
 
@@ -347,18 +346,12 @@ telemetry_t poly_to_struct(int16_t const *recd){
 }
 
 void compress_data(int16_t const *recd, int16_t *recd_compact){
-
+    for (int i=0;i < KK2-1;i++){
+    	recd_compact[i] = (recd[2*i] << 4) | recd[2*i+1];
+    }
     for (int i=0; i<NN-KK;i++){
-        recd_compact[i] = recd[i];
-    }
-    for (int i=NN-KK;i < NN-KK+KK2;i++){
-        if (i == NN-KK+KK2-1){
-            recd_compact[i] = (recd[2*(i-NN+KK)+NN-KK] << 4) | 0x0;
+            recd_compact[i+KK2-1] = recd[i+KK-1];
         }
-        else{
-            recd_compact[i] = (recd[2*(i-NN+KK)+NN-KK] << 4) | recd[2*(i-NN+KK)+NN-KK+1];
-        }
-    }
 }
 
 int16_t * decompress_data(int16_t const *recd_compact){

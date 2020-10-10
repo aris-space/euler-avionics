@@ -58,14 +58,17 @@ typedef struct {
 } telemetry_sb_data_t;
 
 typedef struct {
+	uint32_t alignment1;
 	timestamp_t ts;
     telemetry_sb_data_t sb_data;
     telemetry_battery_data_t battery;
+    uint32_t alignment2;
     gps_data_telemetry_t gps;
     int32_t height;
     int32_t velocity;
     int32_t airbrake_extension;
     flight_phase_telemetry_e flight_phase;
+    uint32_t alignment3;
 } telemetry_t;
 #pragma pack(pop)
 
