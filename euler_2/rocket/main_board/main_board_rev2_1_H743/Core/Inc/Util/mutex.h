@@ -20,8 +20,7 @@ osStatus_t release_mutex(custom_mutex_t *custom_mutex);
 osStatus_t read_mutex(custom_mutex_t *custom_mutex, const void *global_data,
                       void *const local_data, int32_t size);
 
-osStatus_t read_mutex_state_est(custom_mutex_t *custom_mutex,
-                                baro_data_t *baro_data, imu_data_t *imu_data,
-                                state_est_meas_t *state, uint32_t sb_number);
+osStatus_t read_mutex_state_est(custom_mutex_t *custom_mutex, state_est_meas_t *state, sb_data_t *data,
+                                uint32_t sb_number);
 
 #endif /* INC_UTIL_MUTEX_H_ */

@@ -24,7 +24,7 @@ inline uint8_t usb_print(const char *format, ...) {
     va_start(argptr, format);
     vsnprintf(print_buffer, PRINT_BUFFER_LEN, format, argptr);
     va_end(argptr);
-    //ret = CDC_Transmit_FS((uint8_t *)print_buffer, strlen(print_buffer));
+    ret = CDC_Transmit_FS((uint8_t *)print_buffer, strlen(print_buffer));
     osMutexRelease(print_mutex);
   }
 #endif

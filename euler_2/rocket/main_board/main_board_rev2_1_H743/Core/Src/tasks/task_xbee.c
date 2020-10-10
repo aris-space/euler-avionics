@@ -125,8 +125,7 @@ void vTaskXbee(void *argument) {
 		}
 
 		/* Read Sensor Board Data */
-		read_mutex(&sb1_mutex, &sb1_baro, &local_sb_data.baro, sizeof(sb1_baro));
-		read_mutex(&sb1_mutex, &sb1_imu_1, &local_sb_data.imu_1, sizeof(sb1_imu_1));
+		read_mutex(&sb1_mutex, &sb1_global, &local_sb_data, sizeof(sb1_global));
 
 		telemetry_send.sb_data.pressure = local_sb_data.baro.pressure;
 		telemetry_send.sb_data.temperature = local_sb_data.baro.temperature;
