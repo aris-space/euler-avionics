@@ -127,7 +127,7 @@ void vTaskMotorCont(void *argument) {
       release_mutex(&airbrake_ext_mutex);
     }
 
-    usb_print("[MOTOR] Read Position:%d\n", measured_motor_position);
+    //usb_print("[MOTOR] Read Position:%d\n", measured_motor_position);
 
     /* Log Motor Position and Desired Motor Position */
     log_motor(osKernelGetTickCount(), desired_motor_position,

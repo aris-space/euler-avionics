@@ -50,8 +50,8 @@ osStatus_t log_sensor(timestamp_t ts, board_id_t sensor_board_id,
       return osError; /* bad sensor type provided, exit the function */
   }
   osStatus_t ret_sd = osMessageQueuePut(sd_queue, &log_elem, 0U, 0U);
-  // osStatus_t ret_flash = osMessageQueuePut(flash_queue, &log_elem, 0U, 0U);
-  // return (ret_sd == osOK && ret_flash == osOK) ? osOK: osError;
+  //osStatus_t ret_flash = osMessageQueuePut(flash_queue, &log_elem, 0U, 0U);
+  //return (ret_sd == osOK && ret_flash == osOK) ? osOK: osError;
   return ret_sd;
 }
 

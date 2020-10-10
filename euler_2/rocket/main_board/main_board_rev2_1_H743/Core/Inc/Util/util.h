@@ -136,7 +136,7 @@ static const imu_data_t EMPTY_IMU = {0};
 #endif
 /* Comment the next line in order to disable flash read -- should be disabled
  * during flight */
-#define FLASH_READ
+// #define FLASH_READ
 
 #ifdef DEBUG
 osMutexId_t print_mutex;
