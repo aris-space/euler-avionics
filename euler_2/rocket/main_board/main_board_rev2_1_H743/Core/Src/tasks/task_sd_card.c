@@ -74,7 +74,7 @@ void vTaskSdCard(void *argument) {
       continue; /* continuing for loop */
     }
 
-    HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
+    //HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
 
     volatile int32_t sync_counter = 0;
     sd_str_idx = 0;
@@ -165,7 +165,7 @@ static void mount_sd_card() {
 #endif
 
       // force sd card to be reinitialized
-      HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
+      //HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
       osDelay(10);
     } else {
 #if (configUSE_TRACE_FACILITY == 1)
@@ -192,7 +192,7 @@ static void remount_sd_card() {
       vTracePrint(sd_channel, "Sd card remounting failed");
 #endif
       // force sd card to be reinitialized
-      HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
+      //HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
       osDelay(10);
     } else {
 #if (configUSE_TRACE_FACILITY == 1)

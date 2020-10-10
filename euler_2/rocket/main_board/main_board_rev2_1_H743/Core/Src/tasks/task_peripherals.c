@@ -8,12 +8,17 @@
 #include "tasks/task_peripherals.h"
 #include "main.h"
 
+void user_pwm_setvalue(uint16_t value);
+
 void vTaskPeripherals(void *argument) {
   /* For periodic update */
   uint32_t tick_count, tick_update;
 
   osDelay(1200);
   HAL_GPIO_WritePin(PW_HOLD_GPIO_Port, PW_HOLD_Pin, GPIO_PIN_SET);
+
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
+  user_pwm_setvalue(0);
 
   /* Camera Variables */
   uint32_t camera_counter = 0;
@@ -105,17 +110,30 @@ void vTaskPeripherals(void *argument) {
     /* Enable Buzzer */
     if (buzzer_on_fsm ^ buzzer_on_telemetry) {
       if (buzzercounter > (400 / tick_update)) {
-        HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
+
+    	user_pwm_setvalue(125);
         buzzercounter = 0;
       }
     }
-
-    else if (osKernelGetTickCount() > 5000) {
-      HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
+    else{
+    	user_pwm_setvalue(0);
     }
+
     buzzercounter++;
 
     /* Sleep */
     osDelayUntil(tick_count);
   }
+}
+
+void user_pwm_setvalue(uint16_t value)
+{
+    TIM_OC_InitTypeDef sConfigOC;
+
+    sConfigOC.OCMode = TIM_OCMODE_PWM1;
+    sConfigOC.Pulse = value;
+    sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+    sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+    HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
 }

@@ -97,7 +97,7 @@ void vTaskMotorCont(void *argument) {
     } else {
       motor_status = move_to_position(0);
     }
-
+//
 //    if(osKernelGetTickCount() < 10000 && osKernelGetTickCount() > 9960){
 //    	test_airbrakes(-100);
 //    }

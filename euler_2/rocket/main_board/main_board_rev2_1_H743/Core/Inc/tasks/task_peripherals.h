@@ -32,6 +32,8 @@ extern custom_mutex_t command_mutex;
 extern flight_phase_detection_t global_flight_phase_detection;
 extern command_e global_telemetry_command;
 
+extern TIM_HandleTypeDef htim4;
+
 /* functions */
 void vTaskPeripherals(void *argument);
 

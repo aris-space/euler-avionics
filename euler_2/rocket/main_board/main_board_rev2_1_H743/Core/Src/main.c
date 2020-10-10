@@ -67,6 +67,8 @@ DMA_HandleTypeDef hdma_spi1_rx;
 DMA_HandleTypeDef hdma_spi2_rx;
 DMA_HandleTypeDef hdma_spi3_rx;
 
+TIM_HandleTypeDef htim4;
+
 UART_HandleTypeDef huart4;
 UART_HandleTypeDef huart7;
 UART_HandleTypeDef huart1;
@@ -124,7 +126,7 @@ const osThreadAttr_t task_sens_read_attributes = {
 };
 /* Definitions for task_sd_card */
 osThreadId_t task_sd_cardHandle;
-uint32_t task_sd_cardBuffer[ 2048 ];
+DTCM uint32_t task_sd_cardBuffer[ 2048 ];
 osStaticThreadDef_t task_sd_cardControlBlock;
 const osThreadAttr_t task_sd_card_attributes = {
   .name = "task_sd_card",
@@ -315,6 +317,7 @@ static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_SPI4_Init(void);
+static void MX_TIM4_Init(void);
 void StartDefaultTask(void *argument);
 extern void vTaskStateEst(void *argument);
 extern void vTaskController(void *argument);
@@ -382,6 +385,7 @@ int main(void)
   MX_USART3_UART_Init();
   MX_FATFS_Init();
   MX_SPI4_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   MX_USB_DEVICE_Init();
 #if (configUSE_TRACE_FACILITY == 1)
@@ -573,7 +577,7 @@ int main(void)
   task_sens_readHandle = osThreadNew(vTaskSensRead, NULL, &task_sens_read_attributes);
 
   /* creation of task_sd_card */
-  //task_sd_cardHandle = osThreadNew(vTaskSdCard, NULL, &task_sd_card_attributes);
+  task_sd_cardHandle = osThreadNew(vTaskSdCard, NULL, &task_sd_card_attributes);
 
   /* creation of task_motor_cont */
   task_motor_contHandle = osThreadNew(vTaskMotorCont, NULL, &task_motor_cont_attributes);
@@ -588,7 +592,7 @@ int main(void)
   task_batteryHandle = osThreadNew(vTaskBattery, NULL, &task_battery_attributes);
 
   /* creation of task_xbee */
-  //task_xbeeHandle = osThreadNew(vTaskXbee, NULL, &task_xbee_attributes);
+  task_xbeeHandle = osThreadNew(vTaskXbee, NULL, &task_xbee_attributes);
 
   /* creation of task_peripherals */
   task_peripheralsHandle = osThreadNew(vTaskPeripherals, NULL, &task_peripherals_attributes);
@@ -1009,6 +1013,55 @@ static void MX_SPI4_Init(void)
 }
 
 /**
+  * @brief TIM4 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM4_Init(void)
+{
+
+  /* USER CODE BEGIN TIM4_Init 0 */
+
+  /* USER CODE END TIM4_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM4_Init 1 */
+
+  /* USER CODE END TIM4_Init 1 */
+  htim4.Instance = TIM4;
+  htim4.Init.Prescaler = 240;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.Period = 250;
+  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_PWM_Init(&htim4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 125;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM4_Init 2 */
+
+  /* USER CODE END TIM4_Init 2 */
+  HAL_TIM_MspPostInit(&htim4);
+
+}
+
+/**
   * @brief UART4 Initialization Function
   * @param None
   * @retval None
@@ -1317,8 +1370,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(PW_HOLD_GPIO_Port, PW_HOLD_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, LED3_Pin|LED4_Pin|BUZZER_Pin|LED1_Pin
-                          |LED2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, LED3_Pin|LED4_Pin|LED1_Pin|LED2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : SPI4_CS_Pin CAMERA1_Pin CAMERA2_Pin */
   GPIO_InitStruct.Pin = SPI4_CS_Pin|CAMERA1_Pin|CAMERA2_Pin;
@@ -1340,10 +1392,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(PW_HOLD_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LED3_Pin LED4_Pin BUZZER_Pin LED1_Pin
-                           LED2_Pin */
-  GPIO_InitStruct.Pin = LED3_Pin|LED4_Pin|BUZZER_Pin|LED1_Pin
-                          |LED2_Pin;
+  /*Configure GPIO pins : LED3_Pin LED4_Pin LED1_Pin LED2_Pin */
+  GPIO_InitStruct.Pin = LED3_Pin|LED4_Pin|LED1_Pin|LED2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

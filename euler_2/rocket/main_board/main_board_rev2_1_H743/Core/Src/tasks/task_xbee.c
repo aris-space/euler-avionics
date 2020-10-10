@@ -82,7 +82,7 @@ void vTaskXbee(void *argument) {
 	/* Infinite loop */
 	tick_update_slow = osKernelGetTickFreq() / XBEE_SAMPLING_FREQ;
 	tick_update_fast = osKernelGetTickFreq() / XBEE_SAMPLING_FREQ_HIGH;
-	bool fast_sampling = true;
+	bool fast_sampling = false;
 	HAL_UART_Receive_IT(&huart7, (uint8_t *)&local_command_rx, 1);
 	tick_count = osKernelGetTickCount();
 
