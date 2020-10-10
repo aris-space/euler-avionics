@@ -72,20 +72,23 @@ void vTaskStateEst(void *argument) {
     /* Acquire the Sensor data */
 
     /* Sensor Board 1 */
-    read_mutex_state_est(&sb1_mutex, &sb1_baro, &sb1_imu_1, &state_est_state.state_est_meas, 1);
+    read_mutex_state_est(&sb1_mutex, &state_est_state.state_est_meas, &sb1_global, 1);
 
     /* Sensor Board 2 */
-    read_mutex_state_est(&sb2_mutex, &sb2_baro, &sb2_imu_1, &state_est_state.state_est_meas, 2);
+    read_mutex_state_est(&sb2_mutex, &state_est_state.state_est_meas, &sb2_global, 2);
 
     /* Sensor Board 3 */
-    read_mutex_state_est(&sb3_mutex, &sb3_baro, &sb3_imu_1, &state_est_state.state_est_meas, 3);
+    read_mutex_state_est(&sb3_mutex, &state_est_state.state_est_meas, &sb3_global, 3);
 
     /* calculate averaging */
     if (state_est_state.flight_phase_detection.flight_phase == IDLE) {
       sum_press +=
-          (float)(sb1_baro.pressure + sb2_baro.pressure + sb3_baro.pressure);
-      sum_temp += ((float)(sb1_baro.temperature + sb2_baro.temperature +
-                           sb3_baro.temperature)) /
+          state_est_state.state_est_meas.baro_data[0].pressure +
+		  state_est_state.state_est_meas.baro_data[1].pressure +
+		  state_est_state.state_est_meas.baro_data[2].pressure;
+      sum_temp += (state_est_state.state_est_meas.baro_data[0].temperature +
+    		  state_est_state.state_est_meas.baro_data[1].temperature +
+			  state_est_state.state_est_meas.baro_data[2].temperature) /
                   100;
       calibrate_count += 3;
       if (calibrate_count > 150) {

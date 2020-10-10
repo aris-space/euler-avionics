@@ -222,6 +222,10 @@ const osThreadAttr_t task_flash_attributes = {
 
 /** SENSOR BOARD VARIABLES **/
 
+sb_data_t sb1_global = { 0 };
+sb_data_t sb2_global = { 0 };
+sb_data_t sb3_global = { 0 };
+
 baro_data_t sb1_baro = {0};
 imu_data_t sb1_imu_1 = {0};
 imu_data_t sb1_imu_2 = {0};
@@ -569,7 +573,7 @@ int main(void)
   task_sens_readHandle = osThreadNew(vTaskSensRead, NULL, &task_sens_read_attributes);
 
   /* creation of task_sd_card */
-  task_sd_cardHandle = osThreadNew(vTaskSdCard, NULL, &task_sd_card_attributes);
+  //task_sd_cardHandle = osThreadNew(vTaskSdCard, NULL, &task_sd_card_attributes);
 
   /* creation of task_motor_cont */
   task_motor_contHandle = osThreadNew(vTaskMotorCont, NULL, &task_motor_cont_attributes);
@@ -584,7 +588,7 @@ int main(void)
   task_batteryHandle = osThreadNew(vTaskBattery, NULL, &task_battery_attributes);
 
   /* creation of task_xbee */
-  task_xbeeHandle = osThreadNew(vTaskXbee, NULL, &task_xbee_attributes);
+  //task_xbeeHandle = osThreadNew(vTaskXbee, NULL, &task_xbee_attributes);
 
   /* creation of task_peripherals */
   task_peripheralsHandle = osThreadNew(vTaskPeripherals, NULL, &task_peripherals_attributes);
