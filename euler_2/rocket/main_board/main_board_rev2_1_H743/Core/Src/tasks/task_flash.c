@@ -457,8 +457,6 @@ static int compare_arrays(uint8_t a[], uint8_t b[], int n) {
 
 uint8_t flash_buffer[FLASH_BUFFER_LEN];
 
-//uint8_t flash_buffer[FLASH_BUFFER_LEN];
-
 void vTaskFlash(void *argument) {
   osDelay(500);
 
@@ -494,7 +492,7 @@ void vTaskFlash(void *argument) {
     W25qxx_WriteSector(flash_buffer, sector_id, 0, FLASH_BUFFER_LEN);
 
 #ifdef FLASH_READ
-    // osDelay(10000);
+    osDelay(500);
     W25qxx_ReadSector(flash_read_buffer, sector_id, 0, FLASH_BUFFER_LEN);
     // osDelay(1000);
 
