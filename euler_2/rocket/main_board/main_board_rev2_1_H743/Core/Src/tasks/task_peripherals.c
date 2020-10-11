@@ -8,7 +8,7 @@
 #include "tasks/task_peripherals.h"
 #include "main.h"
 
-void user_pwm_setvalue(uint16_t value);
+//void user_pwm_setvalue(uint16_t value);
 
 void vTaskPeripherals(void *argument) {
   /* For periodic update */
@@ -17,15 +17,8 @@ void vTaskPeripherals(void *argument) {
   osDelay(1200);
   HAL_GPIO_WritePin(PW_HOLD_GPIO_Port, PW_HOLD_Pin, GPIO_PIN_SET);
 
-  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
-  user_pwm_setvalue(0);
 
-  /* Camera Variables */
-  uint32_t camera_counter = 0;
   bool camera_enabled = false;
-  bool camera_wait = false;
-  bool camera_trigger = false;
-  bool camera_ready = false;
 
   /* buzzer variables */
   bool buzzer_on_fsm = false;
@@ -79,29 +72,7 @@ void vTaskPeripherals(void *argument) {
     /* Start Enable Camera Sequence */
     if ((telemetry_command == ENABLE_CAMERA) && !camera_enabled) {
       camera_enabled = true;
-      HAL_GPIO_WritePin(CAMERA1_GPIO_Port, CAMERA1_Pin, GPIO_PIN_SET);
-      HAL_GPIO_WritePin(CAMERA2_GPIO_Port, CAMERA2_Pin, GPIO_PIN_SET);
-      camera_counter = osKernelGetTickCount() + CAMERA_ON;
-    }
-
-    if ((camera_counter > osKernelGetTickCount()) && !camera_wait) {
-      camera_wait = true;
-      HAL_GPIO_WritePin(CAMERA1_GPIO_Port, CAMERA1_Pin, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(CAMERA2_GPIO_Port, CAMERA2_Pin, GPIO_PIN_RESET);
-      camera_counter = osKernelGetTickCount() + CAMERA_WAIT;
-    }
-
-    if ((camera_counter > osKernelGetTickCount()) && !camera_trigger) {
-      camera_trigger = true;
-      HAL_GPIO_WritePin(CAMERA1_GPIO_Port, CAMERA1_Pin, GPIO_PIN_SET);
-      HAL_GPIO_WritePin(CAMERA2_GPIO_Port, CAMERA2_Pin, GPIO_PIN_SET);
-      camera_counter = osKernelGetTickCount() + CAMERA_TRIGGER;
-    }
-
-    if ((camera_counter > osKernelGetTickCount()) && !camera_ready) {
-      camera_ready = true;
-      HAL_GPIO_WritePin(CAMERA1_GPIO_Port, CAMERA1_Pin, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(CAMERA2_GPIO_Port, CAMERA2_Pin, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(CAMERA_GPIO_Port, CAMERA_Pin, GPIO_PIN_SET);
     }
 
     /* Camera first enable for some time, then turn off and finally turn on
@@ -109,31 +80,25 @@ void vTaskPeripherals(void *argument) {
 
     /* Enable Buzzer */
     if (buzzer_on_fsm ^ buzzer_on_telemetry) {
-      if (buzzercounter > (400 / tick_update)) {
+      if (buzzercounter > (800 / tick_update)) {
 
-    	user_pwm_setvalue(125);
-        buzzercounter = 0;
+    	  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
+      }
+      else{
+      	HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_2);
       }
     }
     else{
-    	user_pwm_setvalue(0);
+    	HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_2);
     }
 
     buzzercounter++;
+    if(buzzercounter >= 16){
+    	buzzercounter = 0;
+    }
 
     /* Sleep */
     osDelayUntil(tick_count);
   }
 }
 
-void user_pwm_setvalue(uint16_t value)
-{
-    TIM_OC_InitTypeDef sConfigOC;
-
-    sConfigOC.OCMode = TIM_OCMODE_PWM1;
-    sConfigOC.Pulse = value;
-    sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-    sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-    HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_2);
-    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);
-}

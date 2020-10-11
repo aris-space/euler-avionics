@@ -17,10 +17,6 @@
 /* defines */
 #define PERIPHERALS_SAMPLING_FREQ 10
 
-#define CAMERA_ON 3500
-#define CAMERA_WAIT 1000
-#define CAMERA_TRIGGER 200
-
 /* extern */
 
 /* Mutexes */

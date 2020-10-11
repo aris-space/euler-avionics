@@ -29,7 +29,7 @@ void vTaskFsm(void *argument) {
   /* Telemetry Command */
   command_e telemetry_command = IDLE_COMMAND;
 
-  osDelay(1000);
+  osDelay(10000);
 
   /* Infinite loop */
   tick_count = osKernelGetTickCount();

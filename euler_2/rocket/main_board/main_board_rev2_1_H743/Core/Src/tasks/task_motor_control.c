@@ -40,21 +40,21 @@ void vTaskMotorCont(void *argument) {
   int32_t desired_motor_position = 0;
   int32_t measured_motor_position = 0;
 
-  /* Enable Motor */
-  while (enable_motor() != osOK) {
-    osDelay(1000);
-  };
-
-  /* Set Position Mode */
-  set_position_mode(position_mode);
-  while (set_position_mode(position_mode) != osOK) {
-    osDelay(1000);
-  };
-
-  if (position_mode == 0x01) {
-    motor_status =
-        configure_ppm(PPM_velocity, PPM_acceleration, PPM_deceleration);
-  }
+//  /* Enable Motor */
+//  while (enable_motor() != osOK) {
+//    osDelay(1000);
+//  };
+//
+//  /* Set Position Mode */
+//  set_position_mode(position_mode);
+//  while (set_position_mode(position_mode) != osOK) {
+//    osDelay(1000);
+//  };
+//
+//  if (position_mode == 0x01) {
+//    motor_status =
+//        configure_ppm(PPM_velocity, PPM_acceleration, PPM_deceleration);
+//  }
 
   /* Infinite loop */
   tick_count = osKernelGetTickCount();

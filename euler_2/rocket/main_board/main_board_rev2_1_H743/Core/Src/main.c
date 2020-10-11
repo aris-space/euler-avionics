@@ -126,7 +126,7 @@ const osThreadAttr_t task_sens_read_attributes = {
 };
 /* Definitions for task_sd_card */
 osThreadId_t task_sd_cardHandle;
-DTCM uint32_t task_sd_cardBuffer[ 2048 ];
+uint32_t task_sd_cardBuffer[ 2048 ];
 osStaticThreadDef_t task_sd_cardControlBlock;
 const osThreadAttr_t task_sd_card_attributes = {
   .name = "task_sd_card",
@@ -1366,7 +1366,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, SPI4_CS_Pin|CAMERA1_Pin|CAMERA2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOE, SPI4_CS_Pin|CAMERA_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(PW_HOLD_GPIO_Port, PW_HOLD_Pin, GPIO_PIN_RESET);
@@ -1374,8 +1374,8 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, LED3_Pin|LED4_Pin|LED1_Pin|LED2_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : SPI4_CS_Pin CAMERA1_Pin CAMERA2_Pin */
-  GPIO_InitStruct.Pin = SPI4_CS_Pin|CAMERA1_Pin|CAMERA2_Pin;
+  /*Configure GPIO pins : SPI4_CS_Pin CAMERA_Pin */
+  GPIO_InitStruct.Pin = SPI4_CS_Pin|CAMERA_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

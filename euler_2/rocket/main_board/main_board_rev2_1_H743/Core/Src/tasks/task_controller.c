@@ -9,6 +9,7 @@
 #include "util/logging_util.h"
 #include "tasks/task_controller.h"
 
+ DTCM control_data_t control_data = {0};
 
 void vTaskController(void *argument) {
   /* For periodic update */
@@ -19,7 +20,7 @@ void vTaskController(void *argument) {
   env_t env_local = {0};
 
   /* Initialize the control_data struct */
-  control_data_t control_data = {0};
+
   control_init(&control_data);
 
 
@@ -50,7 +51,7 @@ void vTaskController(void *argument) {
     state_est_data_local.position_world[2] = 3000000;
     control_data.integrated_error = 0;
 
-    control_step(&control_data, &state_est_data_local, &flight_phase_detection_local, &env_local);
+//    control_step(&control_data, &state_est_data_local, &flight_phase_detection_local, &env_local);
 
 	usb_print("[TS END]: %d\n",
 			osKernelGetTickCount());

@@ -23,8 +23,8 @@ osStatus_t release_mutex(custom_mutex_t *custom_mutex) {
 
 osStatus_t read_mutex(custom_mutex_t *custom_mutex, void const *global_data,
                      void *const local_data, int32_t size) {
-  uint8_t buffer[100] = {0};
-  uint32_t counter = custom_mutex->counter;
+  uint8_t buffer[100];
+  volatile uint32_t counter = custom_mutex->counter;
   osStatus_t status = osError;
   for (int i = 0; i < 5; i++) {
     memcpy(&buffer[0], global_data, size);
@@ -41,8 +41,8 @@ osStatus_t read_mutex(custom_mutex_t *custom_mutex, void const *global_data,
 osStatus_t read_mutex_state_est(custom_mutex_t *custom_mutex, state_est_meas_t *state, sb_data_t *data,
                                 uint32_t sb_number) {
   /* Buffer */
-  uint32_t Placeholder_timestamps[3] = {0};
-  float Placeholder_measurement[4] = {0};
+  uint32_t Placeholder_timestamps[3];
+  float Placeholder_measurement[4];
 
   /* Status */
   osStatus_t status = osError;

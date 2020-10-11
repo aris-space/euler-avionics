@@ -9,6 +9,7 @@
 #define INC_UTIL_UTIL_H_
 
 #include "cmsis_os.h"
+#include "stm32h7xx.h"
 
 /** BASIC TYPES **/
 
