@@ -11,6 +11,7 @@
 /* Includes */
 #include "util/mutex.h"
 #include "util/util.h"
+#include "../../aris-euler-state-estimation/Inc/flight_phase_detection.h"
 
 /* Constants */
 
@@ -24,9 +25,11 @@
 extern custom_mutex_t controller_mutex;
 extern custom_mutex_t state_est_mutex;
 extern custom_mutex_t fsm_mutex;
+extern custom_mutex_t env_mutex;
 extern state_est_data_t state_est_data_global;
 extern int32_t controller_output_global;
 extern flight_phase_detection_t global_flight_phase_detection;
+extern env_t global_env;
 
 /* Tasks */
 void vTaskController(void *argument);
