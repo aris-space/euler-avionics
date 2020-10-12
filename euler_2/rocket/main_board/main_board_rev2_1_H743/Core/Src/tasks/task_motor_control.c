@@ -24,6 +24,7 @@ void vTaskMotorCont(void *argument) {
   flight_phase_detection.mach_number = SUBSONIC;
 
   /* Initialisation */
+  /* TODO [nemanja]: unused variables */
    int8_t position_mode = 0x08;
   /* Profile Position Mode */
   //int8_t position_mode = 0x01;

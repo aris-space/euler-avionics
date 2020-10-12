@@ -86,6 +86,7 @@ void gen_poly(int16_t *gg, int16_t const *alpha_to, int16_t const *index_of)
     for (int i = 0; i <= NN - KK; i++) gg[i] = index_of[gg[i]];
 }
 
+/* TODO [nemanja]: try this https://kernel.googlesource.com/pub/scm/linux/kernel/git/mcoquelin/stm32/+/next/dt-for-v4.3b/lib/reed_solomon/encode_rs.c */
 void encode_rs(int16_t *bb, int16_t const *index_of, int16_t const *alpha_to, int16_t const *gg, int16_t const *data)
 /* take the string of symbols in data[i], i=0..(k-1) and encode systematically
    to produce 2*TT parity symbols in bb[0]..bb[2*TT-1]

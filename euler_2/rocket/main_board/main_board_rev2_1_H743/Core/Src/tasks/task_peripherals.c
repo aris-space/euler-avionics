@@ -92,6 +92,7 @@ void vTaskPeripherals(void *argument) {
     	HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_2);
     }
 
+    /* TODO [nemanja]: === if (++buzzercounter >= 16) */
     buzzercounter++;
     if(buzzercounter >= 16){
     	buzzercounter = 0;

@@ -407,6 +407,7 @@ static inline void read_value(uint8_t *flash_read_buffer,
 }
 #endif
 
+/* TODO [nemanja]: move initialization to a separate task */
 static inline void init_flash() {
   //	[FLASH] Page Size: 256 Bytes
   //	[FLASH] Page Count: 65536
@@ -455,6 +456,7 @@ static int compare_arrays(uint8_t a[], uint8_t b[], int n) {
 }
 #endif
 
+/* TODO [nemanja]: try moving this to DTCM */
 uint8_t flash_buffer[FLASH_BUFFER_LEN];
 
 void vTaskFlash(void *argument) {

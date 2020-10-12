@@ -90,6 +90,7 @@ const osThreadAttr_t defaultTask_attributes = {
 };
 /* Definitions for task_state_est */
 osThreadId_t task_state_estHandle;
+/* TODO [nemanja]: try moving task buffers to DTCM and see what happens */
 uint32_t task_state_estBuffer[ 2048 ];
 osStaticThreadDef_t task_state_estControlBlock;
 const osThreadAttr_t task_state_est_attributes = {
@@ -392,6 +393,7 @@ int main(void)
 #if (configUSE_TRACE_FACILITY == 1)
   vTraceEnable(TRC_INIT);
 #endif
+  /* TODO [nemanja]: initialize all things here (flash, mount sd_card...) or create a separate task */
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -1421,6 +1423,7 @@ void StartDefaultTask(void *argument)
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   osDelay(5000);
+  /* TODO [nemanja]: move this to initialization task */
 #if (configUSE_TRACE_FACILITY == 1)
   vTraceEnable(TRC_START);
 #endif

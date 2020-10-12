@@ -107,6 +107,8 @@ void vTaskSdCard(void *argument) {
               vTracePrint(sd_channel, "Written to file");
 #endif
             }
+            /* TODO [nemanja]: === if (++sync_counter >= SD_CARD_SYNC_COUNT) */
+            /* TODO [nemanja]: check if this sync count is detrimental */
             sync_counter++;
             if (sync_counter >= SD_CARD_SYNC_COUNT) {
               sync_counter = 0;
@@ -176,6 +178,7 @@ static void mount_sd_card() {
   } while (res != FR_OK);
 }
 
+/* TODO [nemanja]: this is probably not working, check in debugger */
 static void remount_sd_card() {
   FRESULT res;
   // f_close(&EULER_LOG_FILE);

@@ -44,6 +44,7 @@ void vTaskController(void *argument) {
 
     		usb_print("[TS START]: %d\n",
     				osKernelGetTickCount());
+	/* TODO [nemanja]: are these initialization parameters correct? */
     flight_phase_detection_local.flight_phase = CONTROL;
     flight_phase_detection_local.mach_number = 0.45f;
     state_est_data_local.airbrake_extension = 500000;
