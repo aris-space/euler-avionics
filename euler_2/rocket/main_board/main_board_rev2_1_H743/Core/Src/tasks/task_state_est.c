@@ -102,14 +102,14 @@ void vTaskStateEst(void *argument) {
 
     /* get current airbrake extension */
     read_mutex(&airbrake_ext_mutex, &global_airbrake_ext_meas,
-        		&airbrake_ext_meas, sizeof(global_airbrake_ext_meas));
+        		   &airbrake_ext_meas, sizeof(global_airbrake_ext_meas));
 
     /* write into state_est_state */
     state_est_state.state_est_meas.airbrake_extension = ((float)airbrake_ext_meas)/1000;
 
     /* get new Phase Detection*/
     read_mutex(&fsm_mutex, &global_flight_phase_detection,
-    		&state_est_state.flight_phase_detection, sizeof(state_est_state.flight_phase_detection));
+    		       &state_est_state.flight_phase_detection, sizeof(state_est_state.flight_phase_detection));
 
     /* Kalman Filter Step */
     state_est_step(tick_count, &state_est_state, false);
