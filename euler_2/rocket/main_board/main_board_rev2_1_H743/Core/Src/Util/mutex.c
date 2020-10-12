@@ -65,8 +65,8 @@ osStatus_t read_mutex_state_est(custom_mutex_t *custom_mutex, state_est_meas_t *
     Placeholder_measurement[1] = ((float)(data->baro.temperature)) / 100;    
 
     #if STATE_ESTIMATION_TYPE == 1
-      Placeholder_measurement[2] = ((float)(data->imu_1.acc_z)) / 1024 * GRAVITATION;
-      Placeholder_measurement[3] = ((float)(data->imu_2.acc_z)) / 1024 * GRAVITATION;
+      Placeholder_measurement[2] = ((float)(data->imu_1.acc_z)) / 1024 * (-GRAVITATION);
+      Placeholder_measurement[3] = ((float)(data->imu_2.acc_z)) / 1024 * (-GRAVITATION);
 
     #elif STATE_ESTIMATION_TYPE == 2
       Placeholder_measurement[2] = ((float)(data->imu_1.acc_x)) / 1024 * GRAVITATION;
