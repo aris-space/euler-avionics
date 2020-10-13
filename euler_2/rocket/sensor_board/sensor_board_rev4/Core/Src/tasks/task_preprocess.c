@@ -22,24 +22,17 @@ void vTaskPreprocess(void *argument) {
 	imu_data_t queue_data_imu_1 = { 0 };
 	imu_data_t queue_data_imu_2 = { 0 };
 
-	/* For periodic update */
-	uint32_t tick_count, tick_update;
-	tick_count = osKernelGetTickCount();
-	tick_update = osKernelGetTickFreq() / SAMPLING_RATE_PREP;
+
 
 	/* Infinite loop */
 	for (;;) {
-		tick_count += tick_update;
 
 		/* IMU 1 */
-
-		/* Check if Queue is empty */
 		if (osMessageQueueGet(preprocess_queue_imu_1, &queue_data_imu_1, NULL,
 				1) == osOK) {
 
 			/* if not, filter Value */
 			//lp_filter(registers_imu_1, queue_data_imu_1.acc_z, &filtered_acc_z);
-
 
 			/* Write Result into Motherboard Variable if Mutex is available */
 			if (osMutexAcquire(imu_mutex_1, IMU_MUTEX_TIMEOUT) == osOK) {
@@ -50,8 +43,9 @@ void vTaskPreprocess(void *argument) {
 		}
 
 		/* IMU 2 */
-		if (osMessageQueueGet(preprocess_queue_imu_2, &queue_data_imu_2, NULL,
-				1) == osOK) {
+		osStatus_t thing = osMessageQueueGet(preprocess_queue_imu_2Handle, &queue_data_imu_2, NULL,
+				1);
+		if (thing == osOK) {
 
 			//lp_filter(registers_imu_2, queue_data_imu_2.acc_z, &filtered_acc_z);
 
@@ -63,9 +57,8 @@ void vTaskPreprocess(void *argument) {
 			}
 		}
 
-		osDelayUntil(tick_count);
-
-
+		/* Sleep */
+		osDelay(1);
 	}
 }
 

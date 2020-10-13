@@ -18,7 +18,7 @@ void vTaskSendToMb(void *argument);
 
 /* Constants */
 #define SPI_TIMEOUT 5
-#define MB_SAMPLING_RATE 100
+#define MB_SAMPLING_RATE SAMPLING_FREQ
 
 /* extern */
 extern baro_data_t baro_data_to_mb;

@@ -15,7 +15,11 @@
 #include "util.h"
 
 /* Constants */
-#define BARO_SAMPLING_FREQ 100
+#if (SAMPLING_FREQ > 200)
+#define BARO_SAMPLING_FREQ 200
+#else
+#define BARO_SAMPLING_FREQ SAMPLING_FREQ
+#endif
 
 /* Extern */
 extern I2C_HandleTypeDef hi2c1;

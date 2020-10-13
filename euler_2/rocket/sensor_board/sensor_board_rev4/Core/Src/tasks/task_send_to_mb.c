@@ -54,6 +54,7 @@ void vTaskSendToMb(void *argument) {
 				fullsb_data.imu_2.acc_z, fullsb_data.imu_2.ts);
 
 
+		/* Send to Motherboard */
 		HAL_SPI_Transmit(&hspi2, (uint8_t*) &fullsb_data, sizeof(fullsb_data), HAL_MAX_DELAY);
 
 

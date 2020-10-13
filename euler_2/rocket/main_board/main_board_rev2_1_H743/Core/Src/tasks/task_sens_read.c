@@ -91,9 +91,6 @@ static void read_data_sb(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
       sb1_global.imu_1 = sb1->imu_1;
       sb1_global.imu_2 = sb1->imu_2;
       release_mutex(&sb1_mutex);
-      /* Invert Sensor Board acc z because reverse mounting of SB */
-      sb1_global.imu_1.acc_z = -sb1_global.imu_1.acc_z;
-      sb1_global.imu_2.acc_z = -sb1_global.imu_2.acc_z;
     }
   }
 
@@ -105,9 +102,6 @@ static void read_data_sb(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
       sb2_global.imu_1 = sb2->imu_1;
       sb2_global.imu_2 = sb2->imu_2;
       release_mutex(&sb2_mutex);
-      /* Invert Sensor Board acc z because reverse mounting of SB */
-      sb2_global.imu_1.acc_z = -sb2_global.imu_1.acc_z;
-      sb2_global.imu_2.acc_z = -sb2_global.imu_2.acc_z;
     }
   }
 
@@ -119,9 +113,6 @@ static void read_data_sb(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
       sb3_global.imu_1 = sb3->imu_1;
       sb3_global.imu_2 = sb3->imu_2;
       release_mutex(&sb3_mutex);
-      /* Invert Sensor Board acc z because reverse mounting of SB */
-      sb3_global.imu_1.acc_z = -sb3_global.imu_1.acc_z;
-      sb3_global.imu_2.acc_z = -sb3_global.imu_2.acc_z;
     }
   }
 }

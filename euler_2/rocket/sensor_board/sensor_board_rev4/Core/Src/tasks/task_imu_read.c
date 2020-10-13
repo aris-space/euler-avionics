@@ -38,17 +38,21 @@ void vTaskImuRead(void *argument) {
 	imu_data_t queue_data_imu_1 = { 0 };
 	imu_data_t queue_data_imu_2 = { 0 };
 
+	/* Set Both CS High */
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
 
-
+	/* Initialise IMU */
 	vInitImu20601();
 
 	/* Infinite loop */
 	tick_count = osKernelGetTickCount();
 	tick_update = osKernelGetTickFreq() / IMU20601_SAMPLING_FREQ;
+
 	for (;;) {
 		tick_count += tick_update;
+
+		/* Read Out Sensors */
 		vReadImu20601(&ICM1, gyroscope_data1, acceleration1, &temperature1);
 		vReadImu20601(&ICM2, gyroscope_data2, acceleration2, &temperature2);
 
@@ -61,7 +65,7 @@ void vTaskImuRead(void *argument) {
 //						gyroscope_data2[0], gyroscope_data2[1], gyroscope_data2[2],
 //						acceleration2[0], acceleration2[1], acceleration2[2], temperature2);
 
-
+		/* Write Sensor Data into queue Data */
 		queue_data_imu_1.gyro_x = gyroscope_data1[0];
 		queue_data_imu_1.gyro_y = gyroscope_data1[1];
 		queue_data_imu_1.gyro_z = gyroscope_data1[2];
@@ -79,23 +83,24 @@ void vTaskImuRead(void *argument) {
 
 		/* Send Data to Queue */
 		osMessageQueuePut(preprocess_queue_imu_1, &queue_data_imu_1, 0U, 0U);
-		osMessageQueuePut(preprocess_queue_imu_2, &queue_data_imu_2, 0U, 0U);
+		osMessageQueuePut(preprocess_queue_imu_2Handle, &queue_data_imu_2, 0U, 0U);
 
+		/* Sleep */
 		osDelayUntil(tick_count);
 	}
 }
 
 void vInitImu20601() {
 	osDelayUntil(1000);
-	uint8_t r = 0;
-	do {
-		r = icm20601_init(&ICM2);
-		HAL_Delay(10);
-	} while(r);
+	uint8_t r;
 	do {
 		r = icm20601_init(&ICM1);
 		HAL_Delay(10);
-	} while(r);
+	} while(!r);
+	do {
+		r = icm20601_init(&ICM2);
+		HAL_Delay(10);
+	} while(!r);
 }
 
 void vReadImu20601(struct icm20601_dev * dev, int16_t gyroscope_data[], int16_t acceleration[], int16_t *temperature) {

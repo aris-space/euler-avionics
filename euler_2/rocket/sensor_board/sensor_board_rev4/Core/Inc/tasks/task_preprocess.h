@@ -13,7 +13,6 @@
 #include "stm32l4xx_hal.h"
 #include "util.h"
 #include "main.h"
-#define SAMPLING_RATE_PREP 200
 
 /* Lowpass Filter Constants */
 static const double B1 = -0.44444444444;
@@ -31,7 +30,7 @@ void vTaskPreprocess(void *argument);
 
 /* Extern */
 extern osMessageQueueId_t preprocess_queue_imu_1;
-extern osMessageQueueId_t preprocess_queue_imu_2;
+extern osMessageQueueId_t preprocess_queue_imu_2Handle;
 extern osMutexId_t imu_mutex_1;
 extern osMutexId_t imu_mutex_2;
 extern imu_data_t imu_data_1_to_mb;

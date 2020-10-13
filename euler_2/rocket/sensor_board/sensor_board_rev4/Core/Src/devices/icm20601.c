@@ -118,8 +118,6 @@ int8_t icm20601_init(struct icm20601_dev * dev) {
     _icm_read_bytes(dev, REG_WHO_AM_I, r, 1);
     if (r[0] != REG_WHO_AM_I_CONST) return 0;
 
-    return 0;
-
     // place accel and gyro on standby
     tmp = SENS_standby; // 0x3F
     _icm_write_bytes(dev, REG_PWR_MGMT_2, &tmp , 1);

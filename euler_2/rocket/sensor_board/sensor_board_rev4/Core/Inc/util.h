@@ -10,8 +10,12 @@
 
 #include "cmsis_os.h"
 
+/* OVERALL SAMPLING FREQUENCY */
+#define SAMPLING_FREQ 100
+
+
 /* Constants */
-#define PREPROCESS_QUEUE_SIZE 32
+#define PREPROCESS_QUEUE_SIZE 128
 #define BARO_MUTEX_TIMEOUT 0
 #define IMU_MUTEX_TIMEOUT 0
 

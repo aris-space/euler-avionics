@@ -34,6 +34,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 typedef StaticTask_t osStaticThreadDef_t;
+typedef StaticQueue_t osStaticMessageQDef_t;
 /* USER CODE BEGIN PTD */
 
 /* USER CODE END PTD */
@@ -109,9 +110,19 @@ const osThreadAttr_t task_preprocess_attributes = {
   .cb_size = sizeof(task_preprocessControlBlock),
   .priority = (osPriority_t) osPriorityNormal,
 };
+/* Definitions for preprocess_queue_imu_2 */
+osMessageQueueId_t preprocess_queue_imu_2Handle;
+uint8_t myQueue01Buffer[ 32 * sizeof( imu_data_t ) ];
+osStaticMessageQDef_t myQueue01ControlBlock;
+const osMessageQueueAttr_t preprocess_queue_imu_2_attributes = {
+  .name = "preprocess_queue_imu_2",
+  .cb_mem = &myQueue01ControlBlock,
+  .cb_size = sizeof(myQueue01ControlBlock),
+  .mq_mem = &myQueue01Buffer,
+  .mq_size = sizeof(myQueue01Buffer)
+};
 /* USER CODE BEGIN PV */
 osMessageQueueId_t preprocess_queue_imu_1;
-osMessageQueueId_t preprocess_queue_imu_2;
 /* Baro Stuff */
 osMutexId_t baro_mutex;
 baro_data_t baro_data_to_mb;
@@ -199,6 +210,7 @@ int main(void)
   };
 
   baro_mutex = osMutexNew(&baro_mutex_attr);
+
   /* IMU Mutex */
   const osMutexAttr_t imu_1_mutex_attr = {
     "imu_mutex_1",                          // human readable mutex name
@@ -237,10 +249,13 @@ int main(void)
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
+  /* Create the queue(s) */
+  /* creation of preprocess_queue_imu_2 */
+  preprocess_queue_imu_2Handle = osMessageQueueNew (32, sizeof(imu_data_t), &preprocess_queue_imu_2_attributes);
+
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
-  preprocess_queue_imu_1 = osMessageQueueNew(PREPROCESS_QUEUE_SIZE, sizeof(imu_data_t), NULL);
-  preprocess_queue_imu_2 = osMessageQueueNew(2*PREPROCESS_QUEUE_SIZE, sizeof(imu_data_t), NULL);
+  preprocess_queue_imu_1 = osMessageQueueNew(1*PREPROCESS_QUEUE_SIZE, sizeof(imu_data_t), NULL);
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
@@ -409,7 +424,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
