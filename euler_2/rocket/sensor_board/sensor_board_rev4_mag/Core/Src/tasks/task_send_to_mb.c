@@ -91,21 +91,27 @@ void ReadDataSensors(){
 	/* acquire current Data */
 
 	/* IMU 1 */
-	if (osMutexAcquire(imu_mutex_1, IMU_MUTEX_TIMEOUT) == osOK) {
+	if (osMutexAcquire(imu_mutex_1, MUTEX_TIMEOUT) == osOK) {
 		fullsb_data.imu_1 = imu_data_1_to_mb;
 		osMutexRelease(imu_mutex_1);
 	}
 
 	/* IMU 2 */
-	if (osMutexAcquire(imu_mutex_2, IMU_MUTEX_TIMEOUT) == osOK) {
+	if (osMutexAcquire(imu_mutex_2, MUTEX_TIMEOUT) == osOK) {
 		fullsb_data.imu_2 = imu_data_2_to_mb;
 		osMutexRelease(imu_mutex_2);
 	}
 
 	/* Baro */
-	if (osMutexAcquire(baro_mutex, BARO_MUTEX_TIMEOUT) == osOK) {
+	if (osMutexAcquire(baro_mutex, MUTEX_TIMEOUT) == osOK) {
 		fullsb_data.baro = baro_data_to_mb;
 		osMutexRelease(baro_mutex);
+	}
+
+	/* MagnoMeter */
+	if (osMutexAcquire(magno_mutex, MUTEX_TIMEOUT) == osOK) {
+		fullsb_data.magno = magno_data_to_mb;
+		osMutexRelease(magno_mutex);
 	}
 
 

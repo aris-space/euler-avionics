@@ -41,9 +41,16 @@ typedef struct {
 } baro_data_t;
 
 typedef struct {
+	int32_t magx;
+	int32_t magy;
+	timestamp_t ts;
+} mag_data_t;
+
+typedef struct {
 	baro_data_t baro;
 	imu_data_t imu_1;
 	imu_data_t imu_2;
+	mag_data_t magno;
 	uint8_t checksum;
 } sb_data_t;
 

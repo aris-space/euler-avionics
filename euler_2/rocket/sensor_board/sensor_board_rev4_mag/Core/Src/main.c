@@ -64,7 +64,7 @@ const osThreadAttr_t defaultTask_attributes = {
 };
 /* Definitions for task_baro_read */
 osThreadId_t task_baro_readHandle;
-uint32_t task_baro_readBuffer[ 1024 ];
+uint32_t task_baro_readBuffer[ 512 ];
 osStaticThreadDef_t task_baro_readControlBlock;
 const osThreadAttr_t task_baro_read_attributes = {
   .name = "task_baro_read",
@@ -76,7 +76,7 @@ const osThreadAttr_t task_baro_read_attributes = {
 };
 /* Definitions for task_imu_read */
 osThreadId_t task_imu_readHandle;
-uint32_t task_imu_readBuffer[ 2048 ];
+uint32_t task_imu_readBuffer[ 512 ];
 osStaticThreadDef_t task_imu_readControlBlock;
 const osThreadAttr_t task_imu_read_attributes = {
   .name = "task_imu_read",
@@ -88,7 +88,7 @@ const osThreadAttr_t task_imu_read_attributes = {
 };
 /* Definitions for task_send_to_mb */
 osThreadId_t task_send_to_mbHandle;
-uint32_t task_send_to_mbBuffer[ 1024 ];
+uint32_t task_send_to_mbBuffer[ 512 ];
 osStaticThreadDef_t task_send_to_mbControlBlock;
 const osThreadAttr_t task_send_to_mb_attributes = {
   .name = "task_send_to_mb",
@@ -100,7 +100,7 @@ const osThreadAttr_t task_send_to_mb_attributes = {
 };
 /* Definitions for task_preprocess */
 osThreadId_t task_preprocessHandle;
-uint32_t task_preprocessBuffer[ 1024 ];
+uint32_t task_preprocessBuffer[ 512 ];
 osStaticThreadDef_t task_preprocessControlBlock;
 const osThreadAttr_t task_preprocess_attributes = {
   .name = "task_preprocess",
@@ -108,6 +108,18 @@ const osThreadAttr_t task_preprocess_attributes = {
   .stack_size = sizeof(task_preprocessBuffer),
   .cb_mem = &task_preprocessControlBlock,
   .cb_size = sizeof(task_preprocessControlBlock),
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for task_mag_read */
+osThreadId_t task_mag_readHandle;
+uint32_t task_mag_readBuffer[ 512 ];
+osStaticThreadDef_t task_mag_readControlBlock;
+const osThreadAttr_t task_mag_read_attributes = {
+  .name = "task_mag_read",
+  .stack_mem = &task_mag_readBuffer[0],
+  .stack_size = sizeof(task_mag_readBuffer),
+  .cb_mem = &task_mag_readControlBlock,
+  .cb_size = sizeof(task_mag_readControlBlock),
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for preprocess_queue_imu_2 */
@@ -131,6 +143,9 @@ osMutexId_t imu_mutex_1;
 osMutexId_t imu_mutex_2;
 imu_data_t imu_data_1_to_mb;
 imu_data_t imu_data_2_to_mb;
+/* Magnetometer Stuff */
+osMutexId_t magno_mutex;
+mag_data_t magno_data_to_mb;
 /* Fake USB Data insert */
 //osMessageQueueId_t usb_data_queue;
 osMutexId_t usb_data_mutex;
@@ -149,6 +164,7 @@ extern void vTaskBaroRead(void *argument);
 extern void vTaskImuRead(void *argument);
 extern void vTaskSendToMb(void *argument);
 extern void vTaskPreprocess(void *argument);
+extern void vTaskMagRead(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -228,6 +244,16 @@ int main(void)
   };
   imu_mutex_2 = osMutexNew(&imu_2_mutex_attr);
 
+  const osMutexAttr_t magno_mutex_attr = {
+    "magno_mutex",                          // human readable mutex name
+    osMutexPrioInherit,    // attr_bits
+    NULL,                                     // memory for control block
+    0U                                        // size for control block
+  };
+  magno_mutex = osMutexNew(&magno_mutex_attr);
+
+
+
 
 #ifdef DEBUG
   const osMutexAttr_t print_mutex_attr = {
@@ -273,6 +299,9 @@ int main(void)
 
   /* creation of task_preprocess */
   task_preprocessHandle = osThreadNew(vTaskPreprocess, NULL, &task_preprocess_attributes);
+
+  /* creation of task_mag_read */
+  task_mag_readHandle = osThreadNew(vTaskMagRead, NULL, &task_mag_read_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
