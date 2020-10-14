@@ -133,6 +133,7 @@ void vTaskMotorCont(void *argument) {
 
     if (motor_status != osOK && flight_phase_detection.flight_phase == IDLE) {
       disable_motor();
+      // TODO [luca]: What happens if the flight phase is not idle and the motor drivers returns != osOk? should we not disable the motor then aswell? (Might be stuck and pulling tons of amps)
       osDelay(1000);
       enable_motor();
     }

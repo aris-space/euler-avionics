@@ -96,7 +96,7 @@ void vTaskGps(void *argument) {
     log_sensor(osKernelGetTickCount(), 2, GPS, &GPS2.data);
     log_sensor(osKernelGetTickCount(), 3, GPS, &GPS3.data);
 
-
+    // TODO [luca] sattelites can not go above 12 otherwise there is an error, throw out gps modules with more than 12 sats
     /* get best possible GPS for Telemetry */
     if (GPS1.data.satellite >= GPS2.data.satellite) {
       if (GPS1.data.satellite >= GPS3.data.satellite) {
@@ -120,34 +120,10 @@ void vTaskGps(void *argument) {
 
     if (choose_GPS == 1) {
       gps_telemetry = GPS1.data;
-      //			gps_telemetry.hour = GPS1.data.hour;
-      //			gps_telemetry.minute = GPS1.data.minute;
-      //			gps_telemetry.second = GPS1.data.second;
-      //			gps_telemetry.lat_deg = GPS1.data.lat_deg;
-      //			gps_telemetry.lat_decimal =
-      // GPS1.data.lat_decimal; 			gps_telemetry.lon_deg =
-      // GPS1.data.lon_deg; 			gps_telemetry.lon_decimal =
-      // GPS1.data.lon_decimal; gps_telemetry.satellite = GPS1.data.satellite;
     } else if (choose_GPS == 2) {
       gps_telemetry = GPS2.data;
-      //			gps_telemetry.hour = GPS2.data.hour;
-      //			gps_telemetry.minute = GPS2.data.minute;
-      //			gps_telemetry.second = GPS2.data.second;
-      //			gps_telemetry.lat_deg = GPS2.data.lat_deg;
-      //			gps_telemetry.lat_decimal =
-      // GPS2.data.lat_decimal; 			gps_telemetry.lon_deg =
-      // GPS2.data.lon_deg; 			gps_telemetry.lon_decimal =
-      // GPS2.data.lon_decimal; gps_telemetry.satellite = GPS2.data.satellite;
     } else {
       gps_telemetry = GPS3.data;
-      //			gps_telemetry.hour = GPS3.data.hour;
-      //			gps_telemetry.minute = GPS3.data.minute;
-      //			gps_telemetry.second = GPS3.data.second;
-      //			gps_telemetry.lat_deg = GPS3.data.lat_deg;
-      //			gps_telemetry.lat_decimal =
-      // GPS3.data.lat_decimal; 			gps_telemetry.lon_deg =
-      // GPS3.data.lon_deg; 			gps_telemetry.lon_decimal =
-      // GPS3.data.lon_decimal; gps_telemetry.satellite = GPS3.data.satellite;
     }
 
     /* Write into global GPS variable */

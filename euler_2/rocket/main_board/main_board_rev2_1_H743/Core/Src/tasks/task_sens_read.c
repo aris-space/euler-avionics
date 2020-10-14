@@ -31,6 +31,7 @@ void vTaskSensRead(void *argument) {
     tick_count += tick_update;
 
     /* Get Data */
+    // TODO[luca]: why is this not a DEFINE?
     if (USB_DATA_ENABLE) {
       read_data_usb();
     } else {
@@ -131,6 +132,7 @@ static void read_data_usb() {
 }
 
 static uint8_t calculate_checksum_sb(sb_data_t *sb_data) {
+	// TODO [luca] why is this not a for loop? (not really a checksum, we ignore more than half of the data so if there is an error with data we might miss it)
   return sb_data->baro.pressure + sb_data->baro.temperature +
          sb_data->imu_1.gyro_x + sb_data->imu_1.gyro_y + sb_data->imu_1.gyro_z +
          sb_data->imu_1.acc_x + sb_data->imu_1.acc_y + sb_data->imu_1.acc_z +

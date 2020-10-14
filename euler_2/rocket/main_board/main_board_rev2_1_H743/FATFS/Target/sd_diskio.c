@@ -641,6 +641,7 @@ void BSP_SD_WriteCpltCallback(void)
    osMessagePut(SDQueueID, WRITE_CPLT_MSG, 0);
 #else
    const uint16_t msg = WRITE_CPLT_MSG;
+   // TODO [luca]: passing a NULL pointer into a uint8_t
    osMessageQueuePut(SDQueueID, (const void *)&msg, NULL, 0);
 #endif
 }
@@ -660,6 +661,7 @@ void BSP_SD_ReadCpltCallback(void)
    osMessagePut(SDQueueID, READ_CPLT_MSG, 0);
 #else
    const uint16_t msg = READ_CPLT_MSG;
+   // TODO [luca]: passing a NULL pointer into a uint8_t
    osMessageQueuePut(SDQueueID, (const void *)&msg, NULL, 0);
 #endif
 }

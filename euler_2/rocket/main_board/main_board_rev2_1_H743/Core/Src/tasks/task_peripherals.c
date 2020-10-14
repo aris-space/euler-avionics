@@ -77,7 +77,7 @@ void vTaskPeripherals(void *argument) {
       HAL_GPIO_WritePin(CAMERA_GPIO_Port, CAMERA_Pin, GPIO_PIN_SET);
     }
 
-
+    // TODO [luca] is buzzer state sent down? Also can we send down the camera state?
 
     /* Enable Buzzer */
     if (buzzer_on_fsm ^ buzzer_on_telemetry) {

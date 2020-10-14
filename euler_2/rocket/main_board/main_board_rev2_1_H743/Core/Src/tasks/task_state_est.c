@@ -81,6 +81,7 @@ void vTaskStateEst(void *argument) {
     read_mutex_state_est(&sb3_mutex, &state_est_state.state_est_meas, &sb3_global, 3);
 
     /* calculate averaging */
+    // TODO [luca] this can be dangerous if one of our baros is faulty, we also dont see that in our telemetry
     if (state_est_state.flight_phase_detection.flight_phase == IDLE) {
       sum_press +=
           state_est_state.state_est_meas.baro_data[0].pressure +

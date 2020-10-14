@@ -111,6 +111,7 @@ bool W25qxx_Init(void) {
   while (HAL_GetTick() < 100) W25qxx_Delay(1);
   HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_SET);
   W25qxx_Delay(100);
+  // TODO [luca] unused variable id
   uint32_t id;
 #if (_W25QXX_DEBUG == 1)
   printf("w25qxx Init Begin...\n");
@@ -551,6 +552,7 @@ void W25qxx_WritePage(uint8_t *pBuffer, uint32_t Page_Address,
   W25qxx_Spi((Page_Address & 0xFF0000) >> 16);
   W25qxx_Spi((Page_Address & 0xFF00) >> 8);
   W25qxx_Spi(Page_Address & 0xFF);
+  // TODO [luca] blocking spi function
   HAL_SPI_Transmit(&_W25QXX_SPI, pBuffer, NumByteToWrite_up_to_PageSize, 100);
   HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_SET);
   W25qxx_WaitForWriteEnd();
