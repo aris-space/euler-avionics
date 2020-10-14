@@ -25,6 +25,7 @@ static FRESULT find_next_file_name(char *file_name);
 static FRESULT open_file(char *file_name);
 static int32_t format_log_str(char *str, log_elem_t *log_entry);
 
+/* TODO [Jonas]: Change Buzzer enable to new buzzer configuration if needed */
 void vTaskSdCard(void *argument) {
   // Try everything forever;
 

@@ -34,7 +34,6 @@ DTCM int16_t recd_compact[NN-KK+KK2];
 uint8_t transmission_data[NN-KK+KK2];
 
 
-
 void vTaskXbee(void *argument) {
 
 #if (configUSE_TRACE_FACILITY == 1)

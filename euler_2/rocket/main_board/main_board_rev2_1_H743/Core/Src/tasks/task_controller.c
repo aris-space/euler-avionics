@@ -45,6 +45,7 @@ void vTaskController(void *argument) {
     		usb_print("[TS START]: %d\n",
     				osKernelGetTickCount());
 	/* TODO [nemanja]: are these initialization parameters correct? */
+    /* TODO [Jonas]: This is only here for testing -> will not be here once it works */
     flight_phase_detection_local.flight_phase = CONTROL;
     flight_phase_detection_local.mach_number = 0.45f;
     state_est_data_local.airbrake_extension = 500000;
@@ -64,6 +65,7 @@ void vTaskController(void *argument) {
     }
 
     /* Log to SD Card */
+    /* TODO [Jonas]: Change this for appropriate Controller */
     log_controller_output(osKernelGetTickCount(),
                         (int32_t)(control_data.control_input * 1000),
                         (int32_t)(control_data.reference_error * 1000),

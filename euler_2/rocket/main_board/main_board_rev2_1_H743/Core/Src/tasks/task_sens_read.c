@@ -87,9 +87,7 @@ static void read_data_sb(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
   checksum = calculate_checksum_sb(sb1);
   if (checksum == sb1->checksum) {
     if (acquire_mutex(&sb1_mutex) == osOK) {
-      sb1_global.baro = sb1->baro;
-      sb1_global.imu_1 = sb1->imu_1;
-      sb1_global.imu_2 = sb1->imu_2;
+      sb1_global = *sb1;
       release_mutex(&sb1_mutex);
     }
   }
@@ -98,9 +96,7 @@ static void read_data_sb(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
   checksum = calculate_checksum_sb(sb2);
   if (checksum == sb2->checksum) {
     if (acquire_mutex(&sb2_mutex) == osOK) {
-      sb2_global.baro = sb2->baro;
-      sb2_global.imu_1 = sb2->imu_1;
-      sb2_global.imu_2 = sb2->imu_2;
+      sb2_global = *sb2;
       release_mutex(&sb2_mutex);
     }
   }
@@ -109,9 +105,7 @@ static void read_data_sb(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
   checksum = calculate_checksum_sb(sb3);
   if (checksum == sb3->checksum) {
     if (acquire_mutex(&sb3_mutex) == osOK) {
-      sb3_global.baro = sb3->baro;
-      sb3_global.imu_1 = sb3->imu_1;
-      sb3_global.imu_2 = sb3->imu_2;
+      sb3_global = *sb3;
       release_mutex(&sb3_mutex);
     }
   }
