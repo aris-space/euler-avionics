@@ -6,16 +6,18 @@ Author(s): Imre Kertesz
 
 from threading import Thread
 import serial
-import time
 import collections
-import struct
 from tkinter import messagebox
 import sys
 import glob
 import logging
-from myutils import data_struct, dict_commands
+from myutils import dict_commands, data_struct
 import csv
 from datetime import datetime
+
+
+begin_seq = b'\xfa\xfa\xfa\xfa'
+end_seq = b'\xdc\xdc\xdc\xdc'
 
 
 def available_ports():
@@ -66,7 +68,8 @@ telemetry_t = data_struct()
 data_types_order = flatten(telemetry_t)
 fmt = ''.join(data_types_order.values())
 measurements = data_types_order.keys()
-# print(list(measurements)[1:])
+# print(list(measurements))
+# print(fmt)
 
 
 def get_measurement_names():
@@ -94,8 +97,7 @@ class SerialConnection:
         self.logger = logging.getLogger()
         self.port = serial_port
         self.baud = serial_baud
-        self.dataNumBytes = struct.calcsize(fmt)+3
-        self.rawData = bytearray(self.dataNumBytes)
+        self.rawData = bytearray(79)
         self.isRun = True
         self.isReceiving = False
         self.thread = None
@@ -108,6 +110,8 @@ class SerialConnection:
         now = datetime.now()
         dt_string = now.strftime("%d-%m-%Y_%H_%M")
         self.f_name = dt_string + '_raw.csv'
+        self.outfile = open(self.f_name, 'a')
+        self.writer = csv.writer(self.outfile)
 
     def start_connection(self):
         """
@@ -156,70 +160,33 @@ class SerialConnection:
             self.logger.info('was not able to send command: '+command)
 
     def save_raw_data(self):
-        with open(self.f_name, 'a') as outfile:
-            writer = csv.writer(outfile)
-            writer.writerow(self.rawData)
-
-    def verify_checksum(self, data):
-        """
-        Verifies the checksum and the starting byte
-        """
-        # print(hex(sum(data))[-2:])
-        cs = hex(sum(data))[-2:]
-        # print(data[0])
-        # print(cs)
-        if cs != 'ff' or data[0] != 23:
-            self.reset_flag = True
-            return False
-        return True
+        self.writer.writerow(self.rawData)
 
     def back_ground_thread(self):  # retrieve data
-        time.sleep(1.0)  # give some buffer time for retrieving data
         self.serialConnection.reset_input_buffer()
         while self.isRun:
             try:
-                numbytes = self.serialConnection.inWaiting()
+                self.serialConnection.read_until(terminator=begin_seq)
+                self.rawData = self.serialConnection.read_until(terminator=end_seq)
+                self.isReceiving = True
             except (OSError, serial.SerialException):
-                self.logger.info('Lost serial connection to ' + str(self.port))
-                messagebox.showerror('Error', 'Lost serial connection to ' + str(self.port))
+                print('Lost serial connection to'+str(self.port))
+                messagebox.showerror('Error', 'Lost serial connection to '+str(self.port))
                 break
-            if numbytes:
-                try:
-                    if self.reset_flag:
-                        self.serialConnection.reset_input_buffer()
-                        self.reset_flag = False
-                    self.serialConnection.readinto(self.rawData)
-                    # self.serialConnection.reset_input_buffer()
-                    self.isReceiving = True
-                except (OSError, serial.SerialException):
-                    print('Lost serial connection to'+str(self.port))
-                    messagebox.showerror('Error', 'Lost serial connection to '+str(self.port))
-                    break
 
-                print(self.rawData.hex())
-                # print('length', len(self.rawData))
+            # print(self.rawData.hex())
+            # print('length', len(self.rawData))
 
-                self.save_raw_data()
+            self.save_raw_data()
 
-                if self.verify_checksum(self.rawData):
-                    self.data = struct.unpack(fmt+'b'+'b'+'b', self.rawData)
-
-                    data_dict = dict(zip(measurements, self.data))
-                    print(data_dict)
-                    # print(self.serialConnection.inWaiting())
-                    self.root.update_values(list(self.data))
-                    self.root.num_packets_good += 1
-                else:
-                    self.root.num_packets_bad += 1
-                self.root.update_rf_frame()
-
-            time.sleep(0.0009)
+    def get_current_raw_data(self):
+        return self.rawData
 
     def close(self):
         self.isRun = False
+        self.outfile.close()
         if self.thread is not None:
             self.thread.join()
         if self.serialConnection is not None:
             self.serialConnection.close()
         self.logger.info('Serial connection closed')
-

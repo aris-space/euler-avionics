@@ -16,15 +16,22 @@ from matplotlib.figure import Figure
 from matplotlib import style
 import logging
 from Logs.LoggingHandler import LoggingHandler
-from myutils import sb_names, gps_names, battery_names, fsm_names, rf_names, dict_command_msg
+from myutils import sb_names, gps_names, battery_names, fsm_names, rf_names, dict_command_msg, button_text,\
+    dict_commands, data_struct
 from PIL import ImageTk, Image
+import math
+from threading import Thread
+import struct
+import time
 
 matplotlib.use("TkAgg")
 style.use('ggplot')
 
-len_sb = len(sb_names)
-len_gps = len(gps_names) + 4
-len_battery = len(battery_names)
+struct1 = data_struct()
+
+len_sb = len(struct1.get('sb_data'))
+len_gps = len(struct1.get('gps'))
+len_battery = len(struct1.get('battery'))
 len_fsm = len(fsm_names)
 
 flight_phase = {0: '---------',
@@ -32,8 +39,13 @@ flight_phase = {0: '---------',
                 2: 'AIRBRAKE TEST',
                 3: 'THRUSTING',
                 4: 'COASTING',
-                5: 'DESCENT',
-                6: 'RECOVERY'}
+                5: 'CONTROL',
+                6: 'BIAS RESET',
+                7: 'APOGEE APPROACH',
+                8: 'DROGUE DESCENT',
+                9: 'BALLISTIC DESCENT',
+                10: 'MAIN DESCENT',
+                11: 'TOUCHDOWN'}
 
 mach_regime = {0: '----------',
                1: 'SUBSONIC',
@@ -79,7 +91,7 @@ class MainWindow(Frame):
 
         parent.protocol('WM_DELETE_WINDOW', self.__on_close__)
 
-        self.s = None
+        self.s = None  # serialConnection class
         self.connected = False
         self.recording = False
         self.is_receiving = False
@@ -89,6 +101,7 @@ class MainWindow(Frame):
 
         self._root = parent
         self._root.title("ARIS Groundstation")
+        self._root.protocol('WM_DELETE_WINDOW', self.__on_close__)
         if sys.platform.startswith('win'):
             self._root.state("zoomed")
             self._root.wm_iconbitmap("img/aris.ico")
@@ -100,6 +113,9 @@ class MainWindow(Frame):
 
         self.current_velocity = 0
         self.current_altitude = 0
+
+        self.thread = None
+        self.verbose = False
 
         self.__setup__()
 
@@ -116,11 +132,13 @@ class MainWindow(Frame):
         self.file_menu = tk.Menu(self.menubar, tearoff=0)
         self.connection_menu = tk.Menu(self.menubar, tearoff=0)
         self.plot_menu = tk.Menu(self.menubar, tearoff=0)
+        self.settings_menu = tk.Menu(self.menubar, tearoff=0)
         self.help_menu = tk.Menu(self.menubar, tearoff=0)
 
         self.menubar.add_cascade(label="File", menu=self.file_menu)
         self.menubar.add_cascade(label="Connection", menu=self.connection_menu)
         self.menubar.add_cascade(label="Live plot", menu=self.plot_menu)
+        self.menubar.add_cascade(label="Settings", menu=self.settings_menu)
         self.menubar.add_cascade(label="Help", menu=self.help_menu)
 
         self.file_menu.add_command(label="New", command=self.donothing)
@@ -135,9 +153,11 @@ class MainWindow(Frame):
         self.connection_menu.add_command(label="Start reception", command=self.start_reception)
         self.connection_menu.add_command(label="Stop reception", command=self.stop_reception)
 
-        # self.plotmenu.add_command(label='Settings', command=self.plot_setting_window)
         self.plot_menu.add_command(label="Start live plot", command=self.start_plot)
         self.plot_menu.add_command(label="Stop live plot", command=self.stop_plot)
+
+        self.settings_menu.add_command(label="Commands", command=self.command_settings)
+        self.settings_menu.add_command(label='Print raw data (on/off)', command=self.toggle_verbose)
 
         self.help_menu.add_command(label="About", command=self.about_window)
         # self.help_menu.add_command(label="Manual", command=self.manual_window)
@@ -188,30 +208,17 @@ class MainWindow(Frame):
         # ==============================================================================================================
         self.frame_command = tk.LabelFrame(self.frame_upper_left, text='Commands', width=40, height=10)
 
-        self.button_sensor = tk.Button(self.frame_command,
-                                       text='EST Reset',
-                                       width=10,
-                                       command=lambda: self.send_command('sensor'))
-        self.button_airbrake = tk.Button(self.frame_command,
-                                         text='Airbrake Test',
-                                         width=10,
-                                         command=lambda: self.send_command('airbrake'))
-        self.button_sf = tk.Button(self.frame_command,
-                                   text='High Sampling',
-                                   width=10,
-                                   command=lambda: self.send_command('frequency'))
-        self.button_buzzer = tk.Button(self.frame_command,
-                                       text='Buzzer',
-                                       width=10,
-                                       command=lambda: self.send_command('buzzer'))
-        self.button_disable = tk.Button(self.frame_command,
-                                        text='Disable Lock',
-                                        width=10,
-                                        command=lambda: self.send_command('disable'))
+        self.buttons = []
+        for i in range(len(button_text)):
+            self.buttons.append(tk.Button(self.frame_command,
+                                          text=button_text[i],
+                                          width=10,
+                                          command=lambda idx=i: self.send_command(list(dict_command_msg.keys())[idx])))
+
         # ==============================================================================================================
         # add log frame
         # ==============================================================================================================
-        self.frame_log = tk.LabelFrame(self.frame_upper_left, text='Log', width=10, height=20)
+        self.frame_log = tk.LabelFrame(self.frame_upper_left, text='Log', width=40, height=20)
         # ==============================================================================================================
         # add sensorboard frame
         # ==============================================================================================================
@@ -328,15 +335,16 @@ class MainWindow(Frame):
         self.frame_command.pack(side='top', fill='both', expand=True)
         self.frame_log.pack(side='top', fill='both', expand=True)
 
-        st = scrolledtext.ScrolledText(self.frame_log, state='disabled', width=40, height=20)
+        st = scrolledtext.ScrolledText(self.frame_log, state='disabled', width=50, height=20)
         st.configure(font='TkFixedFont')
         st.grid(row=0, column=0)
 
-        self.button_airbrake.grid(row=0, column=0, padx=5)
-        self.button_sensor.grid(row=0, column=1, padx=5)
-        self.button_sf.grid(row=0, column=2, padx=5)
-        self.button_buzzer.grid(row=1, column=0, padx=5)
-        self.button_disable.grid(row=1, column=1, padx=5)
+        half = math.ceil(len(button_text)/2)
+        for i in range(len(button_text)):
+            if i < half:
+                self.buttons[i].grid(row=0, column=i, padx=5)
+            else:
+                self.buttons[i].grid(row=1, column=i-half, padx=5)
 
         self.logger.addHandler(LoggingHandler(st))
 
@@ -353,7 +361,7 @@ class MainWindow(Frame):
         self.button_stop_rec.grid(row=1, column=1)
 
         self.entry_name.delete(0, 'end')
-        self.entry_name.insert(0, 'recording.csv')
+        self.entry_name.insert(0, 'Rec/recording.csv')
 
         self.label_sb_name[0].grid(row=0, column=0, pady=(10, 0), sticky='W')
         self.label_sb_name[1].grid(row=1, column=0, sticky='W')
@@ -403,10 +411,17 @@ class MainWindow(Frame):
         Called when user closes the application.
         """
         if self.s is not None:
-            self.s.close()
-        self.connected = False
-        self.update_plot = False
-        self._root.destroy()
+            if self.s.isRun:
+                messagebox.showinfo('Info', 'Stop the reception first by clicking on "Stop reception" in'
+                                            ' the Connection menu.')
+            else:
+                self.connected = False
+                self.update_plot = False
+                self._root.destroy()
+        else:
+            self.connected = False
+            self.update_plot = False
+            self._root.destroy()
 
     def start_reception(self):
         """
@@ -414,6 +429,8 @@ class MainWindow(Frame):
         """
         if self.connected:
             self.s.read_serial_start()
+            self.thread = Thread(target=self.update_values)
+            self.thread.start()
         else:
             messagebox.showinfo('Info', 'Serial connection is not established.')
 
@@ -423,6 +440,7 @@ class MainWindow(Frame):
         """
         if self.connected:
             self.s.isRun = False
+            self.thread.join()
             if self.update_plot:
                 self.update_plot = False
                 self.logger.info('Live plot stopped.')
@@ -500,6 +518,52 @@ class MainWindow(Frame):
         if self.update_plot:
             self.frame_upper_middle.after(100, self.update_canvas)
 
+    def command_settings(self):
+        root = tk.Toplevel(self._root)
+
+        w = 300
+        h = 250
+        # get screen width and height
+        ws = root.winfo_screenwidth()  # width of the screen
+        hs = root.winfo_screenheight()  # height of the screen
+
+        # calculate x and y coordinates for the Tk window
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+
+        root.title('Command settings')
+        # root.geometry('{}x{}'.format(300, 250))
+        root.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        root.resizable(height=False, width=False)
+
+        frame1 = tk.Frame(root)
+        frame1.pack(fill="both", expand=True)
+
+        label_buttons = tk.Label(frame1, text='Button names')
+        label_commands = tk.Label(frame1, text='Transmitted data')
+        label_buttons.grid(row=0, column=0, padx=10)
+        label_commands.grid(row=0, column=2, padx=10)
+
+        button_list = []
+        for i in range(len(button_text)):
+            button_list.append(tk.Label(frame1,
+                                        text=button_text[i],
+                                        borderwidth=2,
+                                        relief='sunken',
+                                        width=15).grid(row=i+2, column=0, pady=5, padx=15))
+
+        command_list = []
+        for i in range(len(dict_commands)):
+            text = ''.join(format(x, '02X')for x in list(dict_commands.values())[i])
+            command_list.append(tk.Label(frame1,
+                                         text='0x'+text).grid(row=i+2, column=2, padx=10))
+
+        sep1 = ttk.Separator(frame1, orient='vertical')
+        sep1.grid(row=0, column=1, rowspan=9, sticky='ns', pady=(5, 0))
+
+        sep2 = ttk.Separator(frame1, orient='horizontal')
+        sep2.grid(row=1, column=0, columnspan=3, sticky='we', padx=5)
+
     def connection_window(self):
         """
         Opens the serial connection settings window.
@@ -534,11 +598,20 @@ class MainWindow(Frame):
 
         self.entry1.delete(0, 'end')
         if sys.platform.startswith('win'):
-            self.entry1.insert(0, 'COM6')
+            if self.s is not None:
+                self.entry1.insert(0, self.s.port)
+            else:
+                self.entry1.insert(0, 'COM6')
         else:
-            self.entry1.insert(0, '/dev/ttyUSB0')
+            if self.s is not None:
+                self.entry1.insert(0, self.s.port)
+            else:
+                self.entry1.insert(0, '/dev/ttyUSB0')
         self.entry2.delete(0, 'end')
-        self.entry2.insert(0, 115200)
+        if self.s is not None:
+            self.entry2.insert(0, self.s.baud)
+        else:
+            self.entry2.insert(0, 115200)
 
     def connect_xbee(self):
         """
@@ -562,7 +635,7 @@ class MainWindow(Frame):
         self.label_rf_val[1].config(text=self.num_packets_bad)
         self.label_rf_val[2].config(text=self.num_packets_good)
 
-    def update_values(self, data):
+    def update_values(self):
         """
         Updates the values in the main window and the data for live plots.
 
@@ -574,98 +647,153 @@ class MainWindow(Frame):
         # print(len(data))
         # print(data)
         self.is_receiving = True
-        if data == 0:
-            for i in range(len(self.label_sb_val)):
-                self.label_sb_val[i].config(text='-----')
-
-            for i in range(len(self.label_gps_val)):
-                self.label_gps_val[i].config(text='-----')
-
-            for i in range(len(self.label_battery_val)):
-                self.label_battery_val[i].config(text='-----')
-
-            for i in range(len(self.label_fsm_val)):
-                self.label_fsm_val[i].config(text='-----')
-        else:
-            data = data[1:]
-            sb_data = data[:len_sb]
-            battery_data = data[len_sb:len_sb + len_battery]
-            gps_data = data[len_sb + len_battery:len_sb + len_battery + len_gps]
-            fsm_data = data[len_sb + len_gps + len_battery:len_sb + len_gps + len_battery + len_fsm]
-
-            gps_time = str(gps_data[0] + 2) + ':' + str(gps_data[1]) + ':' + str(gps_data[2])
-            tmp = ['0'] * (len_gps - 4)
-            tmp[0] = gps_time
-            tmp[1] = gps_data[3]
-
-            gps_lat_fmt = f'{gps_data[4]}.{gps_data[5]}'
-            gps_lon_fmt = f'{gps_data[6]}.{gps_data[7]}'
-            tmp[2] = gps_lat_fmt
-            tmp[3] = gps_lon_fmt
-            tmp[4:] = gps_data[8:]
-
-            gps_data = tmp
-
-            # sb data scaling
-            sb_data[1] = sb_data[1] / 100
-            sb_data[2:5] = map(lambda x: x / 32.8, sb_data[2:5])
-            sb_data[5:] = map(lambda x: x / 1024 * 9.81, sb_data[5:])
-
-            sb_data[2:] = [f'{x:.2f}' for x in sb_data[2:]]
-
-            # battery data scaling
-            battery_data[0] = battery_data[0] / 1000
-
-            # fsm data scaling
-            fsm_data[0] = fsm_data[0] / 1000
-            fsm_data[1] = fsm_data[1] / 1000
-            fsm_data[2] = fsm_data[2] / 10
-            fsm_data[4] = fsm_data[4] / 1000
-
-            for i in range(len(self.label_sb_val)):
-                self.label_sb_val[i].config(text=sb_data[i])
-
-            for i in range(len(self.label_gps_val)):
-                self.label_gps_val[i].config(text=gps_data[i])
-
-            for i in range(len(self.label_battery_val)):
-                self.label_battery_val[i].config(text=battery_data[i])
-
-            for i in range(len(self.label_fsm_val)):
-                if i != 3 and i != 5:
-                    self.label_fsm_val[i].config(text=fsm_data[i])
-
-            # print(fsm_data)
-            if fsm_data[3] < 128:
-                if fsm_data[3] in range(len(flight_phase)):
-                    self.label_fsm_val[3].config(text=flight_phase[fsm_data[3]])
-                else:
-                    self.label_fsm_val[3].config(text=fsm_data[3])
-                self.label_fsm_val[5].config(text='off')
+        time.sleep(1)
+        while self.s.isRun:
+            data = self.get_data_from_raw()
+            if data == 0:
+                continue
+                # for i in range(len(self.label_sb_val)):
+                #     self.label_sb_val[i].config(text='-----')
+                #
+                # for i in range(len(self.label_gps_val)):
+                #     self.label_gps_val[i].config(text='-----')
+                #
+                # for i in range(len(self.label_battery_val)):
+                #     self.label_battery_val[i].config(text='-----')
+                #
+                # for i in range(len(self.label_fsm_val)):
+                #     self.label_fsm_val[i].config(text='-----')
             else:
-                fsm_data[3] = 128 - fsm_data[3]
-                if fsm_data[3] in range(len(flight_phase)):
-                    self.label_fsm_val[3].config(text=flight_phase[fsm_data[3]])
-                else:
-                    self.label_fsm_val[3].config(text=fsm_data[3])
-                self.label_fsm_val[5].config(text='on')
+                try:
+                    # alignment1 = data[0]
+                    timestamp = data[0]
+                    sb_data = data[1:1+len_sb]
+                    battery_data = data[1+len_sb:1+len_sb+len_battery]
+                    alignment2 = data[1+len_sb+len_battery]
+                    gps_data = data[2+len_sb + len_battery:2+len_sb + len_battery + len_gps]
+                    altitude = data[2+len_sb + len_battery + len_gps]
+                    velocity = data[3+len_sb + len_battery + len_gps]
+                    airbrake_extension = data[4+len_sb + len_battery + len_gps]
+                    flight_phase_number = data[5+len_sb + len_battery + len_gps]
+                    # alignment3 = data[7+len_sb + len_battery + len_gps]
+                    fsm_data = [altitude, velocity, airbrake_extension, flight_phase_number, timestamp]
 
-            if self.recording:
-                with open(self.file_name, 'a') as outfile:
-                    writer = csv.writer(outfile)
-                    writer.writerow(data[:-3])
+                    gps_time = str(gps_data[0] + 2) + ':' + str(gps_data[1]) + ':' + str(gps_data[2])
+                    tmp = ['0'] * (len_gps - 4)
+                    tmp[0] = gps_time
+                    tmp[1] = gps_data[7]
 
-            self.current_altitude = fsm_data[0]
-            self.current_velocity = fsm_data[1]
+                    gps_lat_fmt = f'{gps_data[8]}.{gps_data[3]}'
+                    gps_lon_fmt = f'{gps_data[9]}.{gps_data[4]}'
+                    tmp[2] = gps_lat_fmt
+                    tmp[3] = gps_lon_fmt
+                    # tmp[4:] = gps_data[8:]
+                    tmp[4] = gps_data[10]
+                    tmp[5] = gps_data[5]
+                    tmp[6] = gps_data[6]
+
+                    gps_data = tmp
+
+                    # sb data scaling
+                    sb_data[1] = sb_data[1] / 100
+                    sb_data[2:5] = map(lambda x: x / 32.8, sb_data[2:5])
+                    sb_data[5:] = map(lambda x: x / 1024 * 9.81, sb_data[5:])
+
+                    sb_data[2:] = [f'{x:.2f}' for x in sb_data[2:]]
+
+                    # battery data scaling
+                    battery_data[0] = battery_data[0] / 1000
+
+                    # fsm data scaling
+                    fsm_data[0] = fsm_data[0] / 1000
+                    fsm_data[1] = fsm_data[1] / 1000
+                    fsm_data[2] = fsm_data[2] / 10
+                    fsm_data[4] = fsm_data[4] / 1000
+
+                    fsm_data[4] = '{:.3f}'.format(fsm_data[4])
+
+                    for i in range(len(self.label_sb_val)):
+                        self.label_sb_val[i].config(text=sb_data[i])
+
+                    for i in range(len(self.label_gps_val)):
+                        self.label_gps_val[i].config(text=gps_data[i])
+
+                    for i in range(len(self.label_battery_val)):
+                        self.label_battery_val[i].config(text=battery_data[i])
+
+                    for i in range(len(self.label_fsm_val)):
+                        if i != 3 and i != 5:
+                            self.label_fsm_val[i].config(text=fsm_data[i])
+
+                    # print(fsm_data)
+                    if fsm_data[3] < 128:
+                        if fsm_data[3] in range(len(flight_phase)):
+                            self.label_fsm_val[3].config(text=flight_phase[fsm_data[3]])
+                        else:
+                            self.label_fsm_val[3].config(text=fsm_data[3])
+                        self.label_fsm_val[5].config(text='off')
+                    else:
+                        fsm_data[3] = 128 - fsm_data[3]
+                        if fsm_data[3] in range(len(flight_phase)):
+                            self.label_fsm_val[3].config(text=flight_phase[fsm_data[3]])
+                        else:
+                            self.label_fsm_val[3].config(text=fsm_data[3])
+                        self.label_fsm_val[5].config(text='on')
+
+                    if self.recording:
+                        with open(self.file_name, 'a') as outfile:
+                            writer = csv.writer(outfile)
+                            writer.writerow(data)
+
+                    self.current_altitude = fsm_data[0]
+                    self.current_velocity = fsm_data[1]
+                except IndexError as e:
+                    self.logger.info("An Index Error occurred.")
+            time.sleep(0.001)
+
+    def get_data_from_raw(self):
+
+        curr_raw_data = self.s.get_current_raw_data()
+        if self.verbose:
+            print(curr_raw_data.hex())
+
+        if len(curr_raw_data) != 79:
+            return 0
+
+        part1 = curr_raw_data[:30]
+        try:
+            part1_unpacked = struct.unpack('lllhhhhhhHHH', part1)
+        except struct.error as e:
+            part1_unpacked = [0]*12
+
+        part2 = curr_raw_data[30:-4]
+        try:
+            part2_unpacked = struct.unpack('LlllllHHBBBBlllB', part2)
+        except struct.error as e:
+            part2_unpacked = [0]*16
+
+        return list(part1_unpacked)+list(part2_unpacked)
 
     def about_window(self):
-        root3 = tk.Toplevel(self._root)
-        root3.title('About')
-        root3.geometry('{}x{}'.format(300, 500))
-        root3.resizable(height=False, width=False)
+        root = tk.Toplevel(self._root)
 
-        frame1 = tk.Frame(root3)
-        frame2 = tk.Frame(root3)
+        w = 300
+        h = 500
+        # get screen width and height
+        ws = root.winfo_screenwidth()  # width of the screen
+        hs = root.winfo_screenheight()  # height of the screen
+
+        # calculate x and y coordinates for the Tk window
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+
+        root.title('About')
+        # root3.geometry('{}x{}'.format(300, 500))
+        root.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        root.resizable(height=False, width=False)
+
+        frame1 = tk.Frame(root)
+        frame2 = tk.Frame(root)
 
         frame1.pack(side="top", fill="both", expand=True)
         frame2.pack(side="bottom", fill="both", expand=True)
@@ -688,3 +816,6 @@ class MainWindow(Frame):
         label_img.configure(bg="white")
         label_img.image = img
         label_img.pack()
+
+    def toggle_verbose(self):
+        self.verbose = not self.verbose
