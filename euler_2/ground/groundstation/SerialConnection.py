@@ -97,7 +97,7 @@ class SerialConnection:
         self.logger = logging.getLogger()
         self.port = serial_port
         self.baud = serial_baud
-        self.rawData = bytearray(79)
+        self.rawData = bytearray(1) #79
         self.isRun = True
         self.isReceiving = False
         self.thread = None
@@ -160,7 +160,10 @@ class SerialConnection:
             self.logger.info('was not able to send command: '+command)
 
     def save_raw_data(self):
-        self.writer.writerow(self.rawData)
+        try:
+            self.writer.writerow(self.rawData)
+        except PermissionError as e:
+            self.logger.error(e)
 
     def back_ground_thread(self):  # retrieve data
         self.serialConnection.reset_input_buffer()
