@@ -29,6 +29,7 @@ void vTaskFsm(void *argument) {
   /* Telemetry Command */
   command_e telemetry_command = IDLE_COMMAND;
 
+  /* TODO [Jonas]: Make sure that this delay is larger than the reset of the state estimation! */
   osDelay(10000);
 
   /* Infinite loop */

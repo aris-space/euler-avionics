@@ -52,12 +52,13 @@ void vTaskBattery(void *argument) {
     float supply_voltage = adc_value[2] * (2.45 / 65536.0) * 2;           // 3V3
     float battery_voltage = adc_value[3] * (2.45 / 65536.0) * 5.2;  // BAT
 
-
+    // In case of an error with reading adc values, reinitialize dma
     if ((adc_value[0] | adc_value[1]) == 0) {
       HAL_ADC_Stop_DMA(&hadc1);
       HAL_ADC_Start_DMA(&hadc1, adc_value, 4);
     }
-    // Filter adc values
+
+    // Filter adc values (running avarage)
     if (counter < 50) {
     	current_buffer[counter] = current1+current2;
     	battery_buffer[counter] = battery_voltage;
@@ -66,6 +67,8 @@ void vTaskBattery(void *argument) {
     } else {
     	counter = 0;
     }
+
+    // Every 10 samples save values
     if(counter%10 == 1){
     	curr = 0;
     	supp = 0;
@@ -77,14 +80,14 @@ void vTaskBattery(void *argument) {
     		bat += battery_buffer[i];
     	}
 
-    	mah += (curr) / (BATTERY_SAMPLE_RATE * 3.6);
+    	mah += (curr) / (BATTERY_SAMPLE_RATE * 3.6); // ((Current * 1000) / 60sec) / 60min) * 1 / SAMPLE RATE
 		battery_data.consumption = (uint16_t)mah;
-		battery_data.current = (uint16_t)((curr*20));
+		battery_data.current = (uint16_t)((curr*20)); // (Current * 1000) / RUNNING AVARAGE SAMPLES
 
-		battery_data.supply = (uint16_t)(supp * 20);
-		battery_data.battery = (uint16_t)(bat * 20);
+		battery_data.supply = (uint16_t)(supp * 20); // (Supply Voltage * 1000) / RUNNING AVARAGE SAMPLES
+		battery_data.battery = (uint16_t)(bat * 20); // (Battery Voltage * 1000) / RUNNING AVARAGE SAMPLES
 		/* TODO [nemanja]: (curr/50 * bat/50)*1000 isn't converted to double */
-		battery_data.power = (curr/50 * bat/50)*1000;
+		battery_data.power = (curr/50 * bat/50)*1000; // Current * Voltage
 
 		usb_print(
 		  "[BATTERY] Supply: %d Battery: %d Current: %dmA, Consumption: %dmAh "

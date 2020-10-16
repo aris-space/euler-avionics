@@ -34,7 +34,6 @@ DTCM int16_t recd_compact[NN-KK+KK2];
 uint8_t transmission_data[NN-KK+KK2];
 
 
-
 void vTaskXbee(void *argument) {
 
 #if (configUSE_TRACE_FACILITY == 1)
@@ -219,5 +218,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		}
 
 		HAL_UART_Receive_IT(huart, (uint8_t *)&local_command_rx, 1);
+
+		//TODO [luca] Maybe we should flush the input buffer if nothing is received for more than 200ms
 	}
 }

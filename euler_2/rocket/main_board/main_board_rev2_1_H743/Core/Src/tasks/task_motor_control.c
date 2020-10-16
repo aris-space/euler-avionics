@@ -98,12 +98,9 @@ void vTaskMotorCont(void *argument) {
     } else {
       motor_status = move_to_position(0);
     }
-//
-//    if(osKernelGetTickCount() < 10000 && osKernelGetTickCount() > 9960){
-//    	test_airbrakes(-100);
-//    }
 
     /* Airbrake Test if telemetry command is given and we are in idle state */
+    /* TODO [Jonas]: Make sure that this Command really works! */
     if (flight_phase_detection.flight_phase == IDLE &&
         telemetry_command == AIRBRAKE_TEST_COMMAND &&
         osKernelGetTickCount() < 60000) {
@@ -136,6 +133,7 @@ void vTaskMotorCont(void *argument) {
 
     if (motor_status != osOK && flight_phase_detection.flight_phase == IDLE) {
       disable_motor();
+      // TODO [luca]: What happens if the flight phase is not idle and the motor drivers returns != osOk? should we not disable the motor then aswell? (Might be stuck and pulling tons of amps)
       osDelay(1000);
       enable_motor();
     }

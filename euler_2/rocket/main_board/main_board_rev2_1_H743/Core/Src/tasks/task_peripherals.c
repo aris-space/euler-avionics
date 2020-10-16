@@ -69,14 +69,15 @@ void vTaskPeripherals(void *argument) {
       HAL_GPIO_WritePin(PW_HOLD_GPIO_Port, PW_HOLD_Pin, GPIO_PIN_SET);
     }
 
-    /* Start Enable Camera Sequence */
+    /* TODO [Jonas]: Write Code such that the camera automatically turns off after 5 minutes
+     * and that we can turn the camera on and off several times from the ground station!
+     */
     if ((telemetry_command == ENABLE_CAMERA) && !camera_enabled) {
       camera_enabled = true;
       HAL_GPIO_WritePin(CAMERA_GPIO_Port, CAMERA_Pin, GPIO_PIN_SET);
     }
 
-    /* Camera first enable for some time, then turn off and finally turn on
-     * again */
+    // TODO [luca] is buzzer state sent down? Also can we send down the camera state?
 
     /* Enable Buzzer */
     if (buzzer_on_fsm ^ buzzer_on_telemetry) {
