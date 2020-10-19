@@ -35,7 +35,8 @@ typedef enum {
   TELEMETRY_LOW_SAMPLING = 197,
   ENABLE_BUZZER = 113,
   DISABLE_SELF_HOLD = 251,
-  ENABLE_CAMERA = 2
+  ENABLE_CAMERA = 222,
+  DISABLE_CAMERA = 123
 } command_e;
 
 typedef struct {
@@ -120,7 +121,7 @@ static const imu_data_t EMPTY_IMU = {0};
 
 /* USB Fake data insert */
 
-#define USB_DATA_ENABLE 0
+//#define USB_DATA_ENABLE
 
 /** USB DEBUGGING **/
 

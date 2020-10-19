@@ -43,10 +43,10 @@ void vTaskBattery(void *argument) {
 
   while (1) {
     tick_count += tick_update;
-    // TODO [nemanja]: why is current2 adc_value[0] and current1 adc_value[1]
-    double current2 = ((double)adc_value[0] * (2.45 / 65536.0) - (3.41 * 0.1)) /
+
+    double current1 = ((double)adc_value[0] * (2.45 / 65536.0) - (3.41 * 0.1)) /
                       0.66;                                       // CURR2
-    double current1 = ((double)adc_value[1] * (2.45 / 65536.0) - (3.41 * 0.1)) /
+    double current2 = ((double)adc_value[1] * (2.45 / 65536.0) - (3.41 * 0.1)) /
                           0.66;  // CURR1
 
     float supply_voltage = adc_value[2] * (2.45 / 65536.0) * 2;           // 3V3
@@ -86,8 +86,7 @@ void vTaskBattery(void *argument) {
 
 		battery_data.supply = (uint16_t)(supp * 20); // (Supply Voltage * 1000) / RUNNING AVARAGE SAMPLES
 		battery_data.battery = (uint16_t)(bat * 20); // (Battery Voltage * 1000) / RUNNING AVARAGE SAMPLES
-		/* TODO [nemanja]: (curr/50 * bat/50)*1000 isn't converted to double */
-		battery_data.power = (curr/50 * bat/50)*1000; // Current * Voltage
+		battery_data.power = (uint16_t)((curr/50 * bat/50)*1000); // Current * Voltage
 
 		usb_print(
 		  "[BATTERY] Supply: %d Battery: %d Current: %dmA, Consumption: %dmAh "

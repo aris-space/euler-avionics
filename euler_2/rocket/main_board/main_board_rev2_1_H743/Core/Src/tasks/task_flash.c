@@ -456,7 +456,6 @@ static int compare_arrays(uint8_t a[], uint8_t b[], int n) {
 }
 #endif
 
-/* TODO [nemanja]: try moving this to DTCM */
 uint8_t flash_buffer[FLASH_BUFFER_LEN];
 
 void vTaskFlash(void *argument) {

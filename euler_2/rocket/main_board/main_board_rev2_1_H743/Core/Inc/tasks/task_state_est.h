@@ -15,7 +15,12 @@
 /* Constants */
 /* -> Are in state_est_settings */
 
-/* Commands */
+/* Defines */
+#define BARO_LOWER_BOUND 70000
+#define BARO_UPPER_BOUND 120000
+
+#define TEMP_LOWER_BOUND -10
+#define TEMP_UPPER_BOUND 60
 
 /* Extern */
 /* Sensor Board 1 */

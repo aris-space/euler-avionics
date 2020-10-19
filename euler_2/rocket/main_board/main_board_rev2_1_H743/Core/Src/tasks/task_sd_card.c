@@ -57,7 +57,7 @@ void vTaskSdCard(void *argument) {
     } else {
       already_entered = 1;
     }
-  /* TODO [nemanja]: change this goto */
+
   logToNewFile:
     if (find_next_file_name(EULER_LOG_FILE_NAME) != FR_OK) {
       usb_print("[STORAGE TASK] Error while finding log file!\n");
@@ -89,7 +89,7 @@ void vTaskSdCard(void *argument) {
         /* prepare tmp log string */
         tmp_str_len = format_log_str(tmp_str, &curr_log_elem);
         if (tmp_str_len > 0) {
-          if (sd_str_idx + tmp_str_len < SD_BUFFER_LEN) {
+          if ((sd_str_idx + tmp_str_len) < (SD_BUFFER_LEN - 1)) {
             /* write output */
             strncpy(sd_str_buffer + sd_str_idx, tmp_str, tmp_str_len);
             sd_str_idx += tmp_str_len;
@@ -108,10 +108,8 @@ void vTaskSdCard(void *argument) {
               vTracePrint(sd_channel, "Written to file");
 #endif
             }
-            /* TODO [nemanja]: === if (++sync_counter >= SD_CARD_SYNC_COUNT) */
             /* TODO [nemanja]: check if this sync count is detrimental */
-            sync_counter++;
-            if (sync_counter >= SD_CARD_SYNC_COUNT) {
+            if (++sync_counter >= SD_CARD_SYNC_COUNT) {
               sync_counter = 0;
               HAL_GPIO_TogglePin(LED4_GPIO_Port, LED4_Pin);
               res = f_sync(&EULER_LOG_FILE);

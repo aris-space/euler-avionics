@@ -90,7 +90,6 @@ const osThreadAttr_t defaultTask_attributes = {
 };
 /* Definitions for task_state_est */
 osThreadId_t task_state_estHandle;
-/* TODO [nemanja]: try moving task buffers to DTCM and see what happens */
 uint32_t task_state_estBuffer[ 2048 ];
 osStaticThreadDef_t task_state_estControlBlock;
 const osThreadAttr_t task_state_est_attributes = {
@@ -606,7 +605,7 @@ int main(void)
   task_peripheralsHandle = osThreadNew(vTaskPeripherals, NULL, &task_peripherals_attributes);
 
   /* creation of task_flash */
-//  task_flashHandle = osThreadNew(vTaskFlash, NULL, &task_flash_attributes);
+  task_flashHandle = osThreadNew(vTaskFlash, NULL, &task_flash_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -1426,11 +1425,6 @@ void StartDefaultTask(void *argument)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
-  osDelay(5000);
-  /* TODO [nemanja]: move this to initialization task */
-//#if (configUSE_TRACE_FACILITY == 1)
-//  vTraceEnable(TRC_START);
-//#endif
 
   for (;;) {
     osDelay(1000);

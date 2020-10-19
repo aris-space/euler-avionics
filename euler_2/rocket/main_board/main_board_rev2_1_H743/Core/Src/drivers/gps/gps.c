@@ -7,7 +7,7 @@ uint8_t _parse_data(struct gps_device *dev, uint8_t *data) {
 		crc += data[i];
 	}
 	if(crc == data[BUFFER_SIZE-1]){
-		// TODO [luca]: test if input is possible otherwise return 0, crc might be correct but data is not
+
 		dev->data.hour = data[0];
 		dev->data.minute = data[1];
 		dev->data.second = data[2];
@@ -21,6 +21,10 @@ uint8_t _parse_data(struct gps_device *dev, uint8_t *data) {
 		dev->data.fix = data[13];
 
 		dev->data.satellite = data[14];
+		if((data[0] > 24) || (data[1] > 60) || (data[3] > 60)){
+			dev->data.satellite = 50;
+		}
+
 
 		dev->data.altitude = ((uint16_t)data[15]<<8) + data [16];
 		return 1;

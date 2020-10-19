@@ -313,7 +313,6 @@ void decode_rs(int16_t * recd, int16_t const *alpha_to, int16_t const *index_of)
             else recd[i] = 0;
 }
 
-// TODO [luca] FIX MEMORY LEAK!
 void struct_to_poly(telemetry_t t_data, int16_t *data){
     unsigned char *buffer = (unsigned char*)malloc(sizeof(t_data));
     memcpy(buffer, (const unsigned char *)&t_data, sizeof(t_data));
@@ -330,8 +329,9 @@ void struct_to_poly(telemetry_t t_data, int16_t *data){
             tmp=0;
         }
     }
+    free(buffer);
 }
-// TODO [luca] FIX MEMORY LEAK!
+
 telemetry_t poly_to_struct(int16_t const *recd){
     uint8_t tmp2[KK];
     for(int i=0;i < KK; i++){
@@ -343,6 +343,7 @@ telemetry_t poly_to_struct(int16_t const *recd){
     }
     telemetry_t rec;
     memcpy(&rec, rec_buffer, sizeof(rec));
+    free(rec_buffer);
     return rec;
 }
 

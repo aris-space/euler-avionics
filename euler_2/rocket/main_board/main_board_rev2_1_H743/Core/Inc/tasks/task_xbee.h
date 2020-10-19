@@ -19,6 +19,8 @@
 #define XBEE_SAMPLING_FREQ 10
 #define XBEE_SAMPLING_FREQ_HIGH 100
 
+#define XBEE_COMMAND_TIMEOUT 200
+
 /* extern */
 
 /* Mutexes */

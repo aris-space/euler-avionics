@@ -222,7 +222,5 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		}
 
 		HAL_UART_Receive_IT(huart, (uint8_t *)&local_command_rx, 1);
-
-		//TODO [luca] Maybe we should flush the input buffer if nothing is received for more than 200ms
 	}
 }

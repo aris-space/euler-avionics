@@ -96,22 +96,22 @@ void vTaskGps(void *argument) {
     log_sensor(osKernelGetTickCount(), 2, GPS, &GPS2.data);
     log_sensor(osKernelGetTickCount(), 3, GPS, &GPS3.data);
 
-    // TODO [luca] sattelites can not go above 12 otherwise there is an error, throw out gps modules with more than 12 sats
+    // TODO TEST [luca] sattelites can not go above 12 otherwise there is an error, throw out gps modules with more than 12 sats
     /* get best possible GPS for Telemetry */
-    if (GPS1.data.satellite >= GPS2.data.satellite) {
-      if (GPS1.data.satellite >= GPS3.data.satellite) {
+    if ((GPS1.data.satellite >= GPS2.data.satellite) && (GPS1.data.satellite < 13)) {
+      if ((GPS1.data.satellite >= GPS3.data.satellite) && (GPS1.data.satellite < 13)) {
         choose_GPS = 1;
       } else {
         choose_GPS = 3;
       }
-    } else if (GPS2.data.satellite >= GPS3.data.satellite) {
-      if (GPS2.data.satellite >= GPS1.data.satellite) {
+    } else if ((GPS2.data.satellite >= GPS3.data.satellite) && (GPS2.data.satellite < 13)) {
+      if ((GPS2.data.satellite >= GPS1.data.satellite) && (GPS2.data.satellite < 13)) {
         choose_GPS = 2;
       } else {
         choose_GPS = 1;
       }
-    } else if (GPS3.data.satellite >= GPS1.data.satellite) {
-      if (GPS3.data.satellite >= GPS2.data.satellite) {
+    } else if ((GPS3.data.satellite >= GPS1.data.satellite) && (GPS3.data.satellite < 13)) {
+      if ((GPS3.data.satellite >= GPS2.data.satellite) && (GPS3.data.satellite < 13)) {
         choose_GPS = 3;
       } else {
         choose_GPS = 2;

@@ -15,11 +15,11 @@
 #include <math.h>
 #include "Util/telemetry_util.h"
 
-/* TODO [nemanja]: put defines in brackets MM (8) */
+
 #define MM  8           /* RS code over GF(2**mm) */
 #define NN  255         /* nn=2**mm -1   length of codeword */
 #define TT  44          /* number of errors that can be corrected */
-#define KK  167//(NN-(2*TT))        /* kk = nn-2*tt  - length of data without parity bits*/
+#define KK  167        /* kk = nn-2*tt  - length of data without parity bits*/
 #define KK2 84//(int)ceil((double)KK/2) /* length of compressed data without parity bits*/
 
 /* sets the irreducible polynomial */

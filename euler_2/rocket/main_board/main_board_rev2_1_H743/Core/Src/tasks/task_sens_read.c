@@ -9,7 +9,9 @@
 #include "tasks/task_sens_read.h"
 
 static void read_data_sb(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3);
+#ifdef USB_DATA_ENABLE
 static void read_data_usb();
+#endif
 static uint8_t calculate_checksum_sb(sb_data_t *sb_data);
 
 /* SPI Read Data */
@@ -32,11 +34,11 @@ void vTaskSensRead(void *argument) {
 
     /* Get Data */
     // TODO[luca]: why is this not a DEFINE?
-    if (USB_DATA_ENABLE) {
+#ifdef USB_DATA_ENABLE
       read_data_usb();
-    } else {
+#else
       read_data_sb(&sb1_data, &sb2_data, &sb3_data);
-    }
+#endif
 //    usb_print(
 //    		"[SB1 BARO] P: %ld,T: %ld,Ts: %ld\n", sb1_data.baro.pressure,
 //			sb1_data.baro.temperature,
@@ -113,6 +115,7 @@ static void read_data_sb(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
 }
 
 /* Read Data from USB */
+#ifdef USB_DATA_ENABLE
 static void read_data_usb() {
   if (osMutexAcquire(usb_data_mutex.mutex, 10)) {
 //    sscanf(usb_data_buffer,
@@ -130,9 +133,9 @@ static void read_data_usb() {
     osMutexRelease(usb_data_mutex.mutex);
   }
 }
+#endif
 
 static uint8_t calculate_checksum_sb(sb_data_t *sb_data) {
-	// TODO [luca] why is this not a for loop? (not really a checksum, we ignore more than half of the data so if there is an error with data we might miss it)
   return sb_data->baro.pressure + sb_data->baro.temperature +
          sb_data->imu_1.gyro_x + sb_data->imu_1.gyro_y + sb_data->imu_1.gyro_z +
          sb_data->imu_1.acc_x + sb_data->imu_1.acc_y + sb_data->imu_1.acc_z +
