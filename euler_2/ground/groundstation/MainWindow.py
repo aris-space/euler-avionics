@@ -117,6 +117,8 @@ class MainWindow(Frame):
         self.thread = None
         self.verbose = False
 
+        self.time_offset = 2
+
         self.__setup__()
 
     def __setup__(self):
@@ -158,6 +160,7 @@ class MainWindow(Frame):
 
         self.settings_menu.add_command(label="Commands", command=self.command_settings)
         self.settings_menu.add_command(label='Print raw data (on/off)', command=self.toggle_verbose)
+        self.settings_menu.add_command(label='Time zone', command=self.timezone_window)
 
         self.help_menu.add_command(label="About", command=self.about_window)
         # self.help_menu.add_command(label="Manual", command=self.manual_window)
@@ -458,6 +461,8 @@ class MainWindow(Frame):
             messagebox.showinfo('Warning', 'Serial connection is not established yet. Cannot start recording.')
         elif self.file_name[-4:] != '.csv':
             messagebox.showinfo('Warning', 'Invalid filename. Needs to end on .csv')
+        elif self.recording:
+            messagebox.showinfo('Warning', 'Recording is already running.')
         elif os.path.exists(self.file_name):
             answer = messagebox.askquestion('Warning', 'File already exists. Continue overwriting?')
             if answer == 'yes':
@@ -678,7 +683,7 @@ class MainWindow(Frame):
                     # alignment3 = data[7+len_sb + len_battery + len_gps]
                     fsm_data = [altitude, velocity, airbrake_extension, flight_phase_number, timestamp]
 
-                    gps_time = str(gps_data[0] + 2) + ':' + str(gps_data[1]) + ':' + str(gps_data[2])
+                    gps_time = str(gps_data[0] + self.time_offset) + ':' + str(gps_data[1]) + ':' + str(gps_data[2])
                     tmp = ['0'] * (len_gps - 4)
                     tmp[0] = gps_time
                     tmp[1] = gps_data[7]
@@ -741,15 +746,18 @@ class MainWindow(Frame):
                         self.label_fsm_val[5].config(text='on')
 
                     if self.recording:
-                        with open(self.file_name, 'a') as outfile:
-                            writer = csv.writer(outfile)
-                            writer.writerow(data)
+                        try:
+                            with open(self.file_name, 'a') as outfile:
+                                writer = csv.writer(outfile)
+                                writer.writerow(data)
+                        except PermissionError as e:
+                            self.logger.error(e)
 
                     self.current_altitude = fsm_data[0]
                     self.current_velocity = fsm_data[1]
                 except IndexError as e:
                     self.logger.info("An Index Error occurred.")
-            time.sleep(0.001)
+            time.sleep(0.005)
 
     def get_data_from_raw(self):
 
@@ -819,3 +827,44 @@ class MainWindow(Frame):
 
     def toggle_verbose(self):
         self.verbose = not self.verbose
+
+    def timezone_window(self):
+        self.root_timezone = tk.Toplevel(self._root)
+
+        w = 300
+        h = 100
+        # get screen width and height
+        ws = self.root_timezone.winfo_screenwidth()  # width of the screen
+        hs = self.root_timezone.winfo_screenheight()  # height of the screen
+
+        # calculate x and y coordinates for the Tk window
+        x = (ws / 2) - (w / 2)
+        y = (hs / 2) - (h / 2)
+
+        self.root_timezone.title('Timezone setting')
+        self.root_timezone.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        self.root_timezone.resizable(height=False, width=False)
+
+        frame = tk.LabelFrame(self.root_timezone, text='Timezone')
+        frame.pack()
+
+        label1 = tk.Label(frame, text='UTC+')
+        label1.grid(row=0, column=0, padx=(5, 0), pady=5)
+        self.entry1 = tk.Entry(frame)
+        self.entry1.grid(row=0, column=1, padx=(0, 5), pady=5)
+        self.entry1.delete(0, 'end')
+        self.entry1.insert(0, str(self.time_offset))
+
+        save_button = tk.Button(frame, text='Save', command=self.save_offset)
+        save_button.grid(row=1, column=0, columnspan=2)
+
+    def save_offset(self):
+        try:
+            tmp = int(self.entry1.get())
+            self.time_offset = tmp
+            self.root_timezone.destroy()
+        except ValueError as e:
+            messagebox.showinfo('ValueError', e)
+            self.entry1.delete(0, 'end')
+            self.entry1.insert(0, str(self.time_offset))
+            self.root_timezone.lift()
