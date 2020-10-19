@@ -19,6 +19,7 @@ void vTaskPeripherals(void *argument) {
 
 
   bool camera_enabled = false;
+  int32_t camera_start_time = 0;
 
   /* buzzer variables */
   bool buzzer_on_fsm = false;
@@ -69,15 +70,20 @@ void vTaskPeripherals(void *argument) {
       HAL_GPIO_WritePin(PW_HOLD_GPIO_Port, PW_HOLD_Pin, GPIO_PIN_SET);
     }
 
-    /* TODO [Jonas]: Write Code such that the camera automatically turns off after 5 minutes
-     * and that we can turn the camera on and off several times from the ground station!
-     */
-    if ((telemetry_command == ENABLE_CAMERA) && !camera_enabled) {
+    if ((telemetry_command == ENABLE_CAMERA) | (flight_phase_detection.flight_phase == THRUSTING)) {
       camera_enabled = true;
-      HAL_GPIO_WritePin(CAMERA_GPIO_Port, CAMERA_Pin, GPIO_PIN_SET);
+      camera_start_time = osKernelGetTickCount();
     }
 
-    // TODO [luca] is buzzer state sent down? Also can we send down the camera state?
+    if(camera_enabled){
+    	HAL_GPIO_WritePin(CAMERA_GPIO_Port, CAMERA_Pin, GPIO_PIN_SET);
+    	if(osKernelGetTickCount() > CAMERA_ON_TIME + camera_start_time){
+    		camera_enabled = false;
+    	}
+    }
+    else{
+    	HAL_GPIO_WritePin(CAMERA_GPIO_Port, CAMERA_Pin, GPIO_PIN_RESET);
+    }
 
     /* Enable Buzzer */
     if (buzzer_on_fsm ^ buzzer_on_telemetry) {
@@ -92,6 +98,9 @@ void vTaskPeripherals(void *argument) {
     else{
     	HAL_TIM_PWM_Stop(&htim4, TIM_CHANNEL_2);
     }
+
+    camera_state = camera_enabled;
+    buzzer_state = buzzer_on_fsm ^ buzzer_on_telemetry;
 
     /* TODO [nemanja]: === if (++buzzercounter >= 16) */
     buzzercounter++;

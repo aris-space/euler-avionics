@@ -289,6 +289,10 @@ osMutexId_t battery_mutex_only;
 telemetry_battery_data_t global_battery_data;
 custom_mutex_t battery_mutex;
 
+/* Peripherals */
+int8_t buzzer_state;
+int8_t camera_state;
+
 /* Telemetry Command */
 osMutexId_t command_mutex_only;
 custom_mutex_t command_mutex;

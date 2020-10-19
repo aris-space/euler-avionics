@@ -16,6 +16,7 @@
 
 /* defines */
 #define PERIPHERALS_SAMPLING_FREQ 10
+#define CAMERA_ON_TIME 300000
 
 /* extern */
 
@@ -27,6 +28,9 @@ extern custom_mutex_t command_mutex;
 
 extern flight_phase_detection_t global_flight_phase_detection;
 extern command_e global_telemetry_command;
+
+extern int8_t buzzer_state;
+extern int8_t camera_state;
 
 extern TIM_HandleTypeDef htim4;
 

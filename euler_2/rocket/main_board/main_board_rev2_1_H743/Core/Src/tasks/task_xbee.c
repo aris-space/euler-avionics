@@ -158,6 +158,10 @@ void vTaskXbee(void *argument) {
 		telemetry_send.height = state_est_data.position_world[2];
 		telemetry_send.velocity = state_est_data.velocity_world[2];
 
+		/* Read Peripherals */
+		telemetry_send.flight_phase |= buzzer_state << 7;
+		telemetry_send.flight_phase |= camera_state << 6;
+
 		telemetry_send.ts = osKernelGetTickCount();
 
 		/*=============Encoding Part of Reed Solomon =============*/

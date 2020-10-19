@@ -43,6 +43,9 @@ extern command_e global_telemetry_command;
 extern gps_data_t globalGPS;
 extern telemetry_battery_data_t global_battery_data;
 
+extern int8_t buzzer_state;
+extern int8_t camera_state;
+
 extern UART_HandleTypeDef huart7;
 
 /* functions */
