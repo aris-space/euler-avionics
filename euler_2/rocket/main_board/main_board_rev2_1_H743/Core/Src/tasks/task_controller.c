@@ -5,11 +5,11 @@
  *      Author: Jonas
  */
 
-#include "../../aris-euler-controller/Inc/controller.h"
+//#include "../../aris-euler-controller/Inc/controller.h"
 #include "util/logging_util.h"
 #include "tasks/task_controller.h"
 
- DTCM control_data_t control_data = {0};
+// DTCM control_data_t control_data = {0};
 
 void vTaskController(void *argument) {
   /* For periodic update */
@@ -21,14 +21,14 @@ void vTaskController(void *argument) {
 
   /* Initialize the control_data struct */
 
-  control_init(&control_data);
+//  control_init(&control_data);
 
 
   osDelay(1100);
 
   /* Infinite loop */
   tick_count = osKernelGetTickCount();
-  tick_update = osKernelGetTickFreq() / CONTROLLER_SAMPLING_FREQ;
+  tick_update = osKernelGetTickFreq() / 50;
 
   while (1) {
     /* Tick Update */
@@ -51,7 +51,7 @@ void vTaskController(void *argument) {
     state_est_data_local.airbrake_extension = 500000;
     state_est_data_local.velocity_rocket[0] = 150000;
     state_est_data_local.position_world[2] = 3000000;
-    control_data.integrated_error = 0;
+//    control_data.integrated_error = 0;
 
 //    control_step(&control_data, &state_est_data_local, &flight_phase_detection_local, &env_local);
 
@@ -60,16 +60,16 @@ void vTaskController(void *argument) {
 
     /* Write Control Input into Global Variable */
     if (acquire_mutex(&controller_mutex) == osOK) {
-      controller_output_global = (int32_t)(control_data.control_input * 1000);
+//      controller_output_global = (int32_t)(control_data.control_input * 1000);
       release_mutex(&controller_mutex);
     }
 
     /* Log to SD Card */
     /* TODO [Jonas]: Change this for appropriate Controller */
-    log_controller_output(osKernelGetTickCount(),
-                        (int32_t)(control_data.control_input * 1000),
-                        (int32_t)(control_data.reference_error * 1000),
-                        (int32_t)(control_data.integrated_error * 1000));
+//    log_controller_output(osKernelGetTickCount(),
+//                        (int32_t)(control_data.control_input * 1000),
+//                        (int32_t)(control_data.reference_error * 1000),
+//                        (int32_t)(control_data.integrated_error * 1000));
 
     /* Sleep */
     osDelayUntil(tick_count);

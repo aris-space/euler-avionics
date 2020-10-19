@@ -602,7 +602,7 @@ int main(void)
   task_peripheralsHandle = osThreadNew(vTaskPeripherals, NULL, &task_peripherals_attributes);
 
   /* creation of task_flash */
-  task_flashHandle = osThreadNew(vTaskFlash, NULL, &task_flash_attributes);
+//  task_flashHandle = osThreadNew(vTaskFlash, NULL, &task_flash_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -1424,9 +1424,9 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   osDelay(5000);
   /* TODO [nemanja]: move this to initialization task */
-#if (configUSE_TRACE_FACILITY == 1)
-  vTraceEnable(TRC_START);
-#endif
+//#if (configUSE_TRACE_FACILITY == 1)
+//  vTraceEnable(TRC_START);
+//#endif
 
   for (;;) {
     osDelay(1000);
