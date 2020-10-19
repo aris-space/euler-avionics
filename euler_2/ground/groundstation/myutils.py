@@ -50,7 +50,8 @@ fsm_names = ['altitude [m]',
              'airbrake extension [%]',
              'flight phase',
              'timestamp [s]',
-             'Buzzer']
+             'Buzzer',
+             'Camera']
 
 rf_names = ['Packets total',
             'Corrupted packets',
