@@ -727,23 +727,42 @@ class MainWindow(Frame):
                         self.label_battery_val[i].config(text=battery_data[i])
 
                     for i in range(len(self.label_fsm_val)):
-                        if i != 3 and i != 5:
+                        if i != 3 and i != 5 and i != 6:
                             self.label_fsm_val[i].config(text=fsm_data[i])
 
                     # print(fsm_data)
-                    if fsm_data[3] < 128:
-                        if fsm_data[3] in range(len(flight_phase)):
-                            self.label_fsm_val[3].config(text=flight_phase[fsm_data[3]])
+                    curr_flightphase = fsm_data[3]
+                    if curr_flightphase < 64:
+                        if curr_flightphase in range(len(flight_phase)):
+                            self.label_fsm_val[3].config(text=flight_phase[curr_flightphase])
                         else:
-                            self.label_fsm_val[3].config(text=fsm_data[3])
-                        self.label_fsm_val[5].config(text='off')
+                            self.label_fsm_val[3].config(text=curr_flightphase)
+                        self.label_fsm_val[5].config(text='off')  # buzzer
+                        self.label_fsm_val[6].config(text='off')  # camera
+                    elif 128 > curr_flightphase > 64:
+                        curr_flightphase = 64 - curr_flightphase
+                        if curr_flightphase in range(len(flight_phase)):
+                            self.label_fsm_val[3].config(text=flight_phase[curr_flightphase])
+                        else:
+                            self.label_fsm_val[3].config(text=curr_flightphase)
+                        self.label_fsm_val[5].config(text='off')  # buzzer
+                        self.label_fsm_val[6].config(text='on')  # camera
+                    elif 192 > curr_flightphase > 128:
+                        curr_flightphase = 128 - curr_flightphase
+                        if curr_flightphase in range(len(flight_phase)):
+                            self.label_fsm_val[3].config(text=flight_phase[curr_flightphase])
+                        else:
+                            self.label_fsm_val[3].config(text=curr_flightphase)
+                        self.label_fsm_val[5].config(text='on')  # buzzer
+                        self.label_fsm_val[6].config(text='off')  # camera
                     else:
-                        fsm_data[3] = 128 - fsm_data[3]
-                        if fsm_data[3] in range(len(flight_phase)):
-                            self.label_fsm_val[3].config(text=flight_phase[fsm_data[3]])
+                        curr_flightphase = 192 - curr_flightphase
+                        if curr_flightphase in range(len(flight_phase)):
+                            self.label_fsm_val[3].config(text=flight_phase[curr_flightphase])
                         else:
-                            self.label_fsm_val[3].config(text=fsm_data[3])
-                        self.label_fsm_val[5].config(text='on')
+                            self.label_fsm_val[3].config(text=curr_flightphase)
+                        self.label_fsm_val[5].config(text='on')  # buzzer
+                        self.label_fsm_val[6].config(text='on')  # camera
 
                     if self.recording:
                         try:
