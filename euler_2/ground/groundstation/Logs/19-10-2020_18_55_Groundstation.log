@@ -1,0 +1,22 @@
+2020-10-19 18:55:37,676 - root - INFO - ==========================================================================
+2020-10-19 18:55:37,676 - root - INFO -                         ARIS Groundstation started                        
+2020-10-19 18:55:37,678 - root - INFO - ==========================================================================
+2020-10-19 18:55:37,910 - root - INFO - Initialised Groundstation
+2020-10-19 18:55:56,492 - root - INFO - Trying to connect to: COM14 at 115200 BAUD.
+2020-10-19 18:55:56,510 - root - INFO - Connected to COM14 at 115200 BAUD.
+2020-10-19 18:55:58,844 - root - INFO - Ready to receive data
+2020-10-19 18:56:05,690 - root - INFO - buzzer command was sent.
+2020-10-19 18:56:08,419 - root - INFO - buzzer command was sent.
+2020-10-19 18:56:24,695 - root - INFO - camera_on command was sent.
+2020-10-19 18:56:32,637 - root - INFO - camera_off command was sent.
+2020-10-19 18:56:36,947 - root - INFO - Command aborted.
+2020-10-19 18:56:50,456 - root - INFO - buzzer command was sent.
+2020-10-19 18:56:53,034 - root - INFO - buzzer command was sent.
+2020-10-19 18:57:06,193 - root - INFO - camera_on command was sent.
+2020-10-19 18:57:13,377 - root - INFO - camera_off command was sent.
+2020-10-19 18:57:47,144 - root - INFO - sampling_rate command was sent.
+2020-10-19 18:57:53,755 - root - INFO - Command aborted.
+2020-10-19 18:58:00,949 - root - INFO - Stopped receiving data
+2020-10-19 18:58:02,870 - root - INFO - ==========================================================================
+2020-10-19 18:58:02,870 - root - INFO -                         ARIS Groundstation closed                         
+2020-10-19 18:58:02,873 - root - INFO - ==========================================================================

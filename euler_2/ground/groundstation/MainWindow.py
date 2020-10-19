@@ -768,7 +768,7 @@ class MainWindow(Frame):
                     self.current_velocity = fsm_data[1]
                 except IndexError as e:
                     self.logger.info("An Index Error occurred.")
-            time.sleep(0.005)
+            time.sleep(0.001)
             self.label_rf_val[-1].config(text=str(avg))
             end_time = time.time()
             update_rate.insert(0, int(1/(end_time-start_time)))

@@ -1,0 +1,9 @@
+2020-10-19 22:54:35,188 - root - INFO - ==========================================================================
+2020-10-19 22:54:35,188 - root - INFO -                         ARIS Groundstation started                        
+2020-10-19 22:54:35,188 - root - INFO - ==========================================================================
+2020-10-19 22:54:35,423 - root - INFO - Initialised Groundstation
+2020-10-19 22:54:44,937 - root - INFO - Trying to connect to: COM14 at 115200 BAUD.
+2020-10-19 22:54:44,937 - root - INFO - Connected to COM14 at 115200 BAUD.
+2020-10-19 22:54:48,172 - root - INFO - Ready to receive data
+2020-10-19 22:56:04,120 - root - INFO - Trying to connect to: COM14 at 115200 BAUD.
+2020-10-19 22:56:04,120 - root - INFO - Failed to connect with COM14 at 115200 BAUD.

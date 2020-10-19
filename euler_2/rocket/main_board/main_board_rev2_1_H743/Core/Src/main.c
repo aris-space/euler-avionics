@@ -85,12 +85,12 @@ DMA_HandleTypeDef hdma_usart3_rx;
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityLow,
   .stack_size = 128 * 4
 };
 /* Definitions for task_state_est */
 osThreadId_t task_state_estHandle;
-uint32_t task_state_estBuffer[ 2048 ];
+DTCM uint32_t task_state_estBuffer[ 2048 ];
 osStaticThreadDef_t task_state_estControlBlock;
 const osThreadAttr_t task_state_est_attributes = {
   .name = "task_state_est",
@@ -98,11 +98,11 @@ const osThreadAttr_t task_state_est_attributes = {
   .stack_size = sizeof(task_state_estBuffer),
   .cb_mem = &task_state_estControlBlock,
   .cb_size = sizeof(task_state_estControlBlock),
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityHigh3,
 };
 /* Definitions for task_controller */
 osThreadId_t task_controllerHandle;
-uint32_t task_controllerBuffer[ 2048 ];
+DTCM uint32_t task_controllerBuffer[ 2048 ];
 osStaticThreadDef_t task_controllerControlBlock;
 const osThreadAttr_t task_controller_attributes = {
   .name = "task_controller",
@@ -110,11 +110,11 @@ const osThreadAttr_t task_controller_attributes = {
   .stack_size = sizeof(task_controllerBuffer),
   .cb_mem = &task_controllerControlBlock,
   .cb_size = sizeof(task_controllerControlBlock),
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityAboveNormal6,
 };
 /* Definitions for task_sens_read */
 osThreadId_t task_sens_readHandle;
-uint32_t task_sens_readBuffer[ 2048 ];
+DTCM uint32_t task_sens_readBuffer[ 512 ];
 osStaticThreadDef_t task_sens_readControlBlock;
 const osThreadAttr_t task_sens_read_attributes = {
   .name = "task_sens_read",
@@ -122,11 +122,11 @@ const osThreadAttr_t task_sens_read_attributes = {
   .stack_size = sizeof(task_sens_readBuffer),
   .cb_mem = &task_sens_readControlBlock,
   .cb_size = sizeof(task_sens_readControlBlock),
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityHigh7,
 };
 /* Definitions for task_sd_card */
 osThreadId_t task_sd_cardHandle;
-uint32_t task_sd_cardBuffer[ 2048 ];
+DTCM uint32_t task_sd_cardBuffer[ 1024 ];
 osStaticThreadDef_t task_sd_cardControlBlock;
 const osThreadAttr_t task_sd_card_attributes = {
   .name = "task_sd_card",
@@ -134,11 +134,11 @@ const osThreadAttr_t task_sd_card_attributes = {
   .stack_size = sizeof(task_sd_cardBuffer),
   .cb_mem = &task_sd_cardControlBlock,
   .cb_size = sizeof(task_sd_cardControlBlock),
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityHigh1,
 };
 /* Definitions for task_motor_cont */
 osThreadId_t task_motor_contHandle;
-uint32_t task_motor_contBuffer[ 2048 ];
+DTCM uint32_t task_motor_contBuffer[ 512 ];
 osStaticThreadDef_t task_motor_contControlBlock;
 const osThreadAttr_t task_motor_cont_attributes = {
   .name = "task_motor_cont",
@@ -146,11 +146,11 @@ const osThreadAttr_t task_motor_cont_attributes = {
   .stack_size = sizeof(task_motor_contBuffer),
   .cb_mem = &task_motor_contControlBlock,
   .cb_size = sizeof(task_motor_contControlBlock),
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityAboveNormal7,
 };
 /* Definitions for task_fsm */
 osThreadId_t task_fsmHandle;
-uint32_t task_fsmBuffer[ 2048 ];
+DTCM uint32_t task_fsmBuffer[ 512 ];
 osStaticThreadDef_t task_fsmControlBlock;
 const osThreadAttr_t task_fsm_attributes = {
   .name = "task_fsm",
@@ -158,11 +158,11 @@ const osThreadAttr_t task_fsm_attributes = {
   .stack_size = sizeof(task_fsmBuffer),
   .cb_mem = &task_fsmControlBlock,
   .cb_size = sizeof(task_fsmControlBlock),
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityHigh5,
 };
 /* Definitions for task_gps */
 osThreadId_t task_gpsHandle;
-uint32_t task_gpsBuffer[ 2048 ];
+DTCM uint32_t task_gpsBuffer[ 512 ];
 osStaticThreadDef_t task_gpsControlBlock;
 const osThreadAttr_t task_gps_attributes = {
   .name = "task_gps",
@@ -170,11 +170,11 @@ const osThreadAttr_t task_gps_attributes = {
   .stack_size = sizeof(task_gpsBuffer),
   .cb_mem = &task_gpsControlBlock,
   .cb_size = sizeof(task_gpsControlBlock),
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityHigh6,
 };
 /* Definitions for task_battery */
 osThreadId_t task_batteryHandle;
-uint32_t task_batteryBuffer[ 2048 ];
+DTCM uint32_t task_batteryBuffer[ 512 ];
 osStaticThreadDef_t task_batteryControlBlock;
 const osThreadAttr_t task_battery_attributes = {
   .name = "task_battery",
@@ -182,11 +182,11 @@ const osThreadAttr_t task_battery_attributes = {
   .stack_size = sizeof(task_batteryBuffer),
   .cb_mem = &task_batteryControlBlock,
   .cb_size = sizeof(task_batteryControlBlock),
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for task_xbee */
 osThreadId_t task_xbeeHandle;
-uint32_t task_xbeeBuffer[ 2048 ];
+DTCM uint32_t task_xbeeBuffer[ 512 ];
 osStaticThreadDef_t task_xbeeControlBlock;
 const osThreadAttr_t task_xbee_attributes = {
   .name = "task_xbee",
@@ -194,11 +194,11 @@ const osThreadAttr_t task_xbee_attributes = {
   .stack_size = sizeof(task_xbeeBuffer),
   .cb_mem = &task_xbeeControlBlock,
   .cb_size = sizeof(task_xbeeControlBlock),
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityHigh4,
 };
 /* Definitions for task_peripherals */
 osThreadId_t task_peripheralsHandle;
-uint32_t task_peripheralsBuffer[ 2048 ];
+DTCM uint32_t task_peripheralsBuffer[ 128 ];
 osStaticThreadDef_t task_peripheralsControlBlock;
 const osThreadAttr_t task_peripherals_attributes = {
   .name = "task_peripherals",
@@ -206,11 +206,11 @@ const osThreadAttr_t task_peripherals_attributes = {
   .stack_size = sizeof(task_peripheralsBuffer),
   .cb_mem = &task_peripheralsControlBlock,
   .cb_size = sizeof(task_peripheralsControlBlock),
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityHigh2,
 };
 /* Definitions for task_flash */
 osThreadId_t task_flashHandle;
-uint32_t task_flashBuffer[ 2048 ];
+DTCM uint32_t task_flashBuffer[ 2048 ];
 osStaticThreadDef_t task_flashControlBlock;
 const osThreadAttr_t task_flash_attributes = {
   .name = "task_flash",
@@ -218,7 +218,7 @@ const osThreadAttr_t task_flash_attributes = {
   .stack_size = sizeof(task_flashBuffer),
   .cb_mem = &task_flashControlBlock,
   .cb_size = sizeof(task_flashControlBlock),
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityAboveNormal6,
 };
 /* USER CODE BEGIN PV */
 

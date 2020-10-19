@@ -15,7 +15,6 @@
 
 #define SD_STRFMT_LEN 150
 
-#define LOG_QUEUE_SIZE 128
 extern osMessageQueueId_t sd_queue;
 
 typedef union {
@@ -58,7 +57,7 @@ typedef struct {
 } log_elem_t;
 
 /* TODO [nemanja]: try increasing queue sizes to 256 at least */
-#define SD_QUEUE_SIZE 128
+#define SD_QUEUE_SIZE 256
 #define FLASH_QUEUE_SIZE 128
 
 extern osMessageQueueId_t flash_queue;

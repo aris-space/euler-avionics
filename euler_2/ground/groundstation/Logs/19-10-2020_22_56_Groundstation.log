@@ -1,0 +1,16 @@
+2020-10-19 22:56:57,001 - root - INFO - ==========================================================================
+2020-10-19 22:56:57,001 - root - INFO -                         ARIS Groundstation started                        
+2020-10-19 22:56:57,001 - root - INFO - ==========================================================================
+2020-10-19 22:56:57,235 - root - INFO - Initialised Groundstation
+2020-10-19 22:57:04,141 - root - INFO - Trying to connect to: COM14 at 115200 BAUD.
+2020-10-19 22:57:04,172 - root - INFO - Connected to COM14 at 115200 BAUD.
+2020-10-19 22:57:13,437 - root - INFO - Ready to receive data
+2020-10-19 22:57:55,954 - root - INFO - Live plot started
+2020-10-19 22:58:28,842 - root - INFO - Live plot stopped.
+2020-10-19 22:58:34,545 - root - INFO - sampling_rate command was sent.
+2020-10-19 23:00:23,529 - root - INFO - est_reset command was sent.
+2020-10-19 23:03:09,600 - root - INFO - sampling_rate command was sent.
+2020-10-19 23:06:06,712 - root - INFO - Stopped receiving data
+2020-10-19 23:06:08,868 - root - INFO - ==========================================================================
+2020-10-19 23:06:08,868 - root - INFO -                         ARIS Groundstation closed                         
+2020-10-19 23:06:08,868 - root - INFO - ==========================================================================

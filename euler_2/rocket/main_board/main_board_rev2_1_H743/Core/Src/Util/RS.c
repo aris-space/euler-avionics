@@ -108,8 +108,10 @@ void encode_rs(int16_t *bb, int16_t const *index_of, int16_t const *alpha_to, in
                     bb[j] = bb[j - 1];
             bb[0] = alpha_to[(gg[0] + feedback) % NN];
         } else {
-            for (int j = NN - KK - 1; j > 0; j--)
-                bb[j] = bb[j - 1];
+//            for (int j = NN - KK - 1; j > 0; j--)
+//                bb[j] = bb[j - 1];
+        	//TODO [Nemanja] Send to IMRE
+        	memmove(&bb[0], &bb[1], sizeof(uint16_t)*(NN - KK - 1));
             bb[0] = 0;
         }
     }

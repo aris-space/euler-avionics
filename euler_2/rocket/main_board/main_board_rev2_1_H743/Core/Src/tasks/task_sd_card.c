@@ -96,7 +96,13 @@ void vTaskSdCard(void *argument) {
             tmp_str[0] = 0;
           } else {
             sd_str_buffer[sd_str_idx++] = '\0';
+#if (configUSE_TRACE_FACILITY == 1)
+              vTracePrint(sd_channel, "START FPUTS");
+#endif
             int32_t puts_res = f_puts(sd_str_buffer, &EULER_LOG_FILE);
+#if (configUSE_TRACE_FACILITY == 1)
+              vTracePrint(sd_channel, "END FPUTS");
+#endif
             if (puts_res < 0) {
               usb_print("[STORAGE TASK] Failed writing to file: %d\n", puts_res);
 #if (configUSE_TRACE_FACILITY == 1)
