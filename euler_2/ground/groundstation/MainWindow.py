@@ -653,21 +653,13 @@ class MainWindow(Frame):
         # print(data)
         self.is_receiving = True
         time.sleep(1)
+        update_rate = [0]*20
+        avg = 0
         while self.s.isRun:
+            start_time = time.time()
             data = self.get_data_from_raw()
             if data == 0:
                 continue
-                # for i in range(len(self.label_sb_val)):
-                #     self.label_sb_val[i].config(text='-----')
-                #
-                # for i in range(len(self.label_gps_val)):
-                #     self.label_gps_val[i].config(text='-----')
-                #
-                # for i in range(len(self.label_battery_val)):
-                #     self.label_battery_val[i].config(text='-----')
-                #
-                # for i in range(len(self.label_fsm_val)):
-                #     self.label_fsm_val[i].config(text='-----')
             else:
                 try:
                     # alignment1 = data[0]
@@ -777,6 +769,11 @@ class MainWindow(Frame):
                 except IndexError as e:
                     self.logger.info("An Index Error occurred.")
             time.sleep(0.005)
+            self.label_rf_val[-1].config(text=str(avg))
+            end_time = time.time()
+            update_rate.insert(0, int(1/(end_time-start_time)))
+            update_rate.pop()
+            avg = int(sum(update_rate)/20)
 
     def get_data_from_raw(self):
 

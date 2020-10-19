@@ -56,7 +56,8 @@ fsm_names = ['altitude [m]',
 rf_names = ['Packets total',
             'Corrupted packets',
             'Correct packets',
-            'RSSI']
+            'RSSI',
+            'Display update rate [Hz]']
 
 
 def data_struct():
