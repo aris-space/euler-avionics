@@ -740,7 +740,7 @@ class MainWindow(Frame):
                         self.label_fsm_val[5].config(text='off')  # buzzer
                         self.label_fsm_val[6].config(text='off')  # camera
                     elif 128 > curr_flightphase > 64:
-                        curr_flightphase = 64 - curr_flightphase
+                        curr_flightphase = curr_flightphase - 64
                         if curr_flightphase in range(len(flight_phase)):
                             self.label_fsm_val[3].config(text=flight_phase[curr_flightphase])
                         else:
@@ -748,7 +748,7 @@ class MainWindow(Frame):
                         self.label_fsm_val[5].config(text='off')  # buzzer
                         self.label_fsm_val[6].config(text='on')  # camera
                     elif 192 > curr_flightphase > 128:
-                        curr_flightphase = 128 - curr_flightphase
+                        curr_flightphase = curr_flightphase - 128
                         if curr_flightphase in range(len(flight_phase)):
                             self.label_fsm_val[3].config(text=flight_phase[curr_flightphase])
                         else:
@@ -756,7 +756,7 @@ class MainWindow(Frame):
                         self.label_fsm_val[5].config(text='on')  # buzzer
                         self.label_fsm_val[6].config(text='off')  # camera
                     else:
-                        curr_flightphase = 192 - curr_flightphase
+                        curr_flightphase = curr_flightphase - 192
                         if curr_flightphase in range(len(flight_phase)):
                             self.label_fsm_val[3].config(text=flight_phase[curr_flightphase])
                         else:
