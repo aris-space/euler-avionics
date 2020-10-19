@@ -111,14 +111,16 @@ bool W25qxx_Init(void) {
   while (HAL_GetTick() < 100) W25qxx_Delay(1);
   HAL_GPIO_WritePin(_W25QXX_CS_GPIO, _W25QXX_CS_PIN, GPIO_PIN_SET);
   W25qxx_Delay(100);
-  // TODO [luca] unused variable id
-  uint32_t id;
+
+
 #if (_W25QXX_DEBUG == 1)
   printf("w25qxx Init Begin...\n");
 #endif
-  id = W25qxx_ReadID();
+
 
 #if (_W25QXX_DEBUG == 1)
+  int32_t id;
+  id = W25qxx_ReadID();
   printf("w25qxx ID:0x%X\n", id);
 #endif
   //	switch (id & 0x0000FFFF) {

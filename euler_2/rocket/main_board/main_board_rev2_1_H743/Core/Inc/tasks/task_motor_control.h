@@ -27,6 +27,11 @@ extern uint32_t global_airbrake_ext_meas;
 extern custom_mutex_t fsm_mutex;
 extern flight_phase_detection_t global_flight_phase_detection;
 
+#define POSITION_MODE (0x01)
+#define ACS_MODE (0x08)
+
+#define MOTOR_MODE ACS_MODE
+
 void vTaskMotorCont(void *argument);
 
 #endif /* INC_TASKS_TASK_MOTOR_CONTROL_H_ */

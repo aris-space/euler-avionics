@@ -70,6 +70,10 @@ void vTaskPeripherals(void *argument) {
       HAL_GPIO_WritePin(PW_HOLD_GPIO_Port, PW_HOLD_Pin, GPIO_PIN_SET);
     }
 
+    if(telemetry_command == DISABLE_CAMERA){
+    	camera_enabled = false;
+    }
+
     if ((telemetry_command == ENABLE_CAMERA) | (flight_phase_detection.flight_phase == THRUSTING)) {
       camera_enabled = true;
       camera_start_time = osKernelGetTickCount();
@@ -102,9 +106,7 @@ void vTaskPeripherals(void *argument) {
     camera_state = camera_enabled;
     buzzer_state = buzzer_on_fsm ^ buzzer_on_telemetry;
 
-    /* TODO [nemanja]: === if (++buzzercounter >= 16) */
-    buzzercounter++;
-    if(buzzercounter >= 16){
+    if (++buzzercounter >= 16){
     	buzzercounter = 0;
     }
 

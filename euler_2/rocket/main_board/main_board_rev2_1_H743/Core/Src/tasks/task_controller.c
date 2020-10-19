@@ -5,11 +5,11 @@
  *      Author: Jonas
  */
 
-//#include "../../aris-euler-controller/Inc/controller.h"
+#include "../../aris-euler-controller/Inc/controller.h"
 #include "util/logging_util.h"
 #include "tasks/task_controller.h"
-
-// DTCM control_data_t control_data = {0};
+#include "time.h"
+DTCM control_data_t control_data = {0};
 
 void vTaskController(void *argument) {
   /* For periodic update */
@@ -21,7 +21,7 @@ void vTaskController(void *argument) {
 
   /* Initialize the control_data struct */
 
-//  control_init(&control_data);
+  control_init(&control_data);
 
 
   osDelay(1100);
@@ -44,7 +44,6 @@ void vTaskController(void *argument) {
 
     		usb_print("[TS START]: %d\n",
     				osKernelGetTickCount());
-	/* TODO [nemanja]: are these initialization parameters correct? */
     /* TODO [Jonas]: This is only here for testing -> will not be here once it works */
     flight_phase_detection_local.flight_phase = CONTROL;
     flight_phase_detection_local.mach_number = 0.45f;
@@ -60,7 +59,7 @@ void vTaskController(void *argument) {
 
     /* Write Control Input into Global Variable */
     if (acquire_mutex(&controller_mutex) == osOK) {
-//      controller_output_global = (int32_t)(control_data.control_input * 1000);
+      controller_output_global = (int32_t)(control_data.control_input * 1000);
       release_mutex(&controller_mutex);
     }
 

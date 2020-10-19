@@ -24,13 +24,6 @@ void vTaskMotorCont(void *argument) {
   flight_phase_detection.mach_number = SUBSONIC;
 
   /* Initialisation */
-  /* TODO [nemanja]: unused variables */
-   int8_t position_mode = 0x08;
-  /* Profile Position Mode */
-  //int8_t position_mode = 0x01;
-  int32_t PPM_velocity = 10000;
-  int32_t PPM_acceleration = 100000;
-  int32_t PPM_deceleration = 100000;
 
   osDelay(3000);
 
@@ -41,21 +34,23 @@ void vTaskMotorCont(void *argument) {
   int32_t desired_motor_position = 0;
   int32_t measured_motor_position = 0;
 
-//  /* Enable Motor */
-//  while (enable_motor() != osOK) {
-//    osDelay(1000);
-//  };
-//
-//  /* Set Position Mode */
-//  set_position_mode(position_mode);
-//  while (set_position_mode(position_mode) != osOK) {
-//    osDelay(1000);
-//  };
-//
-//  if (position_mode == 0x01) {
-//    motor_status =
-//        configure_ppm(PPM_velocity, PPM_acceleration, PPM_deceleration);
-//  }
+  /* Enable Motor */
+  while (enable_motor() != osOK) {
+    osDelay(1000);
+  };
+
+  /* Set Position Mode */
+  while (set_position_mode(MOTOR_MODE) != osOK) {
+    osDelay(1000);
+  };
+
+#if MOTOR_MODE == POSITION_MODE
+  int32_t PPM_velocity = 10000;
+  int32_t PPM_acceleration = 100000;
+  int32_t PPM_deceleration = 100000;
+    motor_status =
+        configure_ppm(PPM_velocity, PPM_acceleration, PPM_deceleration);
+#endif
 
   /* Infinite loop */
   tick_count = osKernelGetTickCount();
@@ -100,7 +95,6 @@ void vTaskMotorCont(void *argument) {
     }
 
     /* Airbrake Test if telemetry command is given and we are in idle state */
-    /* TODO [Jonas]: Make sure that this Command really works! */
     if (flight_phase_detection.flight_phase == IDLE &&
         telemetry_command == AIRBRAKE_TEST_COMMAND &&
         osKernelGetTickCount() < 60000) {
@@ -133,7 +127,6 @@ void vTaskMotorCont(void *argument) {
 
     if (motor_status != osOK && flight_phase_detection.flight_phase == IDLE) {
       disable_motor();
-      // TODO [luca]: What happens if the flight phase is not idle and the motor drivers returns != osOk? should we not disable the motor then aswell? (Might be stuck and pulling tons of amps)
       osDelay(1000);
       enable_motor();
     }
