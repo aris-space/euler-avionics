@@ -90,7 +90,7 @@ const osThreadAttr_t defaultTask_attributes = {
 };
 /* Definitions for task_state_est */
 osThreadId_t task_state_estHandle;
-DTCM uint32_t task_state_estBuffer[ 16384 ];
+DTCM uint32_t task_state_estBuffer[ 2048 ];
 osStaticThreadDef_t task_state_estControlBlock;
 const osThreadAttr_t task_state_est_attributes = {
   .name = "task_state_est",
@@ -110,7 +110,7 @@ const osThreadAttr_t task_controller_attributes = {
   .stack_size = sizeof(task_controllerBuffer),
   .cb_mem = &task_controllerControlBlock,
   .cb_size = sizeof(task_controllerControlBlock),
-  .priority = (osPriority_t) osPriorityAboveNormal6,
+  .priority = (osPriority_t) osPriorityAboveNormal7,
 };
 /* Definitions for task_sens_read */
 osThreadId_t task_sens_readHandle;
@@ -124,9 +124,6 @@ const osThreadAttr_t task_sens_read_attributes = {
   .cb_size = sizeof(task_sens_readControlBlock),
   .priority = (osPriority_t) osPriorityHigh7,
 };
-
-DTCM int32_t x = 5;
-
 /* Definitions for task_sd_card */
 osThreadId_t task_sd_cardHandle;
 DTCM uint32_t task_sd_cardBuffer[ 1024 ];
@@ -149,7 +146,7 @@ const osThreadAttr_t task_motor_cont_attributes = {
   .stack_size = sizeof(task_motor_contBuffer),
   .cb_mem = &task_motor_contControlBlock,
   .cb_size = sizeof(task_motor_contControlBlock),
-  .priority = (osPriority_t) osPriorityAboveNormal7,
+  .priority = (osPriority_t) osPriorityAboveNormal6,
 };
 /* Definitions for task_fsm */
 osThreadId_t task_fsmHandle;
@@ -608,7 +605,7 @@ int main(void)
   task_peripheralsHandle = osThreadNew(vTaskPeripherals, NULL, &task_peripherals_attributes);
 
   /* creation of task_flash */
-//  task_flashHandle = osThreadNew(vTaskFlash, NULL, &task_flash_attributes);
+  task_flashHandle = osThreadNew(vTaskFlash, NULL, &task_flash_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */

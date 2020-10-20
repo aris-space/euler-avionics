@@ -101,7 +101,6 @@ void vTaskSdCard(void *argument) {
             sd_str_buffer[sd_str_idx++] = '\0';
 #if (configUSE_TRACE_FACILITY == 1)
               //vTracePrint(sd_channel, "START FPUTS");
-              vTracePrintF(sd_channel, "X IS %d", x);
 #endif
             int32_t puts_res = f_puts(sd_str_buffer, &EULER_LOG_FILE);
 #if (configUSE_TRACE_FACILITY == 1)
@@ -328,6 +327,7 @@ static int32_t format_log_str(char *str, log_elem_t *log_entry) {
                    log_entry->u.est_var.velocity_rocket[0],
                    log_entry->u.est_var.acceleration_rocket[0]);
     } break;
+#if STATE_ESTIMATION_TYPE == 2
     case ESTIMATOR_VAR_3D: {
       str_len =
           snprintf(str, SD_STRFMT_LEN, "%lu;%d;%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", log_entry->ts,
@@ -351,6 +351,7 @@ static int32_t format_log_str(char *str, log_elem_t *log_entry) {
 				   log_entry->u.est_var.mach_number,
 				   log_entry->u.est_var.altitude_raw);
     } break;
+#endif
     case CONTROLLER_OUTPUT: {
       str_len =
           snprintf(str, SD_STRFMT_LEN, "%lu;%d;%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", log_entry->ts,

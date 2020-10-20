@@ -41,20 +41,8 @@ void vTaskController(void *argument) {
     read_mutex(&env_mutex, &global_env,
                &env_local, sizeof(env_local));
 
-    		usb_print("[TS START]: %d\n",
-    				osKernelGetTickCount());
-    /* TODO [Jonas]: This is only here for testing -> will not be here once it works */
-    flight_phase_detection_local.flight_phase = CONTROL;
-    flight_phase_detection_local.mach_number = 0.45f;
-    state_est_data_local.airbrake_extension = 500000;
-    state_est_data_local.velocity_world[2] = 175000;
-    state_est_data_local.position_world[2] = 3000000;
-//    control_data.integrated_error = 0;
-
+    /* Call the Controller */
     control_step(&control_data, &state_est_data_local, &flight_phase_detection_local, &env_local);
-
-	usb_print("[TS END]: %d\n",
-			osKernelGetTickCount());
 
     /* Write Control Input into Global Variable */
     if (acquire_mutex(&controller_mutex) == osOK) {

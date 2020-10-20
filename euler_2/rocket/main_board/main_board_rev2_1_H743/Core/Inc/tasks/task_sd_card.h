@@ -14,8 +14,6 @@
 #define SD_CARD_SYNC_COUNT 4
 
 
-extern int32_t x;
-
 extern custom_mutex_t fsm_mutex;
 extern flight_phase_detection_t global_flight_phase_detection;
 
