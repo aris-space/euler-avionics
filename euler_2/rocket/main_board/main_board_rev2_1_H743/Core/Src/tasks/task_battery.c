@@ -80,7 +80,7 @@ void vTaskBattery(void *argument) {
     		bat += battery_buffer[i];
     	}
 
-    	mah += (curr) / (BATTERY_SAMPLE_RATE * 3.6); // ((Current * 1000) / 60sec) / 60min) * 1 / SAMPLE RATE
+    	mah += (curr/50) / (BATTERY_SAMPLE_RATE / 10 * 3.6); // ((Current * 1000) / 60sec) / 60min) * 1 / SAMPLE RATE
 		battery_data.consumption = (uint16_t)mah;
 		battery_data.current = (uint16_t)((curr*20)); // (Current * 1000) / RUNNING AVARAGE SAMPLES
 

@@ -37,7 +37,8 @@ osStatus_t log_sensor(timestamp_t ts, board_id_t sensor_board_id,
     case BARO:
       log_elem.u.sensor_log.sensor_data.baro = *((baro_data_t *)sensor_data);
       break;
-    case IMU:
+    case IMU_1:
+    case IMU_2:
       log_elem.u.sensor_log.sensor_data.imu = *((imu_data_t *)sensor_data);
       break;
     case GPS:

@@ -33,6 +33,9 @@ void vTaskSdCard(void *argument) {
   sd_channel = xTraceRegisterString("SD Channel");
 #endif
 
+
+//uint32_t a = x;
+
   usb_print("[STORAGE TASK] Starting SD Card Task...\n");
   FRESULT res;
   char EULER_LOG_FILE_NAME[13] = "";
@@ -97,7 +100,8 @@ void vTaskSdCard(void *argument) {
           } else {
             sd_str_buffer[sd_str_idx++] = '\0';
 #if (configUSE_TRACE_FACILITY == 1)
-              vTracePrint(sd_channel, "START FPUTS");
+              //vTracePrint(sd_channel, "START FPUTS");
+              vTracePrintF(sd_channel, "X IS %d", x);
 #endif
             int32_t puts_res = f_puts(sd_str_buffer, &EULER_LOG_FILE);
 #if (configUSE_TRACE_FACILITY == 1)
@@ -285,7 +289,8 @@ static int32_t format_log_str(char *str, log_elem_t *log_entry) {
                               baro_data_ptr->pressure,
                               baro_data_ptr->temperature, baro_data_ptr->ts);
         } break;
-        case IMU: {
+        case IMU_1:
+        case IMU_2: {
           imu_data_t *imu_data_ptr = &(sensor_log_entry->sensor_data.imu);
           str_len += snprintf(
               str + str_len, SD_STRFMT_LEN, "%hd,%hd,%hd,%hd,%hd,%hd,%lu\n",

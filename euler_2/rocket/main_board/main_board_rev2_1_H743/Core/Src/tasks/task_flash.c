@@ -55,7 +55,8 @@ static inline void pack_sensor(sensor_log_elem_t *sensor_log,
              &(sensor_log->sensor_data.baro.ts), sizeof(timestamp_t));
       *flash_buffer_idx += sizeof(timestamp_t);
     } break;
-    case IMU: {
+    case IMU_1:
+    case IMU_2: {
       memcpy(&(flash_buffer[*flash_buffer_idx]),
              &(sensor_log->sensor_data.imu.gyro_x), sizeof(int16_t));
       *flash_buffer_idx += sizeof(int16_t);

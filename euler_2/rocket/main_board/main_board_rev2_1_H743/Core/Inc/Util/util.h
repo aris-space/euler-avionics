@@ -44,7 +44,7 @@ typedef struct {
 } command_xbee_t;
 
 /* Sensor type */
-typedef enum { BARO = 1, IMU, GPS, BATTERY } sensor_type_e;
+typedef enum { BARO = 1, IMU_1, IMU_2, GPS, BATTERY } sensor_type_e;
 
 /* Log entry */
 typedef enum {

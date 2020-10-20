@@ -124,6 +124,9 @@ const osThreadAttr_t task_sens_read_attributes = {
   .cb_size = sizeof(task_sens_readControlBlock),
   .priority = (osPriority_t) osPriorityHigh7,
 };
+
+DTCM int32_t x = 5;
+
 /* Definitions for task_sd_card */
 osThreadId_t task_sd_cardHandle;
 DTCM uint32_t task_sd_cardBuffer[ 1024 ];

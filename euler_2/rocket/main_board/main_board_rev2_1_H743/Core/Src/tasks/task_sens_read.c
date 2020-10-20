@@ -57,14 +57,14 @@ void vTaskSensRead(void *argument) {
 
     /* Log Data */
     log_sensor(tick_count, 1, BARO, &sb1_data.baro);
-    log_sensor(tick_count, 1, IMU, &sb1_data.imu_1);
-    log_sensor(tick_count, 1, IMU, &sb1_data.imu_2);
+    log_sensor(tick_count, 1, IMU_1, &sb1_data.imu_1);
+    log_sensor(tick_count, 1, IMU_2, &sb1_data.imu_2);
     log_sensor(tick_count, 2, BARO, &sb2_data.baro);
-    log_sensor(tick_count, 2, IMU, &sb2_data.imu_1);
-    log_sensor(tick_count, 2, IMU, &sb2_data.imu_2);
+    log_sensor(tick_count, 2, IMU_1, &sb2_data.imu_1);
+    log_sensor(tick_count, 2, IMU_2, &sb2_data.imu_2);
     log_sensor(tick_count, 3, BARO, &sb3_data.baro);
-    log_sensor(tick_count, 3, IMU, &sb3_data.imu_1);
-    log_sensor(tick_count, 3, IMU, &sb3_data.imu_2);
+    log_sensor(tick_count, 3, IMU_1, &sb3_data.imu_1);
+    log_sensor(tick_count, 3, IMU_2, &sb3_data.imu_2);
 
     /* Get new Data over SPI */
 
