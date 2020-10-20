@@ -14,6 +14,7 @@ import logging
 from myutils import dict_commands, data_struct
 import csv
 from datetime import datetime
+import re
 
 
 begin_seq = b'\xfa\xfa\xfa\xfa'
@@ -98,6 +99,7 @@ class SerialConnection:
         self.port = serial_port
         self.baud = serial_baud
         self.rawData = bytearray(1) #79
+        self.rawData_all = bytearray(1)
         self.isRun = True
         self.isReceiving = False
         self.thread = None
@@ -161,7 +163,7 @@ class SerialConnection:
 
     def save_raw_data(self):
         try:
-            self.writer.writerow(self.rawData)
+            self.writer.writerow(begin_seq + self.rawData_all[:-4])
         except PermissionError as e:
             self.logger.error(e)
 
@@ -169,8 +171,11 @@ class SerialConnection:
         self.serialConnection.reset_input_buffer()
         while self.isRun:
             try:
-                self.serialConnection.read_until(terminator=begin_seq)
-                self.rawData = self.serialConnection.read_until(terminator=end_seq)
+                self.rawData_all = self.serialConnection.read_until(terminator=begin_seq)
+                idx = re.search(end_seq, self.rawData_all)
+                if idx is not None:
+                    self.rawData = self.rawData_all[:idx.end()]
+                # self.rawData = self.serialConnection.read_until(terminator=end_seq)
                 self.isReceiving = True
             except (OSError, serial.SerialException):
                 print('Lost serial connection to'+str(self.port))
@@ -188,8 +193,8 @@ class SerialConnection:
     def close(self):
         self.isRun = False
         self.outfile.close()
-        if self.thread is not None:
-            self.thread.join()
+        # if self.thread is not None:
+        #    self.thread.join()
         if self.serialConnection is not None:
             self.serialConnection.close()
         self.logger.info('Serial connection closed')
