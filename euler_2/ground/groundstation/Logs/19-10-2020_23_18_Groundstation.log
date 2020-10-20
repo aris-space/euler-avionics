@@ -1,8 +1,0 @@
-2020-10-19 23:18:34,478 - root - INFO - ==========================================================================
-2020-10-19 23:18:34,478 - root - INFO -                         ARIS Groundstation started                        
-2020-10-19 23:18:34,494 - root - INFO - ==========================================================================
-2020-10-19 23:18:34,728 - root - INFO - Initialised Groundstation
-2020-10-19 23:18:46,566 - root - INFO - Trying to connect to: COM14 at 115200 BAUD.
-2020-10-19 23:18:46,582 - root - INFO - Connected to COM14 at 115200 BAUD.
-2020-10-19 23:18:51,015 - root - INFO - Ready to receive data
-2020-10-19 23:19:12,294 - root - INFO - sampling_rate command was sent.
