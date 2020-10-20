@@ -8,7 +8,6 @@
 #include "../../aris-euler-controller/Inc/controller.h"
 #include "util/logging_util.h"
 #include "tasks/task_controller.h"
-#include "time.h"
 DTCM control_data_t control_data = {0};
 
 void vTaskController(void *argument) {
@@ -28,7 +27,7 @@ void vTaskController(void *argument) {
 
   /* Infinite loop */
   tick_count = osKernelGetTickCount();
-  tick_update = osKernelGetTickFreq() / 50;
+  tick_update = osKernelGetTickFreq() / CONTROLLER_SAMPLING_FREQ;
 
   while (1) {
     /* Tick Update */
@@ -48,11 +47,11 @@ void vTaskController(void *argument) {
     flight_phase_detection_local.flight_phase = CONTROL;
     flight_phase_detection_local.mach_number = 0.45f;
     state_est_data_local.airbrake_extension = 500000;
-    state_est_data_local.velocity_rocket[0] = 150000;
+    state_est_data_local.velocity_world[2] = 175000;
     state_est_data_local.position_world[2] = 3000000;
 //    control_data.integrated_error = 0;
 
-//    control_step(&control_data, &state_est_data_local, &flight_phase_detection_local, &env_local);
+    control_step(&control_data, &state_est_data_local, &flight_phase_detection_local, &env_local);
 
 	usb_print("[TS END]: %d\n",
 			osKernelGetTickCount());
@@ -65,10 +64,7 @@ void vTaskController(void *argument) {
 
     /* Log to SD Card */
     /* TODO [Jonas]: Change this for appropriate Controller */
-//    log_controller_output(osKernelGetTickCount(),
-//                        (int32_t)(control_data.control_input * 1000),
-//                        (int32_t)(control_data.reference_error * 1000),
-//                        (int32_t)(control_data.integrated_error * 1000));
+    log_controller_output(osKernelGetTickCount(), control_data);
 
     /* Sleep */
     osDelayUntil(tick_count);

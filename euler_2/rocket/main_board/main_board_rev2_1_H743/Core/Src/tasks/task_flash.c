@@ -203,10 +203,10 @@ static inline void pack_estimator_var(state_est_data_t *state_est,
   *flash_buffer_idx += 3 * sizeof(int32_t);
 }
 
-static inline void pack_controller_output(controller_output_log_elem_t *cont_out,
+static inline void pack_controller_output(control_log_elem_t *cont_out,
                                         uint8_t *flash_buffer,
                                         uint16_t *flash_buffer_idx) {
-  memcpy(&(flash_buffer[*flash_buffer_idx]), &(cont_out->controller_output),
+  memcpy(&(flash_buffer[*flash_buffer_idx]), &(cont_out->control_input),
          sizeof(int32_t));
   *flash_buffer_idx += sizeof(int32_t);
 
@@ -255,7 +255,8 @@ static inline void packValue(log_elem_t *log_elem, uint8_t *flash_buffer,
     case STATE: {
       pack_state(&log_elem->u.state, flash_buffer, flash_buffer_idx);
     } break;
-    case ESTIMATOR_VAR: {
+    case ESTIMATOR_VAR_1D:
+    case ESTIMATOR_VAR_3D: {
       pack_estimator_var(&log_elem->u.est_var, flash_buffer, flash_buffer_idx);
     } break;
     case CONTROLLER_OUTPUT: {

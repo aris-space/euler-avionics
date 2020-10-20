@@ -64,20 +64,26 @@ osStatus_t log_rocket_state(timestamp_t ts,
   return osMessageQueuePut(sd_queue, &log_elem, 0U, 0U);
 }
 
-osStatus_t log_estimator_var(timestamp_t ts, state_est_data_t estimator_data) {
+osStatus_t log_estimator_var(timestamp_t ts, state_est_data_t estimator_data, log_entry_type_e entry_log_type) {
   log_elem_t log_elem = {
-      .ts = ts, .log_type = ESTIMATOR_VAR, .u.est_var = estimator_data};
+      .ts = ts, .log_type = entry_log_type, .u.est_var = estimator_data};
   return osMessageQueuePut(sd_queue, &log_elem, 0U, 0U);
 }
 
-osStatus_t log_controller_output(timestamp_t ts, int32_t controller_output,
-                               int32_t reference_error,
-                               int32_t integrated_error) {
+osStatus_t log_controller_output(timestamp_t ts, control_data_t control_data) {
   log_elem_t log_elem = {.ts = ts,
                          .log_type = CONTROLLER_OUTPUT,
-                         .u.cont_out.controller_output = controller_output,
-                         .u.cont_out.reference_error = reference_error,
-                         .u.cont_out.integrated_error = integrated_error};
+                         .u.cont_out.control_input = (int32_t)(1000*control_data.control_input),
+                         .u.cont_out.reference_error = (int32_t)(1000*control_data.reference_error),
+                         .u.cont_out.integrated_error = (int32_t)(1000*control_data.integrated_error),
+  	  	  	  	  	  	 .u.cont_out.sf_ref_altitude_AGL = (int32_t)(1000*control_data.sf_ref_altitude_AGL),
+						 .u.cont_out.sf_velocity = (int32_t)(1000*control_data.sf_velocity),
+						 .u.cont_out.ref_velocity = (int32_t)(1000*control_data.ref_velocity),
+						 .u.cont_out.tracking_feedback = (int32_t)(1000*control_data.tracking_feedback),
+						 .u.cont_out.lowerboundary_aw = (int32_t)(1000*control_data.lowerboundary_aw),
+						 .u.cont_out.upperboundary_aw = (int32_t)(1000*control_data.upperboundary_aw),
+						 .u.cont_out.exit_flag = control_data.mpc_exitflag,
+						 .u.cont_out.num_iterations = control_data.mpc_info.it};
   return osMessageQueuePut(sd_queue, &log_elem, 0U, 0U);
 }
 

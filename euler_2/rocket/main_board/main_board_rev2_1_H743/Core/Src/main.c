@@ -90,7 +90,7 @@ const osThreadAttr_t defaultTask_attributes = {
 };
 /* Definitions for task_state_est */
 osThreadId_t task_state_estHandle;
-DTCM uint32_t task_state_estBuffer[ 2048 ];
+DTCM uint32_t task_state_estBuffer[ 16384 ];
 osStaticThreadDef_t task_state_estControlBlock;
 const osThreadAttr_t task_state_est_attributes = {
   .name = "task_state_est",
@@ -608,7 +608,7 @@ int main(void)
   task_peripheralsHandle = osThreadNew(vTaskPeripherals, NULL, &task_peripherals_attributes);
 
   /* creation of task_flash */
-  task_flashHandle = osThreadNew(vTaskFlash, NULL, &task_flash_attributes);
+//  task_flashHandle = osThreadNew(vTaskFlash, NULL, &task_flash_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */

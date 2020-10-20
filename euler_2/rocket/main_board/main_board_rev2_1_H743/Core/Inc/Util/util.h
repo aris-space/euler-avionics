@@ -50,7 +50,8 @@ typedef enum { BARO = 1, IMU_1, IMU_2, GPS, BATTERY } sensor_type_e;
 typedef enum {
   SENSOR = 1,
   STATE,
-  ESTIMATOR_VAR,
+  ESTIMATOR_VAR_1D,
+  ESTIMATOR_VAR_3D,
   CONTROLLER_OUTPUT,
   MOTOR_POSITION,
   MSG
@@ -131,7 +132,7 @@ static const imu_data_t EMPTY_IMU = {0};
 #endif
 /* Comment the next line in order to disable debug mode -- should be disabled
  * during flight */
-//#define DEBUG
+#define DEBUG
 /* Flash read flag */
 #ifdef FLASH_READ
 #undef FLASH_READ

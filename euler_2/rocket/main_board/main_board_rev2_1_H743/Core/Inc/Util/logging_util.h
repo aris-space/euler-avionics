@@ -9,6 +9,7 @@
 #define INC_UTIL_LOGGING_UTIL_H_
 
 #include "../aris-euler-state-estimation/Inc/state_est_const.h"
+#include "../aris-euler-controller/Inc/controller_const.h"
 #include "cmsis_os.h"
 
 #define LOG_BUFFER_LEN 30
@@ -30,22 +31,34 @@ typedef struct {
   board_id_t sensor_board_id;
 } sensor_log_elem_t;
 
-typedef struct {
-  int32_t controller_output;
-  int32_t reference_error;
-  int32_t integrated_error;
-} controller_output_log_elem_t;
 
 typedef struct {
   int32_t desired_position;
   int32_t actual_position;
 } motor_log_elem_t;
 
+typedef struct{
+    int32_t control_input;
+    int32_t reference_error;
+    int32_t integrated_error;
+
+    int32_t sf_ref_altitude_AGL;
+    int32_t sf_velocity;
+    int32_t ref_velocity;
+    int32_t tracking_feedback;
+
+    int32_t lowerboundary_aw;
+    int32_t upperboundary_aw;
+    int32_t exit_flag;
+    int32_t num_iterations;
+
+}control_log_elem_t;
+
 typedef union {
   sensor_log_elem_t sensor_log;
   flight_phase_detection_t state;
   state_est_data_t est_var;
-  controller_output_log_elem_t cont_out;
+  control_log_elem_t cont_out;
   motor_log_elem_t motor;
   char msg[LOG_BUFFER_LEN];
 } log_elem_u;
@@ -72,10 +85,8 @@ osStatus_t log_sensor(timestamp_t ts, board_id_t sensor_board_id,
                      sensor_type_e sens_type, void *sensor_data);
 osStatus_t log_rocket_state(timestamp_t ts,
                           flight_phase_detection_t flight_phase_detection);
-osStatus_t log_estimator_var(timestamp_t ts, state_est_data_t estimator_data);
-osStatus_t log_controller_output(timestamp_t ts, int32_t controller_output,
-                               int32_t reference_error,
-                               int32_t integrated_error);
+osStatus_t log_estimator_var(timestamp_t ts, state_est_data_t estimator_data, log_entry_type_e entry_log_type);
+osStatus_t log_controller_output(timestamp_t ts, control_data_t control_data);
 osStatus_t log_motor(timestamp_t ts, int32_t desired_position,
                     int32_t actual_position);
 osStatus_t log_msg(timestamp_t ts, char *msg);

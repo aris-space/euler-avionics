@@ -321,19 +321,50 @@ static int32_t format_log_str(char *str, log_elem_t *log_entry) {
       str_len = snprintf(str, SD_STRFMT_LEN, "%lu;%d;%d\n", log_entry->ts,
                          STATE, log_entry->u.state.flight_phase);
     } break;
-    case ESTIMATOR_VAR: {
+    case ESTIMATOR_VAR_1D: {
       str_len =
           snprintf(str, SD_STRFMT_LEN, "%lu;%d;%ld,%ld,%ld\n", log_entry->ts,
-                   ESTIMATOR_VAR, log_entry->u.est_var.position_world[2],
+                   ESTIMATOR_VAR_1D, log_entry->u.est_var.position_world[2],
                    log_entry->u.est_var.velocity_rocket[0],
                    log_entry->u.est_var.acceleration_rocket[0]);
     } break;
+    case ESTIMATOR_VAR_3D: {
+      str_len =
+          snprintf(str, SD_STRFMT_LEN, "%lu;%d;%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", log_entry->ts,
+                   ESTIMATOR_VAR_3D, log_entry->u.est_var.position_world[0],
+				   log_entry->u.est_var.position_world[1],
+				   log_entry->u.est_var.position_world[2],
+                   log_entry->u.est_var.velocity_world[0],
+				   log_entry->u.est_var.velocity_world[1],
+				   log_entry->u.est_var.velocity_world[2],
+				   log_entry->u.est_var.acceleration_world[0],
+				   log_entry->u.est_var.acceleration_world[1],
+				   log_entry->u.est_var.acceleration_world[2],
+				   log_entry->u.est_var.quarternion_world[0],
+				   log_entry->u.est_var.quarternion_world[1],
+				   log_entry->u.est_var.quarternion_world[2],
+				   log_entry->u.est_var.quarternion_world[3],
+				   log_entry->u.est_var.quarternion_dot_world[0],
+				   log_entry->u.est_var.quarternion_dot_world[1],
+				   log_entry->u.est_var.quarternion_dot_world[2],
+				   log_entry->u.est_var.quarternion_dot_world[3],
+				   log_entry->u.est_var.mach_number,
+				   log_entry->u.est_var.altitude_raw);
+    } break;
     case CONTROLLER_OUTPUT: {
       str_len =
-          snprintf(str, SD_STRFMT_LEN, "%lu;%d;%ld,%ld,%ld\n", log_entry->ts,
-                   CONTROLLER_OUTPUT, log_entry->u.cont_out.controller_output,
-                   log_entry->u.cont_out.reference_error,
-                   log_entry->u.cont_out.integrated_error);
+          snprintf(str, SD_STRFMT_LEN, "%lu;%d;%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", log_entry->ts,
+                   CONTROLLER_OUTPUT, log_entry->u.cont_out.control_input,
+				   log_entry->u.cont_out.reference_error,
+				   log_entry->u.cont_out.integrated_error,
+				   log_entry->u.cont_out.sf_ref_altitude_AGL,
+				   log_entry->u.cont_out.sf_velocity,
+				   log_entry->u.cont_out.ref_velocity,
+				   log_entry->u.cont_out.tracking_feedback,
+				   log_entry->u.cont_out.lowerboundary_aw,
+				   log_entry->u.cont_out.upperboundary_aw,
+				   log_entry->u.cont_out.exit_flag,
+				   log_entry->u.cont_out.num_iterations);
     } break;
     case MOTOR_POSITION: {
       str_len = snprintf(str, SD_STRFMT_LEN, "%lu;%d;%ld,%ld\n", log_entry->ts,
