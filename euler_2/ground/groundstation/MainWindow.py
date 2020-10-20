@@ -443,7 +443,7 @@ class MainWindow(Frame):
         """
         if self.connected:
             self.s.isRun = False
-            self.thread.join()
+            # self.thread.join()
             if self.update_plot:
                 self.update_plot = False
                 self.logger.info('Live plot stopped.')
