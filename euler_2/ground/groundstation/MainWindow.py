@@ -118,6 +118,7 @@ class MainWindow(Frame):
         self.verbose = False
 
         self.time_offset = 2
+        self.gps_sign = False
 
         self.__setup__()
 
@@ -160,7 +161,7 @@ class MainWindow(Frame):
 
         self.settings_menu.add_command(label="Commands", command=self.command_settings)
         self.settings_menu.add_command(label='Print raw data (on/off)', command=self.toggle_verbose)
-        self.settings_menu.add_command(label='Time zone', command=self.timezone_window)
+        self.settings_menu.add_command(label='GPS settings', command=self.gps_window)
 
         self.help_menu.add_command(label="About", command=self.about_window)
         # self.help_menu.add_command(label="Manual", command=self.manual_window)
@@ -240,7 +241,7 @@ class MainWindow(Frame):
             self.label_sb_name.append(tk.Label(self.frame_sb, text=sb_names[i]))
 
         self.sep1_sb = ttk.Separator(self.frame_sb, orient='vertical')
-        # self.sep2_sb = ttk.Separator(self.frame_sb, orient='vertical')
+        self.sep2_sb = ttk.Separator(self.frame_sb, orient='horizontal')
 
         # ==============================================================================================================
         # add GPS frame
@@ -368,7 +369,7 @@ class MainWindow(Frame):
 
         self.label_sb_name[0].grid(row=0, column=0, pady=(10, 0), sticky='W')
         self.label_sb_name[1].grid(row=1, column=0, sticky='W')
-        self.label_sb_name[2].grid(row=2, column=0, pady=(15, 0), sticky='W')
+        self.label_sb_name[2].grid(row=3, column=0, sticky='W')
         self.label_sb_name[3].grid(row=0, column=3, pady=(10, 0), sticky='W')
         self.label_sb_name[4].grid(row=1, column=3, sticky='W')
         self.label_sb_name[5].grid(row=2, column=3, sticky='W')
@@ -377,11 +378,11 @@ class MainWindow(Frame):
         self.label_sb_name[8].grid(row=5, column=3, sticky='W')
 
         self.sep1_sb.grid(row=0, column=2, rowspan=6, sticky='ns')
-        # self.sep2_sb.grid(row=0, column=5, rowspan=3, sticky='ns')
+        self.sep2_sb.grid(row=2, column=0, columnspan=2, sticky='we')
 
         self.label_sb_val[0].grid(row=0, column=1, padx=10, pady=(10, 0))
         self.label_sb_val[1].grid(row=1, column=1, padx=10)
-        self.label_sb_val[2].grid(row=2, column=1, padx=10, pady=(15, 0))
+        self.label_sb_val[2].grid(row=3, column=1, padx=10)
         self.label_sb_val[3].grid(row=0, column=4, padx=10, pady=(10, 0))
         self.label_sb_val[4].grid(row=1, column=4, padx=10)
         self.label_sb_val[5].grid(row=2, column=4, padx=10)
@@ -694,7 +695,10 @@ class MainWindow(Frame):
                     tmp[1] = gps_data[7]
 
                     gps_lat_fmt = f'{gps_data[8]}.{gps_data[3]}'
-                    gps_lon_fmt = f'{gps_data[9]}.{gps_data[4]}'
+                    if self.gps_sign:
+                        gps_lon_fmt = f'{gps_data[9]}.{gps_data[4]}'
+                    else:
+                        gps_lon_fmt = f'-{gps_data[9]}.{gps_data[4]}'
                     tmp[2] = gps_lat_fmt
                     tmp[3] = gps_lon_fmt
                     # tmp[4:] = gps_data[8:]
@@ -866,43 +870,53 @@ class MainWindow(Frame):
     def toggle_verbose(self):
         self.verbose = not self.verbose
 
-    def timezone_window(self):
-        self.root_timezone = tk.Toplevel(self._root)
+    def gps_window(self):
+        self.root_gps = tk.Toplevel(self._root)
 
         w = 300
-        h = 100
+        h = 150
         # get screen width and height
-        ws = self.root_timezone.winfo_screenwidth()  # width of the screen
-        hs = self.root_timezone.winfo_screenheight()  # height of the screen
+        ws = self.root_gps.winfo_screenwidth()  # width of the screen
+        hs = self.root_gps.winfo_screenheight()  # height of the screen
 
         # calculate x and y coordinates for the Tk window
         x = (ws / 2) - (w / 2)
         y = (hs / 2) - (h / 2)
 
-        self.root_timezone.title('Timezone setting')
-        self.root_timezone.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        self.root_timezone.resizable(height=False, width=False)
+        self.root_gps.title('GPS setting')
+        self.root_gps.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        self.root_gps.resizable(height=False, width=False)
 
-        frame = tk.LabelFrame(self.root_timezone, text='Timezone')
-        frame.pack()
+        frame_timezone = tk.LabelFrame(self.root_gps, text='Timezone')
+        frame_timezone.pack()
 
-        label1 = tk.Label(frame, text='UTC+')
+        label1 = tk.Label(frame_timezone, text='UTC+')
         label1.grid(row=0, column=0, padx=(5, 0), pady=5)
-        self.entry1 = tk.Entry(frame)
+        self.entry1 = tk.Entry(frame_timezone)
         self.entry1.grid(row=0, column=1, padx=(0, 5), pady=5)
         self.entry1.delete(0, 'end')
         self.entry1.insert(0, str(self.time_offset))
 
-        save_button = tk.Button(frame, text='Save', command=self.save_offset)
-        save_button.grid(row=1, column=0, columnspan=2)
+        frame_orientation = tk.LabelFrame(self.root_gps, text='Orientation')
+        frame_orientation.pack()
 
-    def save_offset(self):
+        self.switch_variable = tk.IntVar(value=self.gps_sign)
+        east_button = tk.Radiobutton(frame_orientation, text='East', variable=self.switch_variable, value=True, width=8)
+        west_button = tk.Radiobutton(frame_orientation, text='West', variable=self.switch_variable, value=False, width=8)
+        east_button.grid(row=0, column=0)
+        west_button.grid(row=0, column=1)
+
+        save_button = tk.Button(self.root_gps, text='Save', command=self.save_gps)
+        save_button.pack()
+
+    def save_gps(self):
         try:
             tmp = int(self.entry1.get())
             self.time_offset = tmp
-            self.root_timezone.destroy()
+            self.root_gps.destroy()
         except ValueError as e:
             messagebox.showinfo('ValueError', e)
             self.entry1.delete(0, 'end')
             self.entry1.insert(0, str(self.time_offset))
-            self.root_timezone.lift()
+            self.root_gps.lift()
+        self.gps_sign = self.switch_variable.get()
