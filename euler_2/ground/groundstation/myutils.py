@@ -26,6 +26,7 @@ button_text = ['Airbrake Test', 'EST Reset', 'High Sampling', 'Buzzer', 'Disable
 
 sb_names = ["pressure [Pa]",
             "temp [C]",
+            "Sensorboard #",
             "gyro_x [deg/s]",
             "gyro_y [deg/s]",
             "gyro_z [deg/s]",

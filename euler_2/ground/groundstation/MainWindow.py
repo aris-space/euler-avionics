@@ -368,24 +368,26 @@ class MainWindow(Frame):
 
         self.label_sb_name[0].grid(row=0, column=0, pady=(10, 0), sticky='W')
         self.label_sb_name[1].grid(row=1, column=0, sticky='W')
-        self.label_sb_name[2].grid(row=0, column=3, pady=(10, 0), sticky='W')
-        self.label_sb_name[3].grid(row=1, column=3, sticky='W')
-        self.label_sb_name[4].grid(row=2, column=3, sticky='W')
-        self.label_sb_name[5].grid(row=3, column=3, sticky='W')
-        self.label_sb_name[6].grid(row=4, column=3, sticky='W')
-        self.label_sb_name[7].grid(row=5, column=3, sticky='W')
+        self.label_sb_name[2].grid(row=2, column=0, pady=(15, 0), sticky='W')
+        self.label_sb_name[3].grid(row=0, column=3, pady=(10, 0), sticky='W')
+        self.label_sb_name[4].grid(row=1, column=3, sticky='W')
+        self.label_sb_name[5].grid(row=2, column=3, sticky='W')
+        self.label_sb_name[6].grid(row=3, column=3, sticky='W')
+        self.label_sb_name[7].grid(row=4, column=3, sticky='W')
+        self.label_sb_name[8].grid(row=5, column=3, sticky='W')
 
         self.sep1_sb.grid(row=0, column=2, rowspan=6, sticky='ns')
         # self.sep2_sb.grid(row=0, column=5, rowspan=3, sticky='ns')
 
         self.label_sb_val[0].grid(row=0, column=1, padx=10, pady=(10, 0))
         self.label_sb_val[1].grid(row=1, column=1, padx=10)
-        self.label_sb_val[2].grid(row=0, column=4, padx=10, pady=(10, 0))
-        self.label_sb_val[3].grid(row=1, column=4, padx=10)
-        self.label_sb_val[4].grid(row=2, column=4, padx=10)
-        self.label_sb_val[5].grid(row=3, column=4, padx=10)
-        self.label_sb_val[6].grid(row=4, column=4, padx=10)
-        self.label_sb_val[7].grid(row=5, column=4, padx=10)
+        self.label_sb_val[2].grid(row=2, column=1, padx=10, pady=(15, 0))
+        self.label_sb_val[3].grid(row=0, column=4, padx=10, pady=(10, 0))
+        self.label_sb_val[4].grid(row=1, column=4, padx=10)
+        self.label_sb_val[5].grid(row=2, column=4, padx=10)
+        self.label_sb_val[6].grid(row=3, column=4, padx=10)
+        self.label_sb_val[7].grid(row=4, column=4, padx=10)
+        self.label_sb_val[8].grid(row=5, column=4, padx=10)
 
     def send_command(self, command):
         """
@@ -655,6 +657,7 @@ class MainWindow(Frame):
         time.sleep(1)
         update_rate = [0]*20
         avg = 0
+        sb_board_num = 1
         while self.s.isRun:
             start_time = time.time()
             data = self.get_data_from_raw()
@@ -674,6 +677,16 @@ class MainWindow(Frame):
                     flight_phase_number = data[5+len_sb + len_battery + len_gps]
                     # alignment3 = data[7+len_sb + len_battery + len_gps]
                     fsm_data = [altitude, velocity, airbrake_extension, flight_phase_number, timestamp]
+
+                    if 33554432 > gps_data[0] > 16777216:
+                        sb_board_num = 1
+                        gps_data[0] -= 16777216
+                    elif 50331648 > gps_data[0] > 33554432:
+                        sb_board_num = 2
+                        gps_data[0] -= 33554432
+                    elif gps_data[0] > 50331648:
+                        sb_board_num = 3
+                        gps_data[0] -= 50331648
 
                     gps_time = str(gps_data[0] + self.time_offset) + ':' + str(gps_data[1]) + ':' + str(gps_data[2])
                     tmp = ['0'] * (len_gps - 4)
@@ -709,8 +722,17 @@ class MainWindow(Frame):
 
                     fsm_data[4] = '{:.3f}'.format(fsm_data[4])
 
-                    for i in range(len(self.label_sb_val)):
-                        self.label_sb_val[i].config(text=sb_data[i])
+                    # for i in range(len(self.label_sb_val)):
+                    #     self.label_sb_val[i].config(text=sb_data[i])
+                    self.label_sb_val[0].config(text=sb_data[0])
+                    self.label_sb_val[1].config(text=sb_data[1])
+                    self.label_sb_val[2].config(text=sb_board_num)
+                    self.label_sb_val[3].config(text=sb_data[2])
+                    self.label_sb_val[4].config(text=sb_data[3])
+                    self.label_sb_val[5].config(text=sb_data[4])
+                    self.label_sb_val[6].config(text=sb_data[5])
+                    self.label_sb_val[7].config(text=sb_data[6])
+                    self.label_sb_val[8].config(text=sb_data[7])
 
                     for i in range(len(self.label_gps_val)):
                         self.label_gps_val[i].config(text=gps_data[i])
