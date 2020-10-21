@@ -23,11 +23,13 @@
 /* Mutexes */
 extern custom_mutex_t fsm_mutex;
 extern custom_mutex_t command_mutex;
+extern custom_mutex_t state_est_mutex;
 
 /* Global Data */
 
 extern flight_phase_detection_t global_flight_phase_detection;
 extern command_e global_telemetry_command;
+extern state_est_data_t state_est_data_global;
 
 extern int8_t buzzer_state;
 extern int8_t camera_state;

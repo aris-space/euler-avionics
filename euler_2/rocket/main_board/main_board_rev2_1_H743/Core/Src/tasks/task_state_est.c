@@ -39,6 +39,7 @@ void vTaskStateEst(void *argument) {
 //  float sum_accel[3] = {0};
 
   uint16_t calibrate_count = 0;
+  uint8_t chosen_baro = 0;
 //  uint16_t calibrate_count_imu = 0;
 
   /* Airbrake extension */
@@ -90,17 +91,29 @@ void vTaskStateEst(void *argument) {
     /* Sensor Board 3 */
     read_mutex_state_est(&sb3_mutex, &state_est_state.state_est_meas, &sb3_global, 3);
 
+    /* Check for Working Baro */
+    if((state_est_state.state_est_meas.baro_data[2].pressure < BARO_UPPER_BOUND) &&
+    		(state_est_state.state_est_meas.baro_data[2].pressure > BARO_LOWER_BOUND) &&
+			(state_est_state.state_est_meas.baro_data[2].temperature < TEMP_UPPER_BOUND) &&
+			(state_est_state.state_est_meas.baro_data[2].temperature > TEMP_LOWER_BOUND)){
+    	chosen_baro = 2;
+    }
+    else if((state_est_state.state_est_meas.baro_data[1].pressure < BARO_UPPER_BOUND) &&
+    		(state_est_state.state_est_meas.baro_data[1].pressure > BARO_LOWER_BOUND) &&
+			(state_est_state.state_est_meas.baro_data[1].temperature < TEMP_UPPER_BOUND) &&
+			(state_est_state.state_est_meas.baro_data[1].temperature > TEMP_LOWER_BOUND)){
+    	chosen_baro = 1;
+    }
+    else{
+    	chosen_baro = 0;
+    }
+
     /* calculate averaging */
     // TODO [luca] this can be dangerous if one of our baros is faulty, we also dont see that in our telemetry
     if (state_est_state.flight_phase_detection.flight_phase == IDLE) {
-      sum_press +=
-          state_est_state.state_est_meas.baro_data[0].pressure +
-		  state_est_state.state_est_meas.baro_data[1].pressure +
-		  state_est_state.state_est_meas.baro_data[2].pressure;
-      sum_temp += (state_est_state.state_est_meas.baro_data[0].temperature +
-    		  state_est_state.state_est_meas.baro_data[1].temperature +
-			  state_est_state.state_est_meas.baro_data[2].temperature) /
-                  100;
+      sum_press += state_est_state.state_est_meas.baro_data[chosen_baro].pressure;
+      sum_temp += state_est_state.state_est_meas.baro_data[chosen_baro].temperature;
+
 //      for(int i = 0; i < 6; i++){
 //    	  sum_gyro[0] += state_est_state.state_est_meas.imu_data[i].gyro_x;
 //    	  sum_gyro[1] += state_est_state.state_est_meas.imu_data[i].gyro_y;
@@ -110,7 +123,7 @@ void vTaskStateEst(void *argument) {
 //    	  sum_accel[2] += state_est_state.state_est_meas.imu_data[i].acc_z;
 //      }
 //      calibrate_count_imu += 6;
-      calibrate_count += 3;
+      calibrate_count += 1;
       if (calibrate_count > 150) {
         average_press = sum_press / (float)calibrate_count;
         average_temp = sum_temp / (float)calibrate_count;
@@ -160,11 +173,6 @@ void vTaskStateEst(void *argument) {
       release_mutex(&state_est_mutex);
     }
 
-//    usb_print("[DBG] Height: %d; Velocity: %d; Airbrake_ext: %d; t: %lu\n",
-//    				state_est_data_global.position_world[2],
-//    				state_est_data_global.velocity_world[2],
-//					(int32_t)(state_est_state.state_est_meas.airbrake_extension*1000),
-//     tick_count);
 
     /* Update env for FSM */
     if (acquire_mutex(&fsm_mutex) == osOK) {
@@ -178,8 +186,6 @@ void vTaskStateEst(void *argument) {
 #elif STATE_ESTIMATION_TYPE == 2
     log_estimator_var(osKernelGetTickCount(), state_est_data_global, ESTIMATOR_VAR_3D);
 #endif
-    /* TODO: Check if the state estimation can do this for the given frequency
-     */
 
     /* Sleep */
     osDelayUntil(tick_count);

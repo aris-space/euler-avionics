@@ -24,6 +24,7 @@ void vTaskPeripherals(void *argument) {
   /* buzzer variables */
   bool buzzer_on_fsm = false;
   bool buzzer_on_telemetry = false;
+  bool buzzer_on_state_fault = false;
   uint8_t buzzercounter = 0;
 
   /* Telemetry Command */
@@ -32,6 +33,10 @@ void vTaskPeripherals(void *argument) {
   /* Phase detection struct */
   flight_phase_detection_t flight_phase_detection = {0};
   reset_flight_phase_detection(&flight_phase_detection);
+
+  /* state estimation struct */
+  state_est_data_t state_est_data_local = { 0 };
+  uint32_t faulty_state_est_counter = 0;
 
   /* Infinite loop */
 
@@ -49,6 +54,10 @@ void vTaskPeripherals(void *argument) {
     /* Read Flight Phase */
     read_mutex(&fsm_mutex, &global_flight_phase_detection,
               &flight_phase_detection, sizeof(global_flight_phase_detection));
+
+    /* Read state estimation Data */
+    read_mutex(&state_est_mutex, &state_est_data_global, &state_est_data_local,
+              sizeof(state_est_data_local));
 
     /* Enable Buzzer trough Telemetry */
     if (telemetry_command == ENABLE_BUZZER) {
@@ -70,15 +79,27 @@ void vTaskPeripherals(void *argument) {
       HAL_GPIO_WritePin(PW_HOLD_GPIO_Port, PW_HOLD_Pin, GPIO_PIN_SET);
     }
 
+    /* Disable Camera on Command */
     if(telemetry_command == DISABLE_CAMERA){
     	camera_enabled = false;
     }
 
+    /* Enable Camera on Command and on Thrusting */
     if ((telemetry_command == ENABLE_CAMERA) | (flight_phase_detection.flight_phase == THRUSTING)) {
       camera_enabled = true;
       camera_start_time = osKernelGetTickCount();
     }
+    /* check if state estimation is faulty */
+    if(state_est_data_local.position_world[2] < -10000000){
+    	faulty_state_est_counter++;
+    }
 
+    /* Enable Buzzer if state estimation is faulty */
+    if((faulty_state_est_counter > 20) && (osKernelGetTickCount() < 60000)){
+    	buzzer_on_state_fault = true;
+    }
+
+    /* Actually enable Camera */
     if(camera_enabled){
     	HAL_GPIO_WritePin(CAMERA_GPIO_Port, CAMERA_Pin, GPIO_PIN_SET);
     	if(osKernelGetTickCount() > CAMERA_ON_TIME + camera_start_time){
@@ -90,7 +111,7 @@ void vTaskPeripherals(void *argument) {
     }
 
     /* Enable Buzzer */
-    if (buzzer_on_fsm ^ buzzer_on_telemetry) {
+    if ((buzzer_on_fsm || buzzer_on_state_fault) ^ buzzer_on_telemetry) {
       if (buzzercounter > (800 / tick_update)) {
 
     	  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);

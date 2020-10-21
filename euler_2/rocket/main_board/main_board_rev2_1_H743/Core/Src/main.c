@@ -138,7 +138,7 @@ const osThreadAttr_t task_sd_card_attributes = {
 };
 /* Definitions for task_motor_cont */
 osThreadId_t task_motor_contHandle;
-DTCM uint32_t task_motor_contBuffer[ 512 ];
+uint32_t task_motor_contBuffer[ 512 ];
 osStaticThreadDef_t task_motor_contControlBlock;
 const osThreadAttr_t task_motor_cont_attributes = {
   .name = "task_motor_cont",
@@ -392,11 +392,10 @@ int main(void)
   MX_SPI4_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
-  MX_USB_DEVICE_Init();
+//  MX_USB_DEVICE_Init();
 #if (configUSE_TRACE_FACILITY == 1)
   vTraceEnable(TRC_INIT);
 #endif
-  /* TODO [nemanja]: initialize all things here (flash, mount sd_card...) or create a separate task */
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -1422,7 +1421,7 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void *argument)
 {
   /* init code for USB_DEVICE */
-  MX_USB_DEVICE_Init();
+//  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
 

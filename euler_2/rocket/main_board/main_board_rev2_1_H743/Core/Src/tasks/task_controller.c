@@ -45,13 +45,12 @@ void vTaskController(void *argument) {
     control_step(&control_data, &state_est_data_local, &flight_phase_detection_local, &env_local);
 
     /* Write Control Input into Global Variable */
-    if (acquire_mutex(&controller_mutex) == osOK) {
+    if ((acquire_mutex(&controller_mutex) == osOK) && (osKernelGetTickCount() > 120000)) {
       controller_output_global = (int32_t)(control_data.control_input * 1000);
       release_mutex(&controller_mutex);
     }
 
     /* Log to SD Card */
-    /* TODO [Jonas]: Change this for appropriate Controller */
     log_controller_output(osKernelGetTickCount(), control_data);
 
     /* Sleep */

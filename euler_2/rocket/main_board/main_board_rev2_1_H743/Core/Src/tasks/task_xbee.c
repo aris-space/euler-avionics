@@ -8,7 +8,7 @@
 #include "Util/RS.h"
 
 #if (configUSE_TRACE_FACILITY == 1)
-	traceString xb_channel;
+traceString xb_channel;
 #endif
 
 command_xbee_t local_command_xbee;
@@ -37,7 +37,7 @@ uint8_t transmission_data[NN-KK+KK2];
 void vTaskXbee(void *argument) {
 
 #if (configUSE_TRACE_FACILITY == 1)
-  xb_channel = xTraceRegisterString("Xbee Channel");
+	xb_channel = xTraceRegisterString("Xbee Channel");
 #endif
 
 	/* For periodic update */
@@ -55,7 +55,9 @@ void vTaskXbee(void *argument) {
 	local_command_rx = IDLE_COMMAND;
 	local_command = IDLE_COMMAND;
 
-
+	/* Sensor Board Counter */
+	uint8_t sensor_board_counter = 1;
+	uint32_t sb_swap_time = 0;
 
 
 	/* set irreducible polynomial */
@@ -65,14 +67,14 @@ void vTaskXbee(void *argument) {
 	generate_gf(pp, index_of, alpha_to);
 
 #if (configUSE_TRACE_FACILITY == 1)
-                vTracePrint(xb_channel, "GF GENERATED");
+	vTracePrint(xb_channel, "GF GENERATED");
 #endif
 
 	/* compute the generator polynomial for this RS code */
 	gen_poly(gg, alpha_to, index_of);
 
 #if (configUSE_TRACE_FACILITY == 1)
-                vTracePrint(xb_channel, "POLY GENERATED");
+	vTracePrint(xb_channel, "POLY GENERATED");
 #endif
 
 	osDelay(700);
@@ -123,9 +125,31 @@ void vTaskXbee(void *argument) {
 			new_command = false;
 		}
 
-		/* Read Sensor Board Data */
-		read_mutex(&sb1_mutex, &sb1_global, &local_sb_data, sizeof(sb1_global));
+		/* Cycle with a certain frequency the sensor Boards */
+		if(osKernelGetTickCount() >= sb_swap_time){
+			sb_swap_time = osKernelGetTickCount() + 2000;
+			if(++sensor_board_counter == 4){
+				sensor_board_counter = 1;
+			}
+		}
 
+		/* Switch corresponding to what sensor board we want right now */
+		switch (sensor_board_counter){
+			case 1: {
+				read_mutex(&sb1_mutex, &sb1_global, &local_sb_data, sizeof(sb1_global));
+			}break;
+			case 2: {
+				read_mutex(&sb2_mutex, &sb2_global, &local_sb_data, sizeof(sb2_global));
+			}break;
+			case 3: {
+				read_mutex(&sb3_mutex, &sb3_global, &local_sb_data, sizeof(sb3_global));
+			}break;
+			default: {
+				read_mutex(&sb1_mutex, &sb1_global, &local_sb_data, sizeof(sb1_global));
+			}
+		}
+
+		/* Write into the Telemetry struct */
 		telemetry_send.sb_data.pressure = local_sb_data.baro.pressure;
 		telemetry_send.sb_data.temperature = local_sb_data.baro.temperature;
 		telemetry_send.sb_data.acc_x = local_sb_data.imu_1.acc_x;
@@ -158,6 +182,9 @@ void vTaskXbee(void *argument) {
 		telemetry_send.height = state_est_data.position_world[2];
 		telemetry_send.velocity = state_est_data.velocity_world[2];
 
+		/* Include what sensor board we are sending down */
+		telemetry_send.gps.hour |= sensor_board_counter << 24;
+
 		/* Read Peripherals */
 		telemetry_send.flight_phase |= buzzer_state << 7;
 		telemetry_send.flight_phase |= camera_state << 6;
@@ -186,7 +213,7 @@ void vTaskXbee(void *argument) {
 		}
 
 #if (configUSE_TRACE_FACILITY == 1)
-                vTracePrint(xb_channel, "compress_data done");
+		vTracePrint(xb_channel, "compress_data done");
 #endif
 
 		/* Send recd_compact */

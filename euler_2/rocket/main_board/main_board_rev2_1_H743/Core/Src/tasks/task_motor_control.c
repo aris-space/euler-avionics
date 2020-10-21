@@ -110,7 +110,7 @@ void vTaskMotorCont(void *argument) {
     	measured_motor_position = 0;
     }
     else{
-    	measured_motor_position = measured_motor_position * 1000 / (-150);
+    	measured_motor_position = (measured_motor_position * 1000) / (-150);
     }
 
     /* Write To global airbrake extension */
@@ -125,11 +125,11 @@ void vTaskMotorCont(void *argument) {
     log_motor(osKernelGetTickCount(), desired_motor_position,
              measured_motor_position);
 
-    if (motor_status != osOK && flight_phase_detection.flight_phase == IDLE) {
-      disable_motor();
-      osDelay(1000);
-      enable_motor();
-    }
+//    if (motor_status != osOK && flight_phase_detection.flight_phase == IDLE) {
+//      disable_motor();
+//      osDelay(1000);
+//      enable_motor();
+//    }
 
     osDelayUntil(tick_count);
   }
