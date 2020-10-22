@@ -6,7 +6,7 @@ Author(s): Imre Kertesz
 
 import tkinter as tk
 from tkinter import ttk, messagebox, Tk, Frame, scrolledtext, Canvas
-from SerialConnection import SerialConnection, get_measurement_names, available_ports
+from SerialConnection import get_measurement_names
 import sys
 import csv
 import os.path
@@ -17,12 +17,16 @@ from matplotlib import style
 import logging
 from Logs.LoggingHandler import LoggingHandler
 from myutils import sb_names, gps_names, battery_names, fsm_names, rf_names, dict_command_msg, button_text,\
-    dict_commands, data_struct
-from PIL import ImageTk, Image
+    data_struct
 import math
 from threading import Thread
 import struct
 import time
+from View.ConfigurePlotWindow import ConfigurePlotWindow
+from View.ConfigureGPSWindow import ConfigureGPSWindow
+from View.AboutWindow import AboutWindow
+from View.CommandSettingsWindow import CommandSettingsWindow
+from View.ConnectionWindow import ConnectionWindow
 
 matplotlib.use("TkAgg")
 style.use('ggplot')
@@ -55,11 +59,13 @@ mach_regime = {0: '----------',
 velocity_data = [0]
 altitude_data = [0]
 
-fig_velocity = Figure(figsize=(4, 4), dpi=100)
+fig_velocity = Figure(figsize=(4, 4), dpi=100, facecolor='#ffffff')
 sub_velocity = fig_velocity.add_subplot(111)
+sub_velocity.set_facecolor('#929591')
 
-fig_altitude = Figure(figsize=(4, 4), dpi=100)
+fig_altitude = Figure(figsize=(4, 4), dpi=100, facecolor='#ffffff')
 sub_altitude = fig_altitude.add_subplot(111)
+sub_altitude.set_facecolor('#929591')
 
 sub_velocity.plot(velocity_data)
 sub_altitude.plot(altitude_data)
@@ -120,6 +126,14 @@ class MainWindow(Frame):
         self.time_offset = 2
         self.gps_sign = False
 
+        self.inner_color = '#929591'
+        self.outer_color = '#ffffff'
+        self.line_color = '#e50000'
+
+        self.target_apogee = 10000
+        self.show_line = False
+        self.target_apogee_line = [self.target_apogee]
+
         self.__setup__()
 
     def __setup__(self):
@@ -151,8 +165,7 @@ class MainWindow(Frame):
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Exit", command=self._root.quit)
 
-        self.connection_menu.add_command(label="Xbee Serial connection", command=self.connection_window)
-        self.connection_menu.add_command(label="Groundstation Serial connection", command=self.connection_window)
+        self.connection_menu.add_command(label="Serial connection", command=self.client_connect_serial)
         self.connection_menu.add_command(label="Start reception", command=self.start_reception)
         self.connection_menu.add_command(label="Stop reception", command=self.stop_reception)
 
@@ -161,7 +174,8 @@ class MainWindow(Frame):
 
         self.settings_menu.add_command(label="Commands", command=self.command_settings)
         self.settings_menu.add_command(label='Print raw data (on/off)', command=self.toggle_verbose)
-        self.settings_menu.add_command(label='GPS settings', command=self.gps_window)
+        self.settings_menu.add_command(label='GPS', command=self.client_configure_gps)
+        self.settings_menu.add_command(label='Plot', command=self.client_configure_plot)
 
         self.help_menu.add_command(label="About", command=self.about_window)
         # self.help_menu.add_command(label="Manual", command=self.manual_window)
@@ -517,123 +531,20 @@ class MainWindow(Frame):
         """
         velocity_data.append(self.current_velocity)
         altitude_data.append(self.current_altitude)
+        self.target_apogee_line.append(self.target_apogee)
         sub_velocity.clear()
         sub_altitude.clear()
-        sub_velocity.plot(velocity_data)
-        sub_altitude.plot(altitude_data)
+        try:
+            sub_velocity.plot(velocity_data, self.line_color)
+            sub_altitude.plot(altitude_data, self.line_color)
+        except ValueError as e:
+            self.logger.info('User set wrong color code.')
+        if self.show_line:
+            sub_altitude.plot(self.target_apogee_line, 'g')
         self.canvas_left.draw()
         self.canvas_right.draw()
         if self.update_plot:
             self.frame_upper_middle.after(100, self.update_canvas)
-
-    def command_settings(self):
-        root = tk.Toplevel(self._root)
-
-        w = 300
-        h = 250
-        # get screen width and height
-        ws = root.winfo_screenwidth()  # width of the screen
-        hs = root.winfo_screenheight()  # height of the screen
-
-        # calculate x and y coordinates for the Tk window
-        x = (ws / 2) - (w / 2)
-        y = (hs / 2) - (h / 2)
-
-        root.title('Command settings')
-        # root.geometry('{}x{}'.format(300, 250))
-        root.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        root.resizable(height=False, width=False)
-
-        frame1 = tk.Frame(root)
-        frame1.pack(fill="both", expand=True)
-
-        label_buttons = tk.Label(frame1, text='Button names')
-        label_commands = tk.Label(frame1, text='Transmitted data')
-        label_buttons.grid(row=0, column=0, padx=10)
-        label_commands.grid(row=0, column=2, padx=10)
-
-        button_list = []
-        for i in range(len(button_text)):
-            button_list.append(tk.Label(frame1,
-                                        text=button_text[i],
-                                        borderwidth=2,
-                                        relief='sunken',
-                                        width=15).grid(row=i+2, column=0, pady=5, padx=15))
-
-        command_list = []
-        for i in range(len(dict_commands)):
-            text = ''.join(format(x, '02X')for x in list(dict_commands.values())[i])
-            command_list.append(tk.Label(frame1,
-                                         text='0x'+text).grid(row=i+2, column=2, padx=10))
-
-        sep1 = ttk.Separator(frame1, orient='vertical')
-        sep1.grid(row=0, column=1, rowspan=9, sticky='ns', pady=(5, 0))
-
-        sep2 = ttk.Separator(frame1, orient='horizontal')
-        sep2.grid(row=1, column=0, columnspan=3, sticky='we', padx=5)
-
-    def connection_window(self):
-        """
-        Opens the serial connection settings window.
-        """
-        self.root2 = tk.Toplevel(self._root)
-        self.root2.title('Xbee serial connection setting')
-        self.root2.geometry('{}x{}'.format(400, 200))
-
-        self.frame1 = tk.LabelFrame(self.root2, text='Settings')
-        self.frame2 = tk.LabelFrame(self.root2, text='Available ports')
-
-        self.label_available_ports = tk.Label(self.frame2, text=available_ports())
-
-        self.label_port = tk.Label(self.frame1, text='Port')
-        self.label_baud = tk.Label(self.frame1, text='Baud rate')
-
-        self.entry1 = tk.Entry(self.frame1)
-        self.entry2 = tk.Entry(self.frame1)
-
-        self.button_connect = tk.Button(self.frame1, text='Connect', command=self.connect_xbee)
-
-        self.frame1.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-        self.frame2.pack(side="left", fill="both", expand=True, padx=5, pady=5)
-
-        self.label_available_ports.grid(row=0, column=0)
-
-        self.label_port.grid(row=0, column=0, padx=(10, 0))
-        self.label_baud.grid(row=1, column=0, padx=(10, 0))
-        self.entry1.grid(row=0, column=1)
-        self.entry2.grid(row=1, column=1)
-        self.button_connect.grid(row=3, column=0, columnspan=2, pady=10)
-
-        self.entry1.delete(0, 'end')
-        if sys.platform.startswith('win'):
-            if self.s is not None:
-                self.entry1.insert(0, self.s.port)
-            else:
-                self.entry1.insert(0, 'COM6')
-        else:
-            if self.s is not None:
-                self.entry1.insert(0, self.s.port)
-            else:
-                self.entry1.insert(0, '/dev/ttyUSB0')
-        self.entry2.delete(0, 'end')
-        if self.s is not None:
-            self.entry2.insert(0, self.s.baud)
-        else:
-            self.entry2.insert(0, 115200)
-
-    def connect_xbee(self):
-        """
-        Tries to establish serial connection.
-        """
-        port_name = self.entry1.get()
-        baud_rate = int(self.entry2.get())
-        self.s = SerialConnection(self, port_name, baud_rate)
-        if not self.s.start_connection():
-            messagebox.showerror('Error', "Could not establish serial connection.")
-            self.root2.lift()
-        else:
-            self.connected = True
-            self.root2.destroy()
 
     def update_rf_frame(self):
         """
@@ -824,99 +735,46 @@ class MainWindow(Frame):
 
         return list(part1_unpacked)+list(part2_unpacked)
 
-    def about_window(self):
-        root = tk.Toplevel(self._root)
-
-        w = 300
-        h = 500
-        # get screen width and height
-        ws = root.winfo_screenwidth()  # width of the screen
-        hs = root.winfo_screenheight()  # height of the screen
-
-        # calculate x and y coordinates for the Tk window
-        x = (ws / 2) - (w / 2)
-        y = (hs / 2) - (h / 2)
-
-        root.title('About')
-        # root3.geometry('{}x{}'.format(300, 500))
-        root.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        root.resizable(height=False, width=False)
-
-        frame1 = tk.Frame(root)
-        frame2 = tk.Frame(root)
-
-        frame1.pack(side="top", fill="both", expand=True)
-        frame2.pack(side="bottom", fill="both", expand=True)
-
-        img = Image.open("img/aris_logo.png")
-        img = img.resize((295, 100), Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(img)
-
-        img2 = Image.open("img/euler_launch.jpg")
-        img2 = img2.resize((300, 400), Image.ANTIALIAS)
-        img2 = ImageTk.PhotoImage(img2)
-
-        background_label = tk.Label(frame2, image=img2, text=self._gs_manager.about_text, compound=tk.CENTER)
-        background_label.image = img2
-        background_label.configure(fg="white")
-        # background_label.place(x=0, y=0, relwidth=1, relheight=1)
-        background_label.pack()
-
-        label_img = tk.Label(frame1, image=img)
-        label_img.configure(bg="white")
-        label_img.image = img
-        label_img.pack()
-
     def toggle_verbose(self):
         self.verbose = not self.verbose
 
-    def gps_window(self):
-        self.root_gps = tk.Toplevel(self._root)
+    def client_configure_plot(self):
+        new_window = tk.Toplevel(self._root)
+        new_window.lift()
+        ConfigurePlotWindow(new_window, self)
 
-        w = 300
-        h = 150
-        # get screen width and height
-        ws = self.root_gps.winfo_screenwidth()  # width of the screen
-        hs = self.root_gps.winfo_screenheight()  # height of the screen
+    def client_configure_gps(self):
+        new_window = tk.Toplevel(self._root)
+        new_window.lift()
+        ConfigureGPSWindow(new_window, self)
 
-        # calculate x and y coordinates for the Tk window
-        x = (ws / 2) - (w / 2)
-        y = (hs / 2) - (h / 2)
+    def about_window(self):
+        new_window = tk.Toplevel(self._root)
+        new_window.lift()
+        AboutWindow(new_window, self)
 
-        self.root_gps.title('GPS setting')
-        self.root_gps.geometry('%dx%d+%d+%d' % (w, h, x, y))
-        self.root_gps.resizable(height=False, width=False)
+    def command_settings(self):
+        new_window = tk.Toplevel(self._root)
+        new_window.lift()
+        CommandSettingsWindow(new_window, self)
 
-        frame_timezone = tk.LabelFrame(self.root_gps, text='Timezone')
-        frame_timezone.pack()
+    def client_connect_serial(self):
+        new_window = tk.Toplevel(self._root)
+        new_window.lift()
+        ConnectionWindow(new_window, self)
 
-        label1 = tk.Label(frame_timezone, text='UTC+')
-        label1.grid(row=0, column=0, padx=(5, 0), pady=5)
-        self.entry1 = tk.Entry(frame_timezone)
-        self.entry1.grid(row=0, column=1, padx=(0, 5), pady=5)
-        self.entry1.delete(0, 'end')
-        self.entry1.insert(0, str(self.time_offset))
-
-        frame_orientation = tk.LabelFrame(self.root_gps, text='Orientation')
-        frame_orientation.pack()
-
-        self.switch_variable = tk.IntVar(value=self.gps_sign)
-        east_button = tk.Radiobutton(frame_orientation, text='East', variable=self.switch_variable, value=True, width=8)
-        west_button = tk.Radiobutton(frame_orientation, text='West', variable=self.switch_variable, value=False, width=8)
-        east_button.grid(row=0, column=0)
-        west_button.grid(row=0, column=1)
-
-        save_button = tk.Button(self.root_gps, text='Save', command=self.save_gps)
-        save_button.pack()
-
-    def save_gps(self):
+    def change_color(self, inner, outer, line):
         try:
-            tmp = int(self.entry1.get())
-            self.time_offset = tmp
-            self.root_gps.destroy()
+            sub_velocity.set_facecolor(inner)
+            sub_altitude.set_facecolor(inner)
+
+            fig_velocity.set_facecolor(outer)
+            fig_altitude.set_facecolor(outer)
         except ValueError as e:
-            messagebox.showinfo('ValueError', e)
-            self.entry1.delete(0, 'end')
-            self.entry1.insert(0, str(self.time_offset))
-            self.root_gps.lift()
-        self.gps_sign = self.switch_variable.get()
+            self.logger.info('User set wrong color code.')
+
+        self.inner_color = inner
+        self.outer_color = outer
+        self.line_color = line
+
+        self.target_apogee_line = [self.target_apogee]*len(altitude_data)
