@@ -15,7 +15,7 @@ class ConfigurePlotWindow(Frame):
 
         self._main = main
         w = 300
-        h = 200
+        h = 300
         # get screen width and height
         ws = self._root.winfo_screenwidth()  # width of the screen
         hs = self._root.winfo_screenheight()  # height of the screen
@@ -37,10 +37,15 @@ class ConfigurePlotWindow(Frame):
     def __setup__(self):
         frame_color = LabelFrame(self._root, text='Color settings')
         frame_target_apogee = LabelFrame(self._root, text='Target apogee')
+        frame_velocity = LabelFrame(self._root, text='Velocity reference line')
 
         frame_color.pack(side="top", fill="both", expand=True, padx=5)
-        frame_target_apogee.pack(side="top", fill="both", expand=True, padx=5, pady=5)
+        frame_target_apogee.pack(side="top", fill="both", expand=True, padx=5)
+        frame_velocity.pack(side="top", fill="both", expand=True, padx=5, pady=5)
 
+        # ==============================================================================================================
+        # Color settings
+        # ==============================================================================================================
         label_inner_color = Label(frame_color, text='Inner color')
         label_outer_color = Label(frame_color, text='Outer color')
         label_line_color = Label(frame_color, text='Line color')
@@ -66,25 +71,51 @@ class ConfigurePlotWindow(Frame):
         self.entry_line_color.delete(0, 'end')
         self.entry_line_color.insert(0, self._main.line_color)
 
-        label_target_apogee = Label(frame_target_apogee, text='Target apogee')
+        # ==============================================================================================================
+        # Target apogee
+        # ==============================================================================================================
+        label_target_apogee = Label(frame_target_apogee, text='Target apogee [m]')
         label_target_apogee.grid(row=0, column=0, padx=10)
-        label_show_line = Label(frame_target_apogee, text='Show line')
-        label_show_line.grid(row=1, column=0, padx=10)
+        label_show_line_apogee = Label(frame_target_apogee, text='Show line')
+        label_show_line_apogee.grid(row=1, column=0, padx=10)
 
         self.entry_target_apogee = Entry(frame_target_apogee, width=10)
         self.entry_target_apogee.grid(row=0, column=1, padx=(0, 10))
         self.entry_target_apogee.delete(0, 'end')
         self.entry_target_apogee.insert(0, self._main.target_apogee)
 
-        self.show_line_variable = IntVar(value=self._main.show_line)
-        show_line_button = Checkbutton(frame_target_apogee,
-                                       variable=self.show_line_variable,
-                                       onvalue=True,
-                                       offvalue=False)
-        show_line_button.grid(row=1, column=1)
-        if self.show_line_variable.get():
-            show_line_button.select()
+        self.show_line_apogee = IntVar(value=self._main.show_line_apogee)
+        show_apogee_button = Checkbutton(frame_target_apogee,
+                                         variable=self.show_line_apogee,
+                                         onvalue=True,
+                                         offvalue=False)
+        show_apogee_button.grid(row=1, column=1)
+        if self.show_line_apogee.get():
+            show_apogee_button.select()
 
+        # ==============================================================================================================
+        # Velocity reference line
+        # ==============================================================================================================
+        label_reference_velocity = Label(frame_velocity, text='Reference velocity [m/s]')
+        label_reference_velocity.grid(row=0, column=0)
+        label_show_line_vel = Label(frame_velocity, text='Show line')
+        label_show_line_vel.grid(row=1, column=0, padx=10)
+
+        self.entry_reference_velocity = Entry(frame_velocity, width=10)
+        self.entry_reference_velocity.grid(row=0, column=1, padx=(0, 10))
+        self.entry_reference_velocity.delete(0, 'end')
+        self.entry_reference_velocity.insert(0, self._main.reference_velocity)
+
+        self.show_line_velocity = IntVar(value=self._main.show_line_velocity)
+        show_velocity_button = Checkbutton(frame_velocity,
+                                           variable=self.show_line_velocity,
+                                           onvalue=True,
+                                           offvalue=False)
+        show_velocity_button.grid(row=1, column=1)
+        if self.show_line_velocity.get():
+            show_velocity_button.select()
+
+        # Save
         save_button = Button(self._root, text='Save', command=self.save)
         save_button.pack()
 
@@ -92,7 +123,9 @@ class ConfigurePlotWindow(Frame):
 
         try:
             self._main.target_apogee = int(self.entry_target_apogee.get())
-            self._main.show_line = self.show_line_variable.get()
+            self._main.show_line_apogee = self.show_line_apogee.get()
+            self._main.reference_velocity = int(self.entry_reference_velocity.get())
+            self._main.show_line_velocity = self.show_line_velocity.get()
             self._main.change_color(self.entry_inner_color.get(),
                                     self.entry_outer_color.get(),
                                     self.entry_line_color.get())
