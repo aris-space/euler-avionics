@@ -85,7 +85,7 @@ void vTaskPeripherals(void *argument) {
     }
 
     /* Enable Camera on Command and on Thrusting */
-    if ((telemetry_command == ENABLE_CAMERA) | (flight_phase_detection.flight_phase == THRUSTING)) {
+    if ((telemetry_command == ENABLE_CAMERA) || (flight_phase_detection.flight_phase == THRUSTING)) {
       camera_enabled = true;
       camera_start_time = osKernelGetTickCount();
     }
@@ -125,7 +125,7 @@ void vTaskPeripherals(void *argument) {
     }
 
     camera_state = camera_enabled;
-    buzzer_state = buzzer_on_fsm ^ buzzer_on_telemetry;
+    buzzer_state = (buzzer_on_fsm || buzzer_on_state_fault) ^ buzzer_on_telemetry;
 
     if (++buzzercounter >= 16){
     	buzzercounter = 0;

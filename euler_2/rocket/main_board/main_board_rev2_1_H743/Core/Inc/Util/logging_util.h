@@ -69,7 +69,6 @@ typedef struct {
   log_entry_type_e log_type;
 } log_elem_t;
 
-/* TODO [nemanja]: try increasing queue sizes to 256 at least */
 #define SD_QUEUE_SIZE 256
 #define FLASH_QUEUE_SIZE 128
 

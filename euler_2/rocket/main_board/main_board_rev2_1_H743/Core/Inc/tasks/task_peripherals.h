@@ -16,7 +16,7 @@
 
 /* defines */
 #define PERIPHERALS_SAMPLING_FREQ 10
-#define CAMERA_ON_TIME 300000
+#define CAMERA_ON_TIME 480000
 
 /* extern */
 

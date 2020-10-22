@@ -114,8 +114,8 @@ void vTaskXbee(void *argument) {
 			fast_sampling = false;
 		}
 
-		/* Go Back to Low Sampling if we are in Touchdown */
-		if (telemetry_send.flight_phase == TOUCHDOWN_T) {
+		/* Go Back to Low Sampling if we are in apogee or later */
+		if (telemetry_send.flight_phase > APOGEE_APPROACH_T) {
 			fast_sampling = false;
 		}
 

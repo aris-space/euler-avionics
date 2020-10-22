@@ -51,7 +51,7 @@ extern command_e global_telemetry_command;
 
 /* Airbrake Extension Mutex */
 extern custom_mutex_t airbrake_ext_mutex;
-extern uint32_t global_airbrake_ext_meas;
+extern int32_t global_airbrake_ext_meas;
 
 /* Tasks */
 void vTaskStateEst(void *argument);

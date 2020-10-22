@@ -76,6 +76,10 @@ static void read_data_sb(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
     if (acquire_mutex(&sb1_mutex) == osOK) {
       sb1_global = *sb1;
       release_mutex(&sb1_mutex);
+    }else{
+    	HAL_SPI_DMAStop(&hspi1);
+    	osDelay(1);
+    	HAL_SPI_DMAResume(&hspi1);
     }
   }
 
@@ -86,6 +90,10 @@ static void read_data_sb(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
       sb2_global = *sb2;
       release_mutex(&sb2_mutex);
     }
+  }else{
+  	HAL_SPI_DMAStop(&hspi2);
+  	osDelay(1);
+  	HAL_SPI_DMAResume(&hspi2);
   }
 
   /* Read SB 3, Write SB 3 Global Variable  */
@@ -95,6 +103,10 @@ static void read_data_sb(sb_data_t *sb1, sb_data_t *sb2, sb_data_t *sb3) {
       sb3_global = *sb3;
       release_mutex(&sb3_mutex);
     }
+  }else{
+  	HAL_SPI_DMAStop(&hspi3);
+  	osDelay(1);
+  	HAL_SPI_DMAResume(&hspi3);
   }
 }
 
@@ -126,3 +138,5 @@ static uint8_t calculate_checksum_sb(sb_data_t *sb_data) {
 		 sb_data->imu_2.gyro_x + sb_data->imu_2.gyro_y + sb_data->imu_2.gyro_z +
 		 sb_data->imu_2.acc_x + sb_data->imu_2.acc_y + sb_data->imu_2.acc_z;
 }
+
+

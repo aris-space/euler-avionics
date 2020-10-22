@@ -19,4 +19,6 @@ extern flight_phase_detection_t global_flight_phase_detection;
 
 void vTaskSdCard(void *argument);
 
+extern SD_HandleTypeDef hsd1;
+
 #endif /* INC_TASKS_TASK_SD_CARD_H_ */

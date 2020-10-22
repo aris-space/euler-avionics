@@ -21,6 +21,8 @@ void vTaskController(void *argument) {
   /* Initialize the control_data struct */
 
   control_init(&control_data);
+  control_data.mpc_exitflag = 0;
+  control_data.mpc_info.it = 0;
 
 
   osDelay(1100);

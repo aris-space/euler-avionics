@@ -8,6 +8,7 @@
 #include "tasks/task_sd_card.h"
 #include "util/logging_util.h"
 #include "fatfs.h"
+#include "main.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -25,16 +26,12 @@ static FRESULT find_next_file_name(char *file_name);
 static FRESULT open_file(char *file_name);
 static int32_t format_log_str(char *str, log_elem_t *log_entry);
 
-/* TODO [Jonas]: Change Buzzer enable to new buzzer configuration if needed */
 void vTaskSdCard(void *argument) {
   // Try everything forever;
 
 #if (configUSE_TRACE_FACILITY == 1)
   sd_channel = xTraceRegisterString("SD Channel");
 #endif
-
-
-//uint32_t a = x;
 
   usb_print("[STORAGE TASK] Starting SD Card Task...\n");
   FRESULT res;
@@ -164,7 +161,6 @@ void vTaskSdCard(void *argument) {
   free(sd_str_buffer);
 }
 
-
 static void mount_sd_card() {
   FRESULT res;
   do {
@@ -174,7 +170,6 @@ static void mount_sd_card() {
 #if (configUSE_TRACE_FACILITY == 1)
       vTracePrint(sd_channel, "SD card mounting failed");
 #endif
-
       // force sd card to be reinitialized
       //HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
       osDelay(10);
@@ -185,7 +180,6 @@ static void mount_sd_card() {
     }
   } while (res != FR_OK);
 }
-
 /* TODO [nemanja]: this is probably not working, check in debugger */
 static void remount_sd_card() {
   FRESULT res;
@@ -193,15 +187,17 @@ static void remount_sd_card() {
   do {
     MX_FATFS_DeInit();
     osDelay(50);
+    HAL_SD_DeInit(&hsd1);
+    MX_SDMMC1_SD_Init();
+    osDelay(50);
     MX_FATFS_Init();
     osDelay(50);
-    //		f_mount(0, "", 0);
-    //		memset(&EULER_FatFS, 0, sizeof(EULER_FatFS));
+    memset(&EULER_FatFS, 0, sizeof(FATFS));
     res = f_mount(&EULER_FatFS, "", 1);
     if (res != FR_OK) {
       usb_print("[STORAGE TASK] Failed remounting SD card: %d\n", res);
 #if (configUSE_TRACE_FACILITY == 1)
-      vTracePrint(sd_channel, "Sd card remounting failed");
+      vTracePrint(sd_channel, "SD card remounting failed");
 #endif
       // force sd card to be reinitialized
       //HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
@@ -327,31 +323,6 @@ static int32_t format_log_str(char *str, log_elem_t *log_entry) {
                    log_entry->u.est_var.velocity_rocket[0],
                    log_entry->u.est_var.acceleration_rocket[0]);
     } break;
-#if STATE_ESTIMATION_TYPE == 2
-    case ESTIMATOR_VAR_3D: {
-      str_len =
-          snprintf(str, SD_STRFMT_LEN, "%lu;%d;%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", log_entry->ts,
-                   ESTIMATOR_VAR_3D, log_entry->u.est_var.position_world[0],
-				   log_entry->u.est_var.position_world[1],
-				   log_entry->u.est_var.position_world[2],
-                   log_entry->u.est_var.velocity_world[0],
-				   log_entry->u.est_var.velocity_world[1],
-				   log_entry->u.est_var.velocity_world[2],
-				   log_entry->u.est_var.acceleration_world[0],
-				   log_entry->u.est_var.acceleration_world[1],
-				   log_entry->u.est_var.acceleration_world[2],
-				   log_entry->u.est_var.quarternion_world[0],
-				   log_entry->u.est_var.quarternion_world[1],
-				   log_entry->u.est_var.quarternion_world[2],
-				   log_entry->u.est_var.quarternion_world[3],
-				   log_entry->u.est_var.quarternion_dot_world[0],
-				   log_entry->u.est_var.quarternion_dot_world[1],
-				   log_entry->u.est_var.quarternion_dot_world[2],
-				   log_entry->u.est_var.quarternion_dot_world[3],
-				   log_entry->u.est_var.mach_number,
-				   log_entry->u.est_var.altitude_raw);
-    } break;
-#endif
     case CONTROLLER_OUTPUT: {
       str_len =
           snprintf(str, SD_STRFMT_LEN, "%lu;%d;%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld\n", log_entry->ts,

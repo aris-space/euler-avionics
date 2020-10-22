@@ -30,20 +30,11 @@ void vTaskStateEst(void *argument) {
   float average_press = 0;
   float sum_press = 0;
 
-  /* average Gyro */
-//  float average_gyro[3] = {0};
-//  float sum_gyro[3] = {0};
-
-  /* average Accel */
-//  float average_accel[3] = {0};
-//  float sum_accel[3] = {0};
-
   uint16_t calibrate_count = 0;
   uint8_t chosen_baro = 0;
-//  uint16_t calibrate_count_imu = 0;
 
   /* Airbrake extension */
-  uint32_t airbrake_ext_meas = 0;
+  int32_t airbrake_ext_meas = 0;
 
 
   /* reset counter */
@@ -109,48 +100,21 @@ void vTaskStateEst(void *argument) {
     }
 
     /* calculate averaging */
-    // TODO [luca] this can be dangerous if one of our baros is faulty, we also dont see that in our telemetry
     if (state_est_state.flight_phase_detection.flight_phase == IDLE) {
       sum_press += state_est_state.state_est_meas.baro_data[chosen_baro].pressure;
       sum_temp += state_est_state.state_est_meas.baro_data[chosen_baro].temperature;
 
-//      for(int i = 0; i < 6; i++){
-//    	  sum_gyro[0] += state_est_state.state_est_meas.imu_data[i].gyro_x;
-//    	  sum_gyro[1] += state_est_state.state_est_meas.imu_data[i].gyro_y;
-//    	  sum_gyro[2] += state_est_state.state_est_meas.imu_data[i].gyro_z;
-//    	  sum_accel[0] += state_est_state.state_est_meas.imu_data[i].acc_x;
-//    	  sum_accel[1] += state_est_state.state_est_meas.imu_data[i].acc_y;
-//    	  sum_accel[2] += state_est_state.state_est_meas.imu_data[i].acc_z;
-//      }
-//      calibrate_count_imu += 6;
       calibrate_count += 1;
       if (calibrate_count > 150) {
         average_press = sum_press / (float)calibrate_count;
         average_temp = sum_temp / (float)calibrate_count;
-//        for(int i = 0; i< 3; i++){
-//        	average_accel[i] = sum_accel[i] / (float)calibrate_count_imu;
-//        	sum_accel[i] = 0;
-//        	average_gyro[i] = sum_gyro[i] / (float)calibrate_count_imu;
-//        	sum_gyro[i] = 0;
-//        }
-
 
         sum_press = 0;
         sum_temp = 0;
         calibrate_count = 0;
-//        calibrate_count_imu = 0;
+
       }
     }
-
-    /* Remove Bias from all IMU Data */
-//    for(int i = 0; i < 6; i++){
-//    	state_est_state.state_est_meas.imu_data[i].acc_x -= average_accel[0];
-//    	state_est_state.state_est_meas.imu_data[i].acc_y -= average_accel[1];
-//    	state_est_state.state_est_meas.imu_data[i].acc_z -= (average_accel[2] + 9.81);
-//    	state_est_state.state_est_meas.imu_data[i].gyro_x -= average_gyro[0];
-//    	state_est_state.state_est_meas.imu_data[i].gyro_y -= average_gyro[1];
-//    	state_est_state.state_est_meas.imu_data[i].gyro_z -= average_gyro[2];
-//    }
 
 
     /* get current airbrake extension */

@@ -228,16 +228,6 @@ sb_data_t sb1_global = { 0 };
 sb_data_t sb2_global = { 0 };
 sb_data_t sb3_global = { 0 };
 
-baro_data_t sb1_baro = {0};
-imu_data_t sb1_imu_1 = {0};
-imu_data_t sb1_imu_2 = {0};
-baro_data_t sb2_baro = {0};
-imu_data_t sb2_imu_1 = {0};
-imu_data_t sb2_imu_2 = {0};
-baro_data_t sb3_baro = {0};
-imu_data_t sb3_imu_1 = {0};
-imu_data_t sb3_imu_2 = {0};
-
 /** CONTROL VARIABLES **/
 
 state_est_data_t state_est_data_global = {0};
@@ -246,7 +236,7 @@ env_t global_env = {0};
 flight_phase_detection_t global_flight_phase_detection = {0};
 
 /** MOTOR CONTROLLER VARIABLES **/
-uint32_t global_airbrake_ext_meas = 0;
+int32_t global_airbrake_ext_meas = 0;
 
 /** TELEMETRY COMMAND **/
 command_e global_telemetry_command;
@@ -312,7 +302,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_ADC1_Init(void);
-static void MX_SDMMC1_SD_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_SPI3_Init(void);
@@ -604,7 +593,7 @@ int main(void)
   task_peripheralsHandle = osThreadNew(vTaskPeripherals, NULL, &task_peripherals_attributes);
 
   /* creation of task_flash */
-  task_flashHandle = osThreadNew(vTaskFlash, NULL, &task_flash_attributes);
+//  task_flashHandle = osThreadNew(vTaskFlash, NULL, &task_flash_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -806,7 +795,7 @@ static void MX_ADC1_Init(void)
   * @param None
   * @retval None
   */
-static void MX_SDMMC1_SD_Init(void)
+void MX_SDMMC1_SD_Init(void)
 {
 
   /* USER CODE BEGIN SDMMC1_Init 0 */

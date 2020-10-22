@@ -39,7 +39,7 @@ extern sb_data_t sb1_global;
 extern sb_data_t sb2_global;
 extern sb_data_t sb3_global;
 extern state_est_data_t state_est_data_global;
-extern uint32_t global_airbrake_ext_meas;
+extern int32_t global_airbrake_ext_meas;
 extern flight_phase_detection_t global_flight_phase_detection;
 extern command_e global_telemetry_command;
 extern gps_data_t globalGPS;

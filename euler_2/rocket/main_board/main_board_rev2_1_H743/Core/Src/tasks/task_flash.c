@@ -255,8 +255,7 @@ static inline void packValue(log_elem_t *log_elem, uint8_t *flash_buffer,
     case STATE: {
       pack_state(&log_elem->u.state, flash_buffer, flash_buffer_idx);
     } break;
-    case ESTIMATOR_VAR_1D:
-    case ESTIMATOR_VAR_3D: {
+    case ESTIMATOR_VAR_1D: {
       pack_estimator_var(&log_elem->u.est_var, flash_buffer, flash_buffer_idx);
     } break;
     case CONTROLLER_OUTPUT: {

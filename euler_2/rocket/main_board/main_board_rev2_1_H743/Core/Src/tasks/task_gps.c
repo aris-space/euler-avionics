@@ -96,7 +96,6 @@ void vTaskGps(void *argument) {
     log_sensor(osKernelGetTickCount(), 2, GPS, &GPS2.data);
     log_sensor(osKernelGetTickCount(), 3, GPS, &GPS3.data);
 
-    // TODO TEST [luca] sattelites can not go above 12 otherwise there is an error, throw out gps modules with more than 12 sats
     /* get best possible GPS for Telemetry */
     if ((GPS1.data.satellite >= GPS2.data.satellite) && (GPS1.data.satellite < 13)) {
       if ((GPS1.data.satellite >= GPS3.data.satellite) && (GPS1.data.satellite < 13)) {

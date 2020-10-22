@@ -73,21 +73,21 @@ void vTaskMotorCont(void *argument) {
 
     /* Transform 0-1 Controller output to controller output of motor */
     desired_motor_position =
-        (int32_t)(((float)controller_actuation) / 1000 * (-150));
+        (int32_t)(((float)controller_actuation) * (-150) / 1000 );
 
     /* Check Bounds */
-    if (desired_motor_position > 2) {
-      desired_motor_position = 2;
+    if (desired_motor_position > 0) {
+      desired_motor_position = 0;
     }
 
-    if (desired_motor_position < -150) {
-      desired_motor_position = -150;
+    if (desired_motor_position < -145) {
+      desired_motor_position = -145;
     }
 
     /* If we are in IDLE, THRUSTING or DESCENDING
      * the Motor is not allowed to Move!
      */
-    if (flight_phase_detection.flight_phase == COASTING) {
+    if (flight_phase_detection.flight_phase == CONTROL) {
       /* Move the Motor */
       motor_status = move_to_position(desired_motor_position);
     } else {
@@ -98,7 +98,7 @@ void vTaskMotorCont(void *argument) {
     if (flight_phase_detection.flight_phase == IDLE &&
         telemetry_command == AIRBRAKE_TEST_COMMAND &&
         osKernelGetTickCount() < 60000) {
-      test_airbrakes(-140);
+      test_airbrakes(-145);
       telemetry_command = IDLE_COMMAND;
     }
 
@@ -106,8 +106,11 @@ void vTaskMotorCont(void *argument) {
     motor_status = get_position(&measured_motor_position);
 
     /* Transform Motor Position to a value between [0-1000] */
-    if(measured_motor_position < 0){
+    if(measured_motor_position > 0){
     	measured_motor_position = 0;
+    }
+    else if(measured_motor_position < -150){
+    	measured_motor_position = 1000;
     }
     else{
     	measured_motor_position = (measured_motor_position * 1000) / (-150);
@@ -125,12 +128,6 @@ void vTaskMotorCont(void *argument) {
     log_motor(osKernelGetTickCount(), desired_motor_position,
              measured_motor_position);
 
-//    if (motor_status != osOK && flight_phase_detection.flight_phase == IDLE) {
-//      disable_motor();
-//      osDelay(1000);
-//      enable_motor();
-//    }
-
     osDelayUntil(tick_count);
   }
 }
@@ -138,5 +135,5 @@ void vTaskMotorCont(void *argument) {
 static void test_airbrakes(int32_t position) {
   move_to_position(position);
   osDelay(100);
-  move_to_position(2);
+  move_to_position(0);
 }

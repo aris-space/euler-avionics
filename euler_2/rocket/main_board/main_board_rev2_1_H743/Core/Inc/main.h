@@ -52,6 +52,8 @@ extern "C" {
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
+void MX_SDMMC1_SD_Init(void);
+
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
