@@ -131,8 +131,11 @@ class MainWindow(Frame):
         self.line_color = '#e50000'
 
         self.target_apogee = 10000
-        self.show_line = False
+        self.show_line_apogee = True
         self.target_apogee_line = [self.target_apogee]
+        self.reference_velocity = 340
+        self.show_line_velocity = True
+        self.reference_velocity_line = [self.reference_velocity]
 
         self.__setup__()
 
@@ -532,6 +535,7 @@ class MainWindow(Frame):
         velocity_data.append(self.current_velocity)
         altitude_data.append(self.current_altitude)
         self.target_apogee_line.append(self.target_apogee)
+        self.reference_velocity_line.append(self.reference_velocity)
         sub_velocity.clear()
         sub_altitude.clear()
         try:
@@ -539,8 +543,10 @@ class MainWindow(Frame):
             sub_altitude.plot(altitude_data, self.line_color)
         except ValueError as e:
             self.logger.info('User set wrong color code.')
-        if self.show_line:
+        if self.show_line_apogee:
             sub_altitude.plot(self.target_apogee_line, 'g')
+        if self.show_line_velocity:
+            sub_velocity.plot(self.reference_velocity_line, 'g')
         self.canvas_left.draw()
         self.canvas_right.draw()
         if self.update_plot:
@@ -778,3 +784,4 @@ class MainWindow(Frame):
         self.line_color = line
 
         self.target_apogee_line = [self.target_apogee]*len(altitude_data)
+        self.reference_velocity_line = [self.reference_velocity]*len(velocity_data)
