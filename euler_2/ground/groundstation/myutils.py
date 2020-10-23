@@ -50,15 +50,12 @@ fsm_names = ['altitude [m]',
              'velocity [m/s]',
              'airbrake extension [%]',
              'flight phase',
-             'timestamp [s]',
-             'Buzzer',
-             'Camera']
+             'timestamp [s]']
 
-rf_names = ['Packets total',
-            'Corrupted packets',
-            'Correct packets',
-            'RSSI',
-            'Display update rate [Hz]']
+hardware_names = ['Buzzer',
+                  'Camera',
+                  'SD card logging',
+                  'Display update rate [Hz]']
 
 
 def data_struct():

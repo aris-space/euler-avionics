@@ -16,7 +16,7 @@ from matplotlib.figure import Figure
 from matplotlib import style
 import logging
 from Logs.LoggingHandler import LoggingHandler
-from myutils import sb_names, gps_names, battery_names, fsm_names, rf_names, dict_command_msg, button_text,\
+from myutils import sb_names, gps_names, battery_names, fsm_names, hardware_names, dict_command_msg, button_text, \
     data_struct
 import math
 from threading import Thread
@@ -27,6 +27,7 @@ from View.ConfigureGPSWindow import ConfigureGPSWindow
 from View.AboutWindow import AboutWindow
 from View.CommandSettingsWindow import CommandSettingsWindow
 from View.ConnectionWindow import ConnectionWindow
+from View.LargeWindow import LargeWindow
 
 matplotlib.use("TkAgg")
 style.use('ggplot')
@@ -102,8 +103,6 @@ class MainWindow(Frame):
         self.recording = False
         self.is_receiving = False
         self.update_plot = False
-        self.num_packets_bad = 0
-        self.num_packets_good = 0
 
         self._root = parent
         self._root.title("ARIS Groundstation")
@@ -153,12 +152,14 @@ class MainWindow(Frame):
         self.connection_menu = tk.Menu(self.menubar, tearoff=0)
         self.plot_menu = tk.Menu(self.menubar, tearoff=0)
         self.settings_menu = tk.Menu(self.menubar, tearoff=0)
+        # self.view_menu = tk.Menu(self.menubar, tearoff=0)
         self.help_menu = tk.Menu(self.menubar, tearoff=0)
 
         self.menubar.add_cascade(label="File", menu=self.file_menu)
         self.menubar.add_cascade(label="Connection", menu=self.connection_menu)
         self.menubar.add_cascade(label="Live plot", menu=self.plot_menu)
         self.menubar.add_cascade(label="Settings", menu=self.settings_menu)
+        # self.menubar.add_cascade(label='View', menu=self.view_menu)
         self.menubar.add_cascade(label="Help", menu=self.help_menu)
 
         self.file_menu.add_command(label="New", command=self.donothing)
@@ -179,6 +180,8 @@ class MainWindow(Frame):
         self.settings_menu.add_command(label='Print raw data (on/off)', command=self.toggle_verbose)
         self.settings_menu.add_command(label='GPS', command=self.client_configure_gps)
         self.settings_menu.add_command(label='Plot', command=self.client_configure_plot)
+
+        # self.view_menu.add_command(label='Large view', command=self.client_large_view)
 
         self.help_menu.add_command(label="About", command=self.about_window)
         # self.help_menu.add_command(label="Manual", command=self.manual_window)
@@ -246,6 +249,7 @@ class MainWindow(Frame):
         self.frame_sb = tk.LabelFrame(self.frame_lower, text='Sensorboard data', font=6, width=250, height=75)
 
         self.label_sb_val = []
+        self.label_sb_name = []
         for i in range(len(sb_names)):
             self.label_sb_val.append(tk.Label(self.frame_sb,
                                               text="--------",
@@ -253,8 +257,6 @@ class MainWindow(Frame):
                                               relief="sunken",
                                               width=10))
 
-        self.label_sb_name = []
-        for i in range(len(sb_names)):
             self.label_sb_name.append(tk.Label(self.frame_sb, text=sb_names[i]))
 
         self.sep1_sb = ttk.Separator(self.frame_sb, orient='vertical')
@@ -275,28 +277,30 @@ class MainWindow(Frame):
 
             self.label_gps_name.append(tk.Label(self.frame_gps, text=gps_names[i]))
 
-        for i in range(len(gps_names)):
-            self.label_gps_name[i].grid(row=i, column=0, sticky='W')
+            self.label_gps_name[i].grid(row=i, column=0, sticky='W', padx=(10, 0))
             self.label_gps_val[i].grid(row=i, column=1, padx=10)
 
         # ==============================================================================================================
-        # add RF frame
+        # add Hardware frame
         # ==============================================================================================================
-        self.frame_rf = tk.LabelFrame(self.frame_lower, text='RF', font=6, width=100, height=75)
-        self.label_rf_val = []
-        self.label_rf_name = []
-        for i in range(len(rf_names)):
-            self.label_rf_val.append(tk.Label(self.frame_rf,
-                                              text='--------',
-                                              borderwidth=2,
-                                              relief='sunken',
-                                              width=10))
+        self.frame_hardware = tk.LabelFrame(self.frame_lower, text='Hardware', font=6, width=100, height=75)
+        self.label_hardware_val = []
+        self.label_hardware_name = []
+        for i in range(len(hardware_names)):
+            self.label_hardware_val.append(tk.Label(self.frame_hardware,
+                                                    text='--------',
+                                                    borderwidth=2,
+                                                    relief='sunken',
+                                                    width=10))
 
-            self.label_rf_name.append(tk.Label(self.frame_rf, text=rf_names[i]))
+            self.label_hardware_name.append(tk.Label(self.frame_hardware, text=hardware_names[i]))
 
-        for i in range(len(rf_names)):
-            self.label_rf_name[i].grid(row=i, column=0, sticky='W')
-            self.label_rf_val[i].grid(row=i, column=1, padx=10)
+            if i == 0:
+                self.label_hardware_name[i].grid(row=i, column=0, sticky='W', padx=(10, 0), pady=(10, 0))
+                self.label_hardware_val[i].grid(row=i, column=1, padx=10, pady=(10, 0))
+            else:
+                self.label_hardware_name[i].grid(row=i, column=0, sticky='W', padx=(10, 0))
+                self.label_hardware_val[i].grid(row=i, column=1, padx=10)
         # ==============================================================================================================
         # add battery monitoring frame
         # ==============================================================================================================
@@ -313,11 +317,11 @@ class MainWindow(Frame):
             self.label_battery_names.append(tk.Label(self.frame_battery, text=battery_names[i]))
 
             if i == 0:
-                self.label_battery_names[i].grid(row=i, column=0, padx=(20, 0), pady=(10, 0), sticky='W')
-                self.label_battery_val[i].grid(row=i, column=1, padx=10, pady=(10, 0))
+                self.label_battery_names[i].grid(row=i, column=0, padx=(10, 0), pady=(10, 0), sticky='W')
+                self.label_battery_val[i].grid(row=i, column=1, padx=(10, 0), pady=(10, 0))
             else:
-                self.label_battery_names[i].grid(row=i, column=0, padx=(20, 0), sticky='W')
-                self.label_battery_val[i].grid(row=i, column=1, padx=10)
+                self.label_battery_names[i].grid(row=i, column=0, padx=(10, 0), sticky='W')
+                self.label_battery_val[i].grid(row=i, column=1, padx=(10, 0))
 
         # ==============================================================================================================
         # add FSM frame
@@ -335,10 +339,10 @@ class MainWindow(Frame):
             self.label_fsm_names.append(tk.Label(self.frame_fsm, text=fsm_names[i]))
 
             if i == 0:
-                self.label_fsm_names[i].grid(row=i, column=0, padx=(20, 0), pady=(10, 0), sticky='W')
+                self.label_fsm_names[i].grid(row=i, column=0, padx=(10, 0), pady=(10, 0), sticky='W')
                 self.label_fsm_val[i].grid(row=i, column=1, padx=10, pady=(10, 0))
             else:
-                self.label_fsm_names[i].grid(row=i, column=0, padx=(20, 0), sticky='W')
+                self.label_fsm_names[i].grid(row=i, column=0, padx=(10, 0), sticky='W')
                 self.label_fsm_val[i].grid(row=i, column=1, padx=10)
 
         # ==============================================================================================================
@@ -360,19 +364,19 @@ class MainWindow(Frame):
         st.configure(font='TkFixedFont')
         st.grid(row=0, column=0)
 
-        half = math.ceil(len(button_text)/2)
+        half = math.ceil(len(button_text) / 2)
         for i in range(len(button_text)):
             if i < half:
                 self.buttons[i].grid(row=0, column=i, padx=5)
             else:
-                self.buttons[i].grid(row=1, column=i-half, padx=5)
+                self.buttons[i].grid(row=1, column=i - half, padx=5)
 
         self.logger.addHandler(LoggingHandler(st))
 
         self.frame_sb.pack(side="left", fill="both", expand=True, padx=5, pady=10)
         # self.sep2.pack(side="left", fill="both")
         self.frame_gps.pack(side="left", fill="both", expand=True, padx=5, pady=10)
-        self.frame_rf.pack(side="left", fill="both", expand=True, padx=5, pady=10)
+        self.frame_hardware.pack(side="left", fill="both", expand=True, padx=5, pady=10)
         self.frame_battery.pack(side="left", fill="both", expand=True, padx=5, pady=10)
         self.frame_fsm.pack(side="left", fill="both", expand=True, padx=5, pady=10)
 
@@ -384,18 +388,18 @@ class MainWindow(Frame):
         self.entry_name.delete(0, 'end')
         self.entry_name.insert(0, 'Rec/recording.csv')
 
-        self.label_sb_name[0].grid(row=0, column=0, pady=(10, 0), sticky='W')
-        self.label_sb_name[1].grid(row=1, column=0, sticky='W')
-        self.label_sb_name[2].grid(row=3, column=0, sticky='W')
-        self.label_sb_name[3].grid(row=0, column=3, pady=(10, 0), sticky='W')
-        self.label_sb_name[4].grid(row=1, column=3, sticky='W')
-        self.label_sb_name[5].grid(row=2, column=3, sticky='W')
-        self.label_sb_name[6].grid(row=3, column=3, sticky='W')
-        self.label_sb_name[7].grid(row=4, column=3, sticky='W')
-        self.label_sb_name[8].grid(row=5, column=3, sticky='W')
+        self.label_sb_name[0].grid(row=0, column=0, pady=(10, 0), sticky='W', padx=(10, 0))
+        self.label_sb_name[1].grid(row=1, column=0, sticky='W', padx=(10, 0))
+        self.label_sb_name[2].grid(row=3, column=0, sticky='W', padx=(10, 0))
+        self.label_sb_name[3].grid(row=0, column=3, pady=(10, 0), sticky='W', padx=(10, 0))
+        self.label_sb_name[4].grid(row=1, column=3, sticky='W', padx=(10, 0))
+        self.label_sb_name[5].grid(row=2, column=3, sticky='W', padx=(10, 0))
+        self.label_sb_name[6].grid(row=3, column=3, sticky='W', padx=(10, 0))
+        self.label_sb_name[7].grid(row=4, column=3, sticky='W', padx=(10, 0))
+        self.label_sb_name[8].grid(row=5, column=3, sticky='W', padx=(10, 0))
 
-        self.sep1_sb.grid(row=0, column=2, rowspan=6, sticky='ns')
-        self.sep2_sb.grid(row=2, column=0, columnspan=2, sticky='we')
+        self.sep1_sb.grid(row=0, column=2, rowspan=6, sticky='ns', pady=(5, 0))
+        self.sep2_sb.grid(row=2, column=0, columnspan=2, sticky='we', padx=(10, 0))
 
         self.label_sb_val[0].grid(row=0, column=1, padx=10, pady=(10, 0))
         self.label_sb_val[1].grid(row=1, column=1, padx=10)
@@ -552,14 +556,6 @@ class MainWindow(Frame):
         if self.update_plot:
             self.frame_upper_middle.after(100, self.update_canvas)
 
-    def update_rf_frame(self):
-        """
-        Updates the values in the rf frame
-        """
-        self.label_rf_val[0].config(text=self.num_packets_good + self.num_packets_bad)
-        self.label_rf_val[1].config(text=self.num_packets_bad)
-        self.label_rf_val[2].config(text=self.num_packets_good)
-
     def update_values(self):
         """
         Updates the values in the main window and the data for live plots.
@@ -573,7 +569,7 @@ class MainWindow(Frame):
         # print(data)
         self.is_receiving = True
         time.sleep(1)
-        update_rate = [0]*20
+        update_rate = [0] * 20
         avg = 0
         sb_board_num = 1
         while self.s.isRun:
@@ -583,28 +579,36 @@ class MainWindow(Frame):
                 continue
             else:
                 try:
-                    # alignment1 = data[0]
                     timestamp = data[0]
-                    sb_data = data[1:1+len_sb]
-                    battery_data = data[1+len_sb:1+len_sb+len_battery]
-                    alignment2 = data[1+len_sb+len_battery]
-                    gps_data = data[2+len_sb + len_battery:2+len_sb + len_battery + len_gps]
-                    altitude = data[2+len_sb + len_battery + len_gps]
-                    velocity = data[3+len_sb + len_battery + len_gps]
-                    airbrake_extension = data[4+len_sb + len_battery + len_gps]
-                    flight_phase_number = data[5+len_sb + len_battery + len_gps]
+                    sb_data = data[1:1 + len_sb]
+                    battery_data = data[1 + len_sb:1 + len_sb + len_battery]
+                    alignment2 = data[1 + len_sb + len_battery]
+                    gps_data = data[2 + len_sb + len_battery:2 + len_sb + len_battery + len_gps]
+                    altitude = data[2 + len_sb + len_battery + len_gps]
+                    velocity = data[3 + len_sb + len_battery + len_gps]
+                    airbrake_extension = data[4 + len_sb + len_battery + len_gps]
+                    flight_phase_number = data[5 + len_sb + len_battery + len_gps]
                     # alignment3 = data[7+len_sb + len_battery + len_gps]
                     fsm_data = [altitude, velocity, airbrake_extension, flight_phase_number, timestamp]
 
-                    if 33554432 > gps_data[0] > 16777216:
+                    if 33554432 > gps_data[0] >= 16777216:
                         sb_board_num = 1
                         gps_data[0] -= 16777216
-                    elif 50331648 > gps_data[0] > 33554432:
+                    elif 50331648 > gps_data[0] >= 33554432:
                         sb_board_num = 2
                         gps_data[0] -= 33554432
-                    elif gps_data[0] > 50331648:
+                    elif gps_data[0] >= 50331648:
                         sb_board_num = 3
                         gps_data[0] -= 50331648
+
+                    if 2147483648 > gps_data[1] >= 1073741824:
+                        self.label_hardware_val[2].config(text='on')
+                        gps_data[1] -= 1073741824
+                    elif gps_data[1] >= 2147483648:
+                        self.label_hardware_val[2].config(text='off')
+                        gps_data[1] -= 2147483648
+                    else:
+                        self.label_hardware_val[2].config(text='not sure')
 
                     gps_time = str(gps_data[0] + self.time_offset) + ':' + str(gps_data[1]) + ':' + str(gps_data[2])
                     tmp = ['0'] * (len_gps - 4)
@@ -626,9 +630,9 @@ class MainWindow(Frame):
                     gps_data = tmp
 
                     # sb data scaling
-                    sb_data[1] = sb_data[1] / 100
-                    sb_data[2:5] = map(lambda x: x / 32.8, sb_data[2:5])
-                    sb_data[5:] = map(lambda x: x / 1024 * 9.81, sb_data[5:])
+                    sb_data[1] = sb_data[1] / 100  # temperature
+                    sb_data[2:5] = map(lambda x: x / 32.8, sb_data[2:5])  # gyro
+                    sb_data[5:] = map(lambda x: x / 1024 * 9.81, sb_data[5:])  # acc
 
                     sb_data[2:] = [f'{x:.2f}' for x in sb_data[2:]]
 
@@ -662,7 +666,7 @@ class MainWindow(Frame):
                         self.label_battery_val[i].config(text=battery_data[i])
 
                     for i in range(len(self.label_fsm_val)):
-                        if i != 3 and i != 5 and i != 6:
+                        if i != 3:
                             self.label_fsm_val[i].config(text=fsm_data[i])
 
                     # print(fsm_data)
@@ -672,32 +676,32 @@ class MainWindow(Frame):
                             self.label_fsm_val[3].config(text=flight_phase[curr_flightphase])
                         else:
                             self.label_fsm_val[3].config(text=curr_flightphase)
-                        self.label_fsm_val[5].config(text='off')  # buzzer
-                        self.label_fsm_val[6].config(text='off')  # camera
+                        self.label_hardware_val[0].config(text='off')  # buzzer
+                        self.label_hardware_val[1].config(text='off')  # camera
                     elif 128 > curr_flightphase > 64:
                         curr_flightphase = curr_flightphase - 64
                         if curr_flightphase in range(len(flight_phase)):
                             self.label_fsm_val[3].config(text=flight_phase[curr_flightphase])
                         else:
                             self.label_fsm_val[3].config(text=curr_flightphase)
-                        self.label_fsm_val[5].config(text='off')  # buzzer
-                        self.label_fsm_val[6].config(text='on')  # camera
+                        self.label_hardware_val[0].config(text='off')  # buzzer
+                        self.label_hardware_val[1].config(text='on')  # camera
                     elif 192 > curr_flightphase > 128:
                         curr_flightphase = curr_flightphase - 128
                         if curr_flightphase in range(len(flight_phase)):
                             self.label_fsm_val[3].config(text=flight_phase[curr_flightphase])
                         else:
                             self.label_fsm_val[3].config(text=curr_flightphase)
-                        self.label_fsm_val[5].config(text='on')  # buzzer
-                        self.label_fsm_val[6].config(text='off')  # camera
+                        self.label_hardware_val[0].config(text='on')  # buzzer
+                        self.label_hardware_val[1].config(text='off')  # camera
                     else:
                         curr_flightphase = curr_flightphase - 192
                         if curr_flightphase in range(len(flight_phase)):
                             self.label_fsm_val[3].config(text=flight_phase[curr_flightphase])
                         else:
                             self.label_fsm_val[3].config(text=curr_flightphase)
-                        self.label_fsm_val[5].config(text='on')  # buzzer
-                        self.label_fsm_val[6].config(text='on')  # camera
+                        self.label_hardware_val[0].config(text='on')  # buzzer
+                        self.label_hardware_val[1].config(text='on')  # camera
 
                     if self.recording:
                         try:
@@ -712,11 +716,11 @@ class MainWindow(Frame):
                 except IndexError as e:
                     self.logger.info("An Index Error occurred.")
             time.sleep(0.001)
-            self.label_rf_val[-1].config(text=str(avg))
+            self.label_hardware_val[-1].config(text=str(avg))
             end_time = time.time()
-            update_rate.insert(0, int(1/(end_time-start_time)))
+            update_rate.insert(0, int(1 / (end_time - start_time)))
             update_rate.pop()
-            avg = int(sum(update_rate)/20)
+            avg = int(sum(update_rate) / 20)
 
     def get_data_from_raw(self):
 
@@ -731,15 +735,15 @@ class MainWindow(Frame):
         try:
             part1_unpacked = struct.unpack('lllhhhhhhHHH', part1)
         except struct.error as e:
-            part1_unpacked = [0]*12
+            part1_unpacked = [0] * 12
 
         part2 = curr_raw_data[30:-4]
         try:
-            part2_unpacked = struct.unpack('LlllllHHBBBBlllB', part2)
+            part2_unpacked = struct.unpack('LIIIIIHHBBBBlllB', part2)
         except struct.error as e:
-            part2_unpacked = [0]*16
+            part2_unpacked = [0] * 16
 
-        return list(part1_unpacked)+list(part2_unpacked)
+        return list(part1_unpacked) + list(part2_unpacked)
 
     def toggle_verbose(self):
         self.verbose = not self.verbose
@@ -783,5 +787,5 @@ class MainWindow(Frame):
         self.outer_color = outer
         self.line_color = line
 
-        self.target_apogee_line = [self.target_apogee]*len(altitude_data)
-        self.reference_velocity_line = [self.reference_velocity]*len(velocity_data)
+        self.target_apogee_line = [self.target_apogee] * len(altitude_data)
+        self.reference_velocity_line = [self.reference_velocity] * len(velocity_data)
