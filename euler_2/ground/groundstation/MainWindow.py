@@ -27,7 +27,6 @@ from View.ConfigureGPSWindow import ConfigureGPSWindow
 from View.AboutWindow import AboutWindow
 from View.CommandSettingsWindow import CommandSettingsWindow
 from View.ConnectionWindow import ConnectionWindow
-from View.LargeWindow import LargeWindow
 
 matplotlib.use("TkAgg")
 style.use('ggplot')
