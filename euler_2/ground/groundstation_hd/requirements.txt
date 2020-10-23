@@ -1,0 +1,4 @@
+pyserial==3.4
+matplotlib==3.3.2
+Pillow==7.2.0
+hdpitkinter==1.0.3
