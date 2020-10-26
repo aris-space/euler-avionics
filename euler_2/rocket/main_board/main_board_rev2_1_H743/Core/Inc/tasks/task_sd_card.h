@@ -17,6 +17,8 @@
 extern custom_mutex_t fsm_mutex;
 extern flight_phase_detection_t global_flight_phase_detection;
 
+extern uint8_t sd_card_logging_status;
+
 void vTaskSdCard(void *argument);
 
 extern SD_HandleTypeDef hsd1;

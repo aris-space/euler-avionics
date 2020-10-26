@@ -70,7 +70,6 @@ typedef struct {
 } log_elem_t;
 
 #define SD_QUEUE_SIZE 256
-#define FLASH_QUEUE_SIZE 128
 
 extern osMessageQueueId_t flash_queue;
 

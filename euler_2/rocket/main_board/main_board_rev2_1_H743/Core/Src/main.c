@@ -162,7 +162,7 @@ const osThreadAttr_t task_fsm_attributes = {
 };
 /* Definitions for task_gps */
 osThreadId_t task_gpsHandle;
-DTCM uint32_t task_gpsBuffer[ 512 ];
+uint32_t task_gpsBuffer[ 512 ];
 osStaticThreadDef_t task_gpsControlBlock;
 const osThreadAttr_t task_gps_attributes = {
   .name = "task_gps",
@@ -198,7 +198,7 @@ const osThreadAttr_t task_xbee_attributes = {
 };
 /* Definitions for task_peripherals */
 osThreadId_t task_peripheralsHandle;
-DTCM uint32_t task_peripheralsBuffer[ 128 ];
+uint32_t task_peripheralsBuffer[ 128 ];
 osStaticThreadDef_t task_peripheralsControlBlock;
 const osThreadAttr_t task_peripherals_attributes = {
   .name = "task_peripherals",
@@ -207,18 +207,6 @@ const osThreadAttr_t task_peripherals_attributes = {
   .cb_mem = &task_peripheralsControlBlock,
   .cb_size = sizeof(task_peripheralsControlBlock),
   .priority = (osPriority_t) osPriorityHigh2,
-};
-/* Definitions for task_flash */
-osThreadId_t task_flashHandle;
-DTCM uint32_t task_flashBuffer[ 2048 ];
-osStaticThreadDef_t task_flashControlBlock;
-const osThreadAttr_t task_flash_attributes = {
-  .name = "task_flash",
-  .stack_mem = &task_flashBuffer[0],
-  .stack_size = sizeof(task_flashBuffer),
-  .cb_mem = &task_flashControlBlock,
-  .cb_size = sizeof(task_flashControlBlock),
-  .priority = (osPriority_t) osPriorityAboveNormal6,
 };
 /* USER CODE BEGIN PV */
 
@@ -240,6 +228,7 @@ int32_t global_airbrake_ext_meas = 0;
 
 /** TELEMETRY COMMAND **/
 command_e global_telemetry_command;
+uint8_t sd_card_logging_status = 0;
 
 /** MUTEXES **/
 
@@ -323,7 +312,6 @@ extern void vTaskGps(void *argument);
 extern void vTaskBattery(void *argument);
 extern void vTaskXbee(void *argument);
 extern void vTaskPeripherals(void *argument);
-extern void vTaskFlash(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -552,7 +540,6 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_QUEUES */
   sd_queue = osMessageQueueNew(SD_QUEUE_SIZE, sizeof(log_elem_t), NULL);
-  flash_queue = osMessageQueueNew(FLASH_QUEUE_SIZE, sizeof(log_elem_t), NULL);
 #if (configUSE_TRACE_FACILITY == 1)
   vTraceSetQueueName(sd_queue, "SD Queue");
 #endif
@@ -591,9 +578,6 @@ int main(void)
 
   /* creation of task_peripherals */
   task_peripheralsHandle = osThreadNew(vTaskPeripherals, NULL, &task_peripherals_attributes);
-
-  /* creation of task_flash */
-//  task_flashHandle = osThreadNew(vTaskFlash, NULL, &task_flash_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */

@@ -119,6 +119,7 @@ void vTaskSdCard(void *argument) {
               sync_counter = 0;
               HAL_GPIO_TogglePin(LED4_GPIO_Port, LED4_Pin);
               res = f_sync(&EULER_LOG_FILE);
+              sd_card_logging_status = 1;
               if (res != FR_OK) {
                 usb_print("[STORAGE TASK] Failed syncing file: %d\n", res);
 #if (configUSE_TRACE_FACILITY == 1)
@@ -180,10 +181,11 @@ static void mount_sd_card() {
     }
   } while (res != FR_OK);
 }
-/* TODO [nemanja]: this is probably not working, check in debugger */
+
 static void remount_sd_card() {
   FRESULT res;
   // f_close(&EULER_LOG_FILE);
+  sd_card_logging_status = 2;
   do {
     MX_FATFS_DeInit();
     osDelay(50);

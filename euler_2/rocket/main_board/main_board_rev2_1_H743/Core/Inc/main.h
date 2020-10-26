@@ -37,6 +37,7 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+void MX_SDMMC1_SD_Init(void);
 
 /* USER CODE END ET */
 
@@ -51,8 +52,6 @@ extern "C" {
 /* USER CODE END EM */
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
-
-void MX_SDMMC1_SD_Init(void);
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);

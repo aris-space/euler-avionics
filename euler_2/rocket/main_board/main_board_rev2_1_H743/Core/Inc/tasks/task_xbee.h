@@ -45,6 +45,7 @@ extern command_e global_telemetry_command;
 extern gps_data_t globalGPS;
 extern telemetry_battery_data_t global_battery_data;
 
+extern uint8_t sd_card_logging_status;
 extern int8_t buzzer_state;
 extern int8_t camera_state;
 

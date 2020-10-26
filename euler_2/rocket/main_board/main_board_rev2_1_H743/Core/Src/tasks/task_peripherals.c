@@ -70,7 +70,7 @@ void vTaskPeripherals(void *argument) {
     }
 
     /* Enable Self Power Hold */
-    if (telemetry_command == TELEMETRY_HIGH_SAMPLING) {
+    if ((telemetry_command == TELEMETRY_HIGH_SAMPLING) || (flight_phase_detection.flight_phase == THRUSTING)) {
       HAL_GPIO_WritePin(PW_HOLD_GPIO_Port, PW_HOLD_Pin, GPIO_PIN_RESET);
     }
 

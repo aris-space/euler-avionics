@@ -185,6 +185,9 @@ void vTaskXbee(void *argument) {
 		/* Include what sensor board we are sending down */
 		telemetry_send.gps.hour |= sensor_board_counter << 24;
 
+		/* Include if the sd card is logging */
+		telemetry_send.gps.minute |= sd_card_logging_status << 30;
+
 		/* Read Peripherals */
 		telemetry_send.flight_phase |= buzzer_state << 7;
 		telemetry_send.flight_phase |= camera_state << 6;
